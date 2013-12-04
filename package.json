@@ -1,0 +1,28 @@
+{
+  "name": "jpm",
+  "version": "0.1.0",
+  "description": "Jetpack Mechanic utilities for creating, testing, running and packaging Mozilla Jetpack Addons",
+  "main": "index.js",
+  "bin": {
+    "jpm": "./bin/jpm"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/jsantell/jpm"
+  },
+  "dependencies": {
+    "commander": "*",
+    "jsontoxml": "*",
+    "fs-promise": "*",
+    "fs-extra": "*",
+    "colors": "*",
+    "when": "*",
+    "dive": "*",
+    "zip-dir": "*"
+  },
+  "author": "Jordan Santell",
+  "license": "MPL v2.0"
+}

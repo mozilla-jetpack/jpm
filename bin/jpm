@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+var VERSION = "0.1.0";
+var program = require("commander");
+var utils = require("../lib/utils");
+var console = utils.console;
+var run = require("../lib/run");
+var test = require("../lib/test");
+var xpi = require("../lib/xpi");
+
+program
+  .version(VERSION)
+  .option("-m, --mode <action>", "action to run [run|test|xpi]")
+  .parse(process.argv);
+
+var manifest = utils.getManifest();
+console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
+
+var progress = program.mode === "test" ? test(program) :
+               program.mode === "xpi" ? xpi(manifest, program) :
+               run(program);
+
+progress.then(console.log,console.error);
