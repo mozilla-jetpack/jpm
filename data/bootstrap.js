@@ -26,7 +26,7 @@ const appInfo = Cc["@mozilla.org/xre/app-info;1"].
 const vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
            getService(Ci.nsIVersionComparator);
 
-
+const { console } = Cu.import("resource://gre/modules/devtools/Console.jsm",{});
 const REASON = [ 'unknown', 'startup', 'shutdown', 'enable', 'disable',
                  'install', 'uninstall', 'upgrade', 'downgrade' ];
 
@@ -34,7 +34,7 @@ const bind = Function.call.bind(Function.bind);
 
 let loader = null;
 let unload = null;
-let cuddlefishSandbox = null;
+let loaderSandbox = null;
 let nukeTimer = null;
 
 // Utility function that synchronously reads local resource from the given
@@ -77,17 +77,19 @@ function startup(data, reasonCode) {
 
     // TODO: Maybe we should perform read harness-options.json asynchronously,
     // since we can't do anything until 'sessionstore-windows-restored' anyway.
-    let options;
+    let manifest, options;
     let node = false;
     try {
       options = JSON.parse(readURI(rootURI + './harness-options.json'));
+      manifest = options.manifest;
     } catch (e) {
-      options = JSON.parse(readURI(rootURI + './package.json'));
+      manifest = JSON.parse(readURI(rootURI + './package.json'));
+      options = JSON.parse(readURI(rootURI + './config.json'));
       node = true;
     }
 
-    let id = options.jetpackID || options.id;
-    let name = options.name;
+    let id = node ? manifest.id : options.jetpackID;
+    let name = node ? manifest.name : options.name;
 
     if (!node) {
       // Clean the metadata
@@ -166,6 +168,7 @@ function startup(data, reasonCode) {
     // Retrieve list of module folder overloads based on preferences in order to
     // eventually used a local modules instead of files shipped into Firefox.
     let branch = prefService.getBranch('extensions.modules.' + id + '.path');
+    console.log("REDUCING PATHS");
     paths = branch.getChildList('', {}).reduce(function (result, name) {
       // Allows overloading of any sub folder by replacing . by / in pref name
       let path = name.substr(1).split('.').join('/');
@@ -188,29 +191,49 @@ function startup(data, reasonCode) {
       return result;
     }, paths);
 
-    // Make version 2 of the manifest
-    let manifest = options.manifest;
+    let loaderURI;
 
+  
+    console.log("!!!!!!");
+    console.log(Object.keys(paths));
+    if (node) {
+      let toolkitLoaderPath = 'toolkit/loader.js';
+      let toolkitLoaderURI = 'resource://gre/modules/commonjs/sdk/' + toolkitLoaderPath;
+    if (paths['sdk/']) { // sdk folder has been overloaded
+                         // (from pref, or cuddlefish is still in the xpi)
+      loaderURI = paths['sdk/'] + '../' + toolkitLoaderPath;
+    }
+    else if (paths['']) { // root modules folder has been overloaded
+      loaderURI = paths[''] + toolkitLoaderPath;
+    }
+    } else {
     // Import `cuddlefish.js` module using a Sandbox and bootstrap loader.
     let cuddlefishPath = 'loader/cuddlefish.js';
     let cuddlefishURI = 'resource://gre/modules/commonjs/sdk/' + cuddlefishPath;
     if (paths['sdk/']) { // sdk folder has been overloaded
                          // (from pref, or cuddlefish is still in the xpi)
-      cuddlefishURI = paths['sdk/'] + cuddlefishPath;
+      loaderURI = paths['sdk/'] + cuddlefishPath;
     }
     else if (paths['']) { // root modules folder has been overloaded
-      cuddlefishURI = paths[''] + 'sdk/' + cuddlefishPath;
+      loaderURI = paths[''] + 'sdk/' + cuddlefishPath;
+    }
     }
 
-    cuddlefishSandbox = loadSandbox(cuddlefishURI);
-    let cuddlefish = cuddlefishSandbox.exports;
-
+    console.log('loading loader from', loaderURI);
+    loaderSandbox = loadSandbox(loaderURI);
+    let loaderModule = loaderSandbox.exports;
+    
     // Normalize `options.mainPath` so that it looks like one that will come
     // in a new version of linker.
     let main = options.mainPath;
 
-    unload = cuddlefish.unload;
-    loader = cuddlefish.Loader({
+    unload = loaderModule.unload;
+    loader = loaderModule.Loader({
+      // Flag to determine whether or not to use node style loader or not
+      // If false, will be using Cuddlefish Loader, and otherwise will be
+      // using toolkit/loader with `node` flag true
+      node: node,
+
       paths: paths,
       // modules manifest.
       manifest: manifest,
@@ -254,8 +277,8 @@ function startup(data, reasonCode) {
       }
     });
 
-    let module = cuddlefish.Module('sdk/loader/cuddlefish', cuddlefishURI);
-    let require = cuddlefish.Require(loader, module);
+    let module = loaderModule.Module(node ? 'toolkit/loader' : 'sdk/loader/cuddlefish', loaderURI);
+    let require = loaderModule.Require(loader, module);
 
     require('sdk/addon/runner').startup(reason, {
       loader: loader,
@@ -344,11 +367,11 @@ function nukeModules() {
   // `cuddlefish.js`, and needs to be unloaded to avoid memory leaks, when
   // the addon is unload.
 
-  unloadSandbox(cuddlefishSandbox.loaderSandbox);
-  unloadSandbox(cuddlefishSandbox.xulappSandbox);
+  unloadSandbox(loaderSandbox.loaderSandbox);
+  unloadSandbox(loaderSandbox.xulappSandbox);
 
   // Bug 764840: We need to unload cuddlefish otherwise it will stay alive
   // and keep a reference to this compartment.
-  unloadSandbox(cuddlefishSandbox);
-  cuddlefishSandbox = null;
+  unloadSandbox(loaderSandbox);
+  loaderSandbox = null;
 }
