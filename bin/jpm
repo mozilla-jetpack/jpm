@@ -20,4 +20,7 @@ var progress = program.mode === "test" ? test(program) :
                program.mode === "xpi" ? xpi(manifest, program) :
                run(program);
 
-progress.then(console.log,console.error);
+progress.then(console.log, function (err) {
+  console.error("Action failed");
+  console.error(err);
+})
