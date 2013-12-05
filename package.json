@@ -14,6 +14,7 @@
     "url": "http://github.com/jsantell/jpm"
   },
   "dependencies": {
+    "firefox-profile": "*",
     "commander": "*",
     "jsontoxml": "*",
     "fs-promise": "*",
@@ -21,6 +22,7 @@
     "colors": "*",
     "when": "*",
     "dive": "*",
+    "underscore": "*",
     "zip-dir": "*"
   },
   "author": "Jordan Santell",
