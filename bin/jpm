@@ -7,14 +7,25 @@ var console = utils.console;
 var run = require("../lib/run");
 var test = require("../lib/test");
 var xpi = require("../lib/xpi");
+var jetpackRoot = process.env["JETPACK_ROOT"];
 
 program
   .version(VERSION)
   .option("-m, --mode <action>", "action to run [run|test|xpi]")
+  .option("-o, --overload", "Use development SDK instead of Firefox's built-in modules")
+  .option("-b, --binary <path>", "Firefox binary to use to run the add-on with")
   .parse(process.argv);
 
 var manifest = utils.getManifest();
 console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
+
+if (program.overload && !jetpackRoot) {
+  program.overload = false;
+  console.warn("Can not overload modules without JETPACK_ROOT being unset. Using built in modules.");
+} else if (program.overload) {
+  program.jetpackRoot = jetpackRoot;
+  console.log("Using SDK modules in " + jetpackRoot);
+}
 
 if (program.mode === "xpi") {
   xpi(manifest, program).then(function (xpiPath) {

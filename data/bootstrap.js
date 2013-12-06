@@ -45,6 +45,7 @@ function readURI(uri) {
   let channel = ioservice.newChannel(uri, 'UTF-8', null);
   let stream = channel.open();
 
+  console.log('reading URI', uri);
   let cstream = Cc['@mozilla.org/intl/converter-input-stream;1'].
     createInstance(Ci.nsIConverterInputStream);
   cstream.init(stream, 'UTF-8', 0, 0);
@@ -115,7 +116,9 @@ function startup(data, reasonCode) {
       replace(uuidRe, '$1');
 
     let prefixURI = 'resource://' + domain + '/';
-    let resourcesURI = ioService.newURI(rootURI + '/resources/', null, null);
+    let resourcesURIPath = node ? rootURI + '/' : rootURI + '/resources/';
+    console.log(domain, resourcesURIPath);
+    let resourcesURI = ioService.newURI(resourcesURIPath, null, null);
     resourceHandler.setSubstitution(domain, resourcesURI);
 
     // Create path to URLs mapping supported by loader.
@@ -168,7 +171,6 @@ function startup(data, reasonCode) {
     // Retrieve list of module folder overloads based on preferences in order to
     // eventually used a local modules instead of files shipped into Firefox.
     let branch = prefService.getBranch('extensions.modules.' + id + '.path');
-    console.log("REDUCING PATHS");
     paths = branch.getChildList('', {}).reduce(function (result, name) {
       // Allows overloading of any sub folder by replacing . by / in pref name
       let path = name.substr(1).split('.').join('/');
@@ -195,16 +197,18 @@ function startup(data, reasonCode) {
 
   
     console.log("!!!!!!");
-    console.log(Object.keys(paths));
+    console.log(paths)
     if (node) {
       let toolkitLoaderPath = 'toolkit/loader.js';
-      let toolkitLoaderURI = 'resource://gre/modules/commonjs/sdk/' + toolkitLoaderPath;
+      let toolkitLoaderURI = 'resource://gre/modules/commonjs/' + toolkitLoaderPath;
     if (paths['sdk/']) { // sdk folder has been overloaded
                          // (from pref, or cuddlefish is still in the xpi)
       loaderURI = paths['sdk/'] + '../' + toolkitLoaderPath;
     }
     else if (paths['']) { // root modules folder has been overloaded
       loaderURI = paths[''] + toolkitLoaderPath;
+    } else {
+      loaderURI = toolkitLoaderURI;
     }
     } else {
     // Import `cuddlefish.js` module using a Sandbox and bootstrap loader.
@@ -216,6 +220,8 @@ function startup(data, reasonCode) {
     }
     else if (paths['']) { // root modules folder has been overloaded
       loaderURI = paths[''] + 'sdk/' + cuddlefishPath;
+    } else {
+      loaderURI = cuddlefishURI;
     }
     }
 
@@ -277,6 +283,7 @@ function startup(data, reasonCode) {
       }
     });
 
+    console.log('booting up loader', paths, rootURI, prefixURI);
     let module = loaderModule.Module(node ? 'toolkit/loader' : 'sdk/loader/cuddlefish', loaderURI);
     let require = loaderModule.Require(loader, module);
 
@@ -313,6 +320,7 @@ function loadSandbox(uri) {
       CC: bind(CC, Components), components: Components,
       ChromeWorker: ChromeWorker });
   };
+  console.log('loading subscript', uri);
   scriptLoader.loadSubScript(uri, sandbox, 'UTF-8');
   return sandbox;
 }
