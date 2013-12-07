@@ -26,7 +26,6 @@ const appInfo = Cc["@mozilla.org/xre/app-info;1"].
 const vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
            getService(Ci.nsIVersionComparator);
 
-const { console } = Cu.import("resource://gre/modules/devtools/Console.jsm",{});
 const REASON = [ 'unknown', 'startup', 'shutdown', 'enable', 'disable',
                  'install', 'uninstall', 'upgrade', 'downgrade' ];
 
@@ -45,7 +44,6 @@ function readURI(uri) {
   let channel = ioservice.newChannel(uri, 'UTF-8', null);
   let stream = channel.open();
 
-  console.log('reading URI', uri);
   let cstream = Cc['@mozilla.org/intl/converter-input-stream;1'].
     createInstance(Ci.nsIConverterInputStream);
   cstream.init(stream, 'UTF-8', 0, 0);
@@ -117,13 +115,12 @@ function startup(data, reasonCode) {
 
     let prefixURI = 'resource://' + domain + '/';
     let resourcesURIPath = node ? rootURI + '/' : rootURI + '/resources/';
-    console.log(domain, resourcesURIPath);
     let resourcesURI = ioService.newURI(resourcesURIPath, null, null);
     resourceHandler.setSubstitution(domain, resourcesURI);
 
     // Create path to URLs mapping supported by loader.
-    let addonPath = node ? prefixURI + name : prefixURI + name + '/lib/';
-    let testPath = node ? prefixURI + name : prefixURI + name + '/tests/';
+    let addonPath = node ? prefixURI : prefixURI + name + '/lib/';
+    let testPath = node ? prefixURI : prefixURI + name + '/tests/';
     let paths = {
       // Relative modules resolve to add-on package lib
       './': addonPath,
@@ -195,46 +192,40 @@ function startup(data, reasonCode) {
 
     let loaderURI;
 
-  
-    console.log("!!!!!!");
-    console.log(paths)
+
     if (node) {
       let toolkitLoaderPath = 'toolkit/loader.js';
       let toolkitLoaderURI = 'resource://gre/modules/commonjs/' + toolkitLoaderPath;
-    if (paths['sdk/']) { // sdk folder has been overloaded
-                         // (from pref, or cuddlefish is still in the xpi)
-      loaderURI = paths['sdk/'] + '../' + toolkitLoaderPath;
-    }
-    else if (paths['']) { // root modules folder has been overloaded
-      loaderURI = paths[''] + toolkitLoaderPath;
+      if (paths['sdk/']) { // sdk folder has been overloaded
+                           // (from pref, or cuddlefish is still in the xpi)
+        loaderURI = paths['sdk/'] + '../' + toolkitLoaderPath;
+      }
+      else if (paths['']) { // root modules folder has been overloaded
+        loaderURI = paths[''] + toolkitLoaderPath;
+      } else {
+        loaderURI = toolkitLoaderURI;
+      }
     } else {
-      loaderURI = toolkitLoaderURI;
-    }
-    } else {
-    // Import `cuddlefish.js` module using a Sandbox and bootstrap loader.
-    let cuddlefishPath = 'loader/cuddlefish.js';
-    let cuddlefishURI = 'resource://gre/modules/commonjs/sdk/' + cuddlefishPath;
-    if (paths['sdk/']) { // sdk folder has been overloaded
-                         // (from pref, or cuddlefish is still in the xpi)
-      loaderURI = paths['sdk/'] + cuddlefishPath;
-    }
-    else if (paths['']) { // root modules folder has been overloaded
-      loaderURI = paths[''] + 'sdk/' + cuddlefishPath;
-    } else {
-      loaderURI = cuddlefishURI;
-    }
+      // Import `cuddlefish.js` module using a Sandbox and bootstrap loader.
+      let cuddlefishPath = 'loader/cuddlefish.js';
+      let cuddlefishURI = 'resource://gre/modules/commonjs/sdk/' + cuddlefishPath;
+      if (paths['sdk/']) { // sdk folder has been overloaded
+                           // (from pref, or cuddlefish is still in the xpi)
+        loaderURI = paths['sdk/'] + cuddlefishPath;
+      }
+      else if (paths['']) { // root modules folder has been overloaded
+        loaderURI = paths[''] + 'sdk/' + cuddlefishPath;
+      } else {
+        loaderURI = cuddlefishURI;
+      }
     }
 
-    console.log('loading loader from', loaderURI);
     loaderSandbox = loadSandbox(loaderURI);
     let loaderModule = loaderSandbox.exports;
-    
-    // Normalize `options.mainPath` so that it looks like one that will come
-    // in a new version of linker.
-    let main = options.mainPath;
+
 
     unload = loaderModule.unload;
-    loader = loaderModule.Loader({
+    let loaderOptions = {
       // Flag to determine whether or not to use node style loader or not
       // If false, will be using Cuddlefish Loader, and otherwise will be
       // using toolkit/loader with `node` flag true
@@ -281,16 +272,37 @@ function startup(data, reasonCode) {
           paths: paths
         }
       }
-    });
+    };
 
-    console.log('booting up loader', paths, rootURI, prefixURI);
+    // Manually set the loader's module cache to include itself;
+    // this is due to several modules requiring 'toolkit/loader',
+    // which fails due to lack of `Components`
+    if (node)
+      loaderOptions.modules['toolkit/loader'] = loaderSandbox.exports;
+
+    let loader = loaderModule.Loader(loaderOptions);
+
     let module = loaderModule.Module(node ? 'toolkit/loader' : 'sdk/loader/cuddlefish', loaderURI);
     let require = loaderModule.Require(loader, module);
+
+    // Normalize `options.mainPath` so that it looks like one that will come
+    // in a new version of linker.
+    //
+    // For node loader, the sdk/addon/runner will call loaderModule.main
+    // on loader, which will resolve the main file based off of manifest
+    let main = options.mainPath;
+
+    // Only specify prefsURI if a node-flagged addon specified it
+    // in the manifest, other wise, use the default path which 
+    // was created by CFX
+    let prefsURI = node ?
+      (manifest.prefs ? rootURI + manifest.prefs : undefined) :
+      rootURI + '/defaults/preferences/prefs.js';
 
     require('sdk/addon/runner').startup(reason, {
       loader: loader,
       main: main,
-      prefsURI: rootURI + 'defaults/preferences/prefs.js'
+      prefsURI: prefsURI
     });
   } catch (error) {
     dump('Bootstrap error: ' +
@@ -320,7 +332,6 @@ function loadSandbox(uri) {
       CC: bind(CC, Components), components: Components,
       ChromeWorker: ChromeWorker });
   };
-  console.log('loading subscript', uri);
   scriptLoader.loadSubScript(uri, sandbox, 'UTF-8');
   return sandbox;
 }
