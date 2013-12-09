@@ -14,7 +14,7 @@
     "url": "http://github.com/jsantell/jpm"
   },
   "dependencies": {
-    "firefox-profile": "*",
+    "firefox-profile": "jsantell/firefox-profile-js",
     "commander": "*",
     "jsontoxml": "*",
     "fs-promise": "*",
