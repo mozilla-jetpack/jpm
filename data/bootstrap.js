@@ -245,7 +245,7 @@ function startup(data, reasonCode) {
       version: node ? options.version : options.metadata[name].version,
       // Add-on package descriptor.
       // Use `options` if node-loader, or metadata otherwise
-      metadata: node ? options : options.metdata[name],
+      metadata: node ? options : options.metadata[name],
       // Add-on load reason.
       loadReason: reason,
 
