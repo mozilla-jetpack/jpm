@@ -23,7 +23,8 @@
     "when": "*",
     "dive": "*",
     "underscore": "*",
-    "zip-dir": "*"
+    "zip-dir": "*",
+    "tmp": "*"
   },
   "author": "Jordan Santell",
   "license": "MPL v2.0"
