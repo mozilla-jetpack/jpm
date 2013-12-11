@@ -13,7 +13,8 @@ program
   .version(VERSION)
   .option("-m, --mode <action>", "action to run [run|test|xpi]")
   .option("-o, --overload", "Use development SDK instead of Firefox's built-in modules")
-  .option("-b, --binary <path>", "Firefox binary to use to run the add-on with")
+  .option("-b, --binary <path>", "path of Firefox binary to use")
+  .option("-v, --verbose", "verbose")
   .parse(process.argv);
 
 var manifest = utils.getManifest();
@@ -33,6 +34,9 @@ if (program.mode === "xpi") {
   }, function (reason) {
     console.error("xpi creation failed.", reason);
   });
+}
+else if (program.mode == "test") {
+  test(manifest, program).then(null, console.error);
 }
 else {
   run(manifest, program).then(null, console.error);
