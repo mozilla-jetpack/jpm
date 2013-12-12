@@ -24,7 +24,10 @@
     "dive": "*",
     "underscore": "*",
     "zip-dir": "*",
-    "tmp": "*"
+    "tmp": "*",
+    "promzard": "*",
+    "semver": "*",
+    "read": "*"
   },
   "author": "Jordan Santell",
   "license": "MPL v2.0"

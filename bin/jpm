@@ -7,6 +7,7 @@ var console = utils.console;
 var run = require("../lib/run");
 var test = require("../lib/test");
 var xpi = require("../lib/xpi");
+var init = require("../lib/init");
 var jetpackRoot = process.env["JETPACK_ROOT"];
 
 program
@@ -35,8 +36,11 @@ if (program.mode === "xpi") {
     console.error("xpi creation failed.", reason);
   });
 }
-else if (program.mode == "test") {
+else if (program.mode === "test") {
   test(manifest, program).then(null, console.error);
+}
+else if (program.mode === "init") {
+  init();
 }
 else {
   run(manifest, program).then(null, console.error);
