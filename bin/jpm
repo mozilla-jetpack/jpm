@@ -17,7 +17,7 @@ program
   .option("-v, --verbose", "verbose")
   .parse(process.argv);
 
-var manifest = utils.getManifest();
+var manifest = utils.getManifest() || {};
 console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
 
 if (program.overload && !jetpackRoot) {
