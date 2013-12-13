@@ -30,7 +30,9 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "chai": "*"
+    "chai": "*",
+    "unzip": "*",
+    "rimraf": "*"
   },
   "author": "Jordan Santell",
   "license": "MPL v2.0"
