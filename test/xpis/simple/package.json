@@ -1,0 +1,9 @@
+{
+  "title": "My Simple Addon",
+  "id": "simple-addon",
+  "name": "simple-addon",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT"
+}
