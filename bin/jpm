@@ -40,7 +40,7 @@ else if (program.mode === "test") {
   test(manifest, program).then(null, console.error);
 }
 else if (program.mode === "init") {
-  init();
+  init().then(process.exit);
 }
 else {
   run(manifest, program).then(null, console.error);
