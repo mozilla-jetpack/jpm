@@ -32,7 +32,8 @@
     "mocha": "*",
     "chai": "*",
     "unzip": "*",
-    "rimraf": "*"
+    "rimraf": "*",
+    "glob": "*"
   },
   "author": "Jordan Santell",
   "license": "MPL v2.0"
