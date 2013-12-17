@@ -1,4 +1,5 @@
 var path = require("path");
+var execFile = require("child_process").execFile;
 var fs = require("fs");
 var rimraf = require("rimraf");
 var prevCwd;
@@ -18,3 +19,13 @@ function tearDown (done) {
   rimraf(tmpOutputDir, done);
 }
 exports.tearDown = tearDown;
+
+function exec (args) {
+  return execFile("../../bin/jpm", args.split(" "), {
+    cwd: tmpOutputDir
+  }, function (err) {
+    if (err)
+      throw err;
+  });
+}
+exports.exec = exec;
