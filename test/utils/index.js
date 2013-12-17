@@ -30,9 +30,10 @@ function tearDown (done) {
 }
 exports.tearDown = tearDown;
 
-function exec (args) {
-  return execFile("../../bin/jpm", args.split(" "), {
-    cwd: tmpOutputDir
+function exec (args, options) {
+  options = options || {};
+  return execFile(path.join(__dirname, "../../bin/jpm"), args.split(" "), {
+    cwd: options.cwd || tmpOutputDir
   }, function (err) {
     if (err)
       throw err;
