@@ -3,10 +3,10 @@ var path = require("path");
 var _ = require("underscore");
 var chai = require("chai");
 var expect = chai.expect;
-var profile = require("../lib/profile");
-var PREFS = require("../data/preferences");
+var profile = require("../../lib/profile");
+var PREFS = require("../../data/preferences");
 
-var simpleXpiPath = path.join(__dirname, 'xpis', 'simple-addon.xpi');
+var simpleXpiPath = path.join(__dirname, '..', 'xpis', 'simple-addon.xpi');
 
 describe("lib/profile", function () {
   it("creates a profile and returns the path", function (done) {

@@ -2,9 +2,9 @@ var fs = require("fs");
 var path = require("path");
 var chai = require("chai");
 var expect = chai.expect;
-var utils = require("../lib/utils");
+var utils = require("../../lib/utils");
 var binary = utils.normalizeBinary;
-var simpleAddonPath = path.join(__dirname, "addons", "simple-addon");
+var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var prevDir;
 
 describe("lib/utils", function () {
@@ -20,7 +20,7 @@ describe("lib/utils", function () {
   });
 
   it("getManifest() returns null when no package.json found", function (done) {
-    process.chdir(path.join(__dirname, "addons"));
+    process.chdir(path.join(__dirname, "..", "addons"));
     var manifest = utils.getManifest();
     expect(manifest).to.be.equal(null);
     done();

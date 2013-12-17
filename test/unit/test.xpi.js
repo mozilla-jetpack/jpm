@@ -4,10 +4,10 @@ var rimraf = require("rimraf");
 var unzip = require("unzip");
 var chai = require("chai");
 var expect = chai.expect;
-var xpi = require("../lib/xpi");
+var xpi = require("../../lib/xpi");
 
-var simpleAddonPath = path.join(__dirname, "addons", "simple-addon");
-var tmpOutputDir = path.join(__dirname, "tmp");
+var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
+var tmpOutputDir = path.join(__dirname, "../", "tmp");
 var prevCwd;
 
 describe("lib/xpi", function () {
