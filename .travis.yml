@@ -1,3 +1,8 @@
+language: node_js
+node_js:
+  - 0.10
+  - 0.8
+
 before_script:
   - uname -a
   #- url="http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/"
