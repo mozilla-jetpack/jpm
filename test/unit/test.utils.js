@@ -5,11 +5,19 @@ var expect = chai.expect;
 var utils = require("../../lib/utils");
 var binary = utils.normalizeBinary;
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
-var prevDir;
+var prevDir, prevBinary;
 
 describe("lib/utils", function () {
-  beforeEach(function () { prevDir = process.cwd(); });
-  afterEach(function () { process.chdir(prevDir); });
+  beforeEach(function () {
+    if (process.env.JPM_FIREFOX_BINARY)
+      prevBinary = process.env.JPM_FIREFOX_BINARY;
+    prevDir = process.cwd();
+  });
+  afterEach(function () {
+    if (prevBinary)
+      process.env.JPM_FIREFOX_BINARY = prevBinary;
+    process.chdir(prevDir); 
+  });
 
   it("getManifest() returns manifest in cwd()", function (done) {
     process.chdir(simpleAddonPath);
@@ -27,10 +35,11 @@ describe("lib/utils", function () {
   });
 
   it("normalizeBinary() default sets", function () {
+    delete process.env.JPM_FIREFOX_BINARY;
     expect(binary(null, "darwin", "x86")).to.be.equal(
-      "/Applications/Firefox.app/Contents/MacOS/firefox-bin")
+      "/Applications/Firefox.app/Contents/MacOS/firefox-bin");
     expect(binary(null, "darwin", "x86_64")).to.be.equal(
-      "/Applications/Firefox.app/Contents/MacOS/firefox-bin")
+      "/Applications/Firefox.app/Contents/MacOS/firefox-bin");
     expect(binary(null, "windows", "x86")).to.be.equal(
       "C:\\Program Files\\Mozilla Firefox\\firefox.exe");
     expect(binary(null, "windows", "x86_64")).to.be.equal(
@@ -47,6 +56,7 @@ describe("lib/utils", function () {
   });
 
   it("normalizeBinary() finds OSX's full path when given .app", function () {
+    process.env.JPM_FIREFOX_BINARY = undefined;
     expect(binary("/Application/FirefoxNightly.app", "darwin")).to.be.equal(
       "/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin");
   });
