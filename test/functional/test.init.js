@@ -13,7 +13,7 @@ describe("jpm init", function () {
     process.chdir(utils.tmpOutputDir);
     var responses = generateResponses();
 
-    var proc = respond(exec("-m init"), responses);
+    var proc = respond(exec("init"), responses);
     proc.on("close", function () {
       var manifest = JSON.parse(fs.readFileSync(path.join(utils.tmpOutputDir, "package.json"), "utf-8"));
       expect(manifest.title).to.be.equal("My Jetpack Addon");
@@ -43,7 +43,7 @@ describe("jpm init", function () {
       'yes'
     ];
 
-    var proc = respond(exec("-m init"), responses.map(function (val) {
+    var proc = respond(exec("init"), responses.map(function (val) {
       return val + '\n';
     }));
     proc.on("close", function () {
@@ -66,7 +66,7 @@ describe("jpm init", function () {
     var responses = generateResponses();
     responses[1] = "  an invalid $ _ name 123\n";
     responses[2] = "invalid version\n";
-    var proc = respond(exec("-m init"), responses);
+    var proc = respond(exec("init"), responses);
     proc.on("close", function () {
       var manifest = JSON.parse(fs.readFileSync(path.join(utils.tmpOutputDir, "package.json"), "utf-8"));
       expect(manifest.name).to.be.equal("aninvalidname123");

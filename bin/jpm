@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var VERSION = "0.1.0";
+var VERSION = require("../package.json").version;
 var program = require("commander");
 var utils = require("../lib/utils");
 var console = utils.console;
@@ -9,49 +9,70 @@ var test = require("../lib/test");
 var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var jetpackRoot = process.env["JETPACK_ROOT"];
+var manifest = utils.getManifest() || {};
 
 program
   .version(VERSION)
-  .option("-m, --mode <action>", "action to run [run|test|xpi]")
   .option("-o, --overload", "Use development SDK instead of Firefox's built-in modules")
   .option("-b, --binary <path>", "path of Firefox binary to use")
   .option("-r, --retro", "In development flag for transitioning to new style addons; uses bootstrap.js and install.rdf. Use until AOM supports native addons")
-  .option("-v, --verbose", "verbose")
-  .parse(process.argv);
+  .option("-v, --verbose", "verbose");
 
-var manifest = utils.getManifest() || {};
-console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
-Object.keys(program).filter(function (option) {
-  return ~['overload', 'binary', 'retro', 'verbose'].indexOf(option);
-}).forEach(function (option) {
-  console.log(option, 'set to', program[option]);
-});
-
-if (program.overload && !jetpackRoot) {
-  program.overload = false;
-  console.warn("Can not overload modules without JETPACK_ROOT being unset. Using built in modules.");
-} else if (program.overload) {
-  program.jetpackRoot = jetpackRoot;
-  console.log("Using SDK modules in " + jetpackRoot);
-}
-
-switch(program.mode) {
-  case "xpi":
+program
+  .command("xpi")
+  .description("Bundle the addon into an .xpi file")
+  .action(prepare(function () {
+    var manifest = utils.getManifest() || {};
     xpi(manifest, program).then(function (xpiPath) {
       console.log("Successfully created xpi at " + xpiPath);
     }, function (reason) {
       console.error("xpi creation failed.", reason);
     });
-    break;
-  case "test":
+  }));
+
+program
+  .command("test")
+  .description("Run tests for current addon")
+  .action(prepare(function () {
     test(manifest, program).then(null, console.error);
-    break;
-  case "init":
+  }));
+
+program
+  .command("init")
+  .description("Series of prompts to create a package.json for a new addon")
+  .action(prepare(function () {
     init().then(process.exit);
-    break;
-  case "run":
+  }));
+
+program
+  .command("run")
+  .description("Install and run in Firefox the current addon")
+  .action(prepare(function () {
     run(manifest, program).then(null, console.error);
-    break;
-  default:
-    console.error("No action set");
+  }));
+
+program.parse(process.argv);
+
+function prepare (actionCallback) {
+  return function () {
+    var args = Array.prototype.slice.call(arguments, 0);
+    Object.keys(program).filter(function (option) {
+      return ~['overload', 'binary', 'retro', 'verbose'].indexOf(option);
+    }).forEach(function (option) {
+      console.log(option, 'set to', program[option]);
+    });
+
+    if (program.overload && !jetpackRoot) {
+      program.overload = false;
+      console.warn("Can not overload modules without JETPACK_ROOT being unset. Using built in modules.");
+    } else if (program.overload) {
+      program.jetpackRoot = jetpackRoot;
+      console.log("Using SDK modules in " + jetpackRoot);
+    }
+
+    console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
+
+    actionCallback.apply(null, args);
+  }
 }
+
