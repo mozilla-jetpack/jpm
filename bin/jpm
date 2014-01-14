@@ -15,11 +15,17 @@ program
   .option("-m, --mode <action>", "action to run [run|test|xpi]")
   .option("-o, --overload", "Use development SDK instead of Firefox's built-in modules")
   .option("-b, --binary <path>", "path of Firefox binary to use")
+  .option("-r, --retro", "In development flag for transitioning to new style addons; uses bootstrap.js and install.rdf. Use until AOM supports native addons")
   .option("-v, --verbose", "verbose")
   .parse(process.argv);
 
 var manifest = utils.getManifest() || {};
 console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
+Object.keys(program).filter(function (option) {
+  return ~['overload', 'binary', 'retro', 'verbose'].indexOf(option);
+}).forEach(function (option) {
+  console.log(option, 'set to', program[option]);
+});
 
 if (program.overload && !jetpackRoot) {
   program.overload = false;
@@ -29,19 +35,23 @@ if (program.overload && !jetpackRoot) {
   console.log("Using SDK modules in " + jetpackRoot);
 }
 
-if (program.mode === "xpi") {
-  xpi(manifest, program).then(function (xpiPath) {
-    console.log("Successfully created xpi at " + xpiPath);
-  }, function (reason) {
-    console.error("xpi creation failed.", reason);
-  });
-}
-else if (program.mode === "test") {
-  test(manifest, program).then(null, console.error);
-}
-else if (program.mode === "init") {
-  init().then(process.exit);
-}
-else {
-  run(manifest, program).then(null, console.error);
+switch(program.mode) {
+  case "xpi":
+    xpi(manifest, program).then(function (xpiPath) {
+      console.log("Successfully created xpi at " + xpiPath);
+    }, function (reason) {
+      console.error("xpi creation failed.", reason);
+    });
+    break;
+  case "test":
+    test(manifest, program).then(null, console.error);
+    break;
+  case "init":
+    init().then(process.exit);
+    break;
+  case "run":
+    run(manifest, program).then(null, console.error);
+    break;
+  default:
+    console.error("No action set");
 }

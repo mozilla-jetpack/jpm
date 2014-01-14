@@ -77,20 +77,28 @@ function startup(data, reasonCode) {
     // TODO: Maybe we should perform read harness-options.json asynchronously,
     // since we can't do anything until 'sessionstore-windows-restored' anyway.
     let manifest, options;
-    let native = false;
+    let isNative = false;
     try {
       options = JSON.parse(readURI(rootURI + './harness-options.json'));
       manifest = options.manifest;
     } catch (e) {
       manifest = JSON.parse(readURI(rootURI + './package.json'));
-      options = JSON.parse(readURI(rootURI + './config.json'));
-      native = true;
+      try {
+        options = JSON.parse(readURI(rootURI + './config.json'));
+      } catch (e) {
+        options = {};
+      }
+      isNative = true;
     }
 
-    let id = native ? manifest.id : options.jetpackID;
-    let name = native ? manifest.name : options.name;
+    let id = isNative ?
+      (manifest.id || (~manifest.name.indexOf('@') ?
+        manifest.name :
+        manifest.name + '@jetpack')) :
+      options.jetpackID;
+    let name = isNative ? manifest.name : options.name;
 
-    if (!native) {
+    if (!isNative) {
       // Clean the metadata
       options.metadata[name]['permissions'] = options.metadata[name]['permissions'] || {};
 
@@ -114,13 +122,13 @@ function startup(data, reasonCode) {
       replace(uuidRe, '$1');
 
     let prefixURI = 'resource://' + domain + '/';
-    let resourcesURIPath = native ? rootURI + '/' : rootURI + '/resources/';
+    let resourcesURIPath = isNative ? rootURI + '/' : rootURI + '/resources/';
     let resourcesURI = ioService.newURI(resourcesURIPath, null, null);
     resourceHandler.setSubstitution(domain, resourcesURI);
 
     // Create path to URLs mapping supported by loader.
-    let addonPath = native ? prefixURI : prefixURI + name + '/lib/';
-    let testPath = native ? prefixURI : prefixURI + name + '/tests/';
+    let addonPath = isNative ? prefixURI : prefixURI + name + '/lib/';
+    let testPath = isNative ? prefixURI : prefixURI + name + '/tests/';
     let paths = {
       // Relative modules resolve to add-on package lib
       './': addonPath,
@@ -129,7 +137,7 @@ function startup(data, reasonCode) {
     };
 
     // Maps addon lib and tests ressource folders for each package
-    if (!native) {
+    if (!isNative) {
       paths = Object.keys(options.metadata).reduce(function(result, name) {
         result[name + '/'] = prefixURI + name + '/lib/'
         result[name + '/tests/'] = prefixURI + name + '/tests/'
@@ -193,7 +201,7 @@ function startup(data, reasonCode) {
     let loaderURI;
 
 
-    if (native) {
+    if (isNative) {
       let toolkitLoaderPath = 'toolkit/loader.js';
       let toolkitLoaderURI = 'resource://gre/modules/commonjs/' + toolkitLoaderPath;
       if (paths['sdk/']) { // sdk folder has been overloaded
@@ -228,8 +236,8 @@ function startup(data, reasonCode) {
     let loaderOptions = {
       // Flag to determine whether or not to use native-style loader or not
       // If false, will be using Cuddlefish Loader, and otherwise will be
-      // using toolkit/loader with `native` flag true
-      native: native,
+      // using toolkit/loader with `isNative` flag true
+      isNative: isNative,
 
       paths: paths,
       // modules manifest.
@@ -242,16 +250,16 @@ function startup(data, reasonCode) {
       // Add-on version.
       // Use `version` if available (native loader), or fall back to
       // metadata[name].version
-      version: native ? options.version : options.metadata[name].version,
+      version: isNative ? options.version : options.metadata[name].version,
       // Add-on package descriptor.
       // Use `options` if native-loader, or metadata otherwise
-      metadata: native ? options : options.metadata[name],
+      metadata: isNative ? options : options.metadata[name],
       // Add-on load reason.
       loadReason: reason,
 
       prefixURI: prefixURI,
       // Add-on URI.
-      rootURI: rootURI,
+      rootURI: isNative ? addonPath : rootURI,
       // options used by system module.
       // File to write 'OK' or 'FAIL' (exit code emulation).
       resultFile: options.resultFile,
@@ -277,12 +285,16 @@ function startup(data, reasonCode) {
     // Manually set the loader's module cache to include itself;
     // this is due to several modules requiring 'toolkit/loader',
     // which fails due to lack of `Components`
-    if (native)
+    if (isNative)
       loaderOptions.modules['toolkit/loader'] = loaderSandbox.exports;
 
     let loader = loaderModule.Loader(loaderOptions);
+    let { console } = Cu.import('resource://gre/modules/devtools/Console.jsm', {});
+    ['rootURI', 'mapping', 'manifest', 'main'].forEach((key) => {
+      console.log(key, loader[key]);
+    });
 
-    let module = loaderModule.Module(native ? 'toolkit/loader' : 'sdk/loader/cuddlefish', loaderURI);
+    let module = loaderModule.Module(isNative ? 'toolkit/loader' : 'sdk/loader/cuddlefish', loaderURI);
     let require = loaderModule.Require(loader, module);
 
     // Normalize `options.mainPath` so that it looks like one that will come
@@ -295,7 +307,7 @@ function startup(data, reasonCode) {
     // Only specify prefsURI if a native-flagged addon specified it
     // in the manifest, other wise, use the default path which 
     // was created by CFX
-    let prefsURI = native ?
+    let prefsURI = isNative ?
       (manifest.prefs ? rootURI + manifest.prefs : undefined) :
       rootURI + '/defaults/preferences/prefs.js';
 
