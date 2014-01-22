@@ -30,9 +30,40 @@ function tearDown (done) {
 }
 exports.tearDown = tearDown;
 
+/**
+ * Utility for `exec` so we can pass in a string
+ * and it preserves quoted values. Very rough and hacky, but
+ * makes the interface for writing CLI tests better.
+ * "-b value --binary-args \"value1 value2 value3\"" ->
+ * ["-b", "value", "--binary-args", "value1 value2 value3"]
+ */
+function formatExecArgs (s) {
+  var args = [];
+  var queue = "";
+  var startQuote = false;
+  for (var i = 0; i < s.length; i++) {
+    if (s[i] === " " && queue.length && !startQuote) {
+      args.push(queue);
+      queue = "";
+    }
+    else if (s[i] === "\"" || s[i] === "'") {
+      if (startQuote) {
+        args.push(queue);
+        queue = "";
+      } else
+        startQuote = true;
+    }
+    else
+      queue += s[i];
+  }
+  if (queue)
+    args.push(queue);
+  return args;
+}
+
 function exec (args, options, callback) {
   options = options || {};
-  return execFile(path.join(__dirname, "../../bin/jpm"), args.split(" "), {
+  return execFile(path.join(__dirname, "../../bin/jpm"), formatExecArgs(args), {
     cwd: options.cwd || tmpOutputDir
   }, function (err) {
     if (callback)

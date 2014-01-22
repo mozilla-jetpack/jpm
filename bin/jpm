@@ -10,7 +10,7 @@ var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var jetpackRoot = process.env["JETPACK_ROOT"];
 var manifest = utils.getManifest() || {};
-var DEBUG_VALUES = ["overload", "binary", "retro", "verbose", "binary-args"];
+var DEBUG_VALUES = ["overload", "binary", "retro", "verbose", "binaryArgs"];
 
 program
   .version(VERSION)

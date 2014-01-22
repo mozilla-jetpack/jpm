@@ -18,7 +18,27 @@ describe("jpm run", function () {
       process.chdir(simpleAddonPath);
       var proc = exec("run -v -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain('-profile');
+        expect(stdout).to.contain("-profile");
+        done();
+      });
+    });
+  });
+
+  describe("--binary-args <CMDARGS>", function () {
+    it("Passes in additional arguments to Firefox (single)", function (done) {
+      process.chdir(simpleAddonPath);
+      var proc = exec("run -v -b " + fakeBinary + " --binary-args -some-value", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-some-value");
+        done();
+      });
+    });
+    
+    it("Passes in additional arguments to Firefox (multiple)", function (done) {
+      process.chdir(simpleAddonPath);
+      var proc = exec("run -v -b " + fakeBinary + " --binary-args \"-one -two -three\"", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-one -two -three");
         done();
       });
     });
