@@ -10,13 +10,15 @@ var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var jetpackRoot = process.env["JETPACK_ROOT"];
 var manifest = utils.getManifest() || {};
+var DEBUG_VALUES = ["overload", "binary", "retro", "verbose", "binary-args"];
 
 program
   .version(VERSION)
   .option("-o, --overload", "Use development SDK instead of Firefox's built-in modules")
-  .option("-b, --binary <path>", "path of Firefox binary to use")
-  .option("-r, --retro", "In development flag for transitioning to new style addons; uses bootstrap.js and install.rdf. Use until AOM supports native addons")
-  .option("-v, --verbose", "verbose");
+  .option("-b, --binary <path>", "path of Firefox binary to use.")
+  .option("-r, --retro", "In development flag for transitioning to new style addons; uses bootstrap.js and install.rdf. Use until AOM supports native addons.")
+  .option("-v, --verbose", "More verbose logging to stdout.")
+  .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
 
 program
   .command("xpi")
@@ -57,9 +59,10 @@ function prepare (actionCallback) {
   return function () {
     var args = Array.prototype.slice.call(arguments, 0);
     Object.keys(program).filter(function (option) {
-      return ~['overload', 'binary', 'retro', 'verbose'].indexOf(option);
+      return ~DEBUG_VALUES.indexOf(option);
     }).forEach(function (option) {
-      console.log(option, 'set to', program[option]);
+      if (program.verbose)
+        console.log(option, "set to", program[option]);
     });
 
     if (program.overload && !jetpackRoot) {

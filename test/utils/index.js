@@ -1,6 +1,6 @@
 var path = require("path");
 var execFile = require("child_process").execFile;
-var fs = require("fs");
+var fs = require("fs-extra");
 var rimraf = require("rimraf");
 var glob = require("glob");
 var unzip = require("unzip");
@@ -13,7 +13,7 @@ var tmpOutputDir = exports.tmpOutputDir = path.join(__dirname, "../", "tmp");
 // Before each test, make the temp directory and save cwd
 function setup (done) {
   prevCwd = process.cwd();
-  fs.mkdir(tmpOutputDir, done);
+  fs.mkdirp(tmpOutputDir, done);
 }
 exports.setup = setup;
 
@@ -30,12 +30,14 @@ function tearDown (done) {
 }
 exports.tearDown = tearDown;
 
-function exec (args, options) {
+function exec (args, options, callback) {
   options = options || {};
   return execFile(path.join(__dirname, "../../bin/jpm"), args.split(" "), {
     cwd: options.cwd || tmpOutputDir
   }, function (err) {
-    if (err)
+    if (callback)
+      callback.apply(null, arguments);
+    else if (err)
       throw err;
   });
 }
