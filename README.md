@@ -1,7 +1,7 @@
 jpm
 ===
 
-[![Build Status](https://travis-ci.org/jsantell/jpm.png)](https://travis-ci.org/jsantell/jpm)
+[![Build Status](https://travis-ci.org/mozilla/jpm.png)](https://travis-ci.org/mozilla/jpm)
 
 Jetpack Manager for Node.js
 
