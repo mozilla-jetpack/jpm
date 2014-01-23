@@ -12,6 +12,7 @@ Jetpack Manager for Node.js
 * `-b, --binary <path>` Use the specified Firefox binary to run the addon. Used in `run` and `test`.
 * `-r, --retro` A stopgap solution to use old-style Jetpack addons by using an install.rdf and bootstrap file. This will be removed once AOM changes are completed. Used in `xpi`, `run` and `test`.
 * `-v, --verbose` Prints additional debugging information.
+* `--binary-args <CMDARGS>` Passes the additional arguments into Firefox. Multiple arguments must be enclosed in quotes.
 
 ### `jpm run`
 
