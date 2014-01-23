@@ -16,9 +16,10 @@ program
   .version(VERSION)
   .option("-o, --overload", "Use development SDK instead of Firefox's built-in modules")
   .option("-b, --binary <path>", "path of Firefox binary to use.")
-  .option("-r, --retro", "In development flag for transitioning to new style addons; uses bootstrap.js and install.rdf. Use until AOM supports native addons.")
+  .option("-p, --profile <path>", "path or name of Firefox profile to use.")
   .option("-v, --verbose", "More verbose logging to stdout.")
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
+  .option("-r, --retro", "In development flag for transitioning to new style addons; uses bootstrap.js and install.rdf. Use until AOM supports native addons.")
 
 program
   .command("xpi")

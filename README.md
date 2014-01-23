@@ -13,6 +13,7 @@ Jetpack Manager for Node.js
 * `-r, --retro` A stopgap solution to use old-style Jetpack addons by using an install.rdf and bootstrap file. This will be removed once AOM changes are completed. Used in `xpi`, `run` and `test`.
 * `-v, --verbose` Prints additional debugging information.
 * `--binary-args <CMDARGS>` Passes the additional arguments into Firefox. Multiple arguments must be enclosed in quotes.
+* `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or otherwise assumed to be a profile name.
 
 ### `jpm run`
 

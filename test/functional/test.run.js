@@ -33,12 +33,41 @@ describe("jpm run", function () {
         done();
       });
     });
-    
+
     it("Passes in additional arguments to Firefox (multiple)", function (done) {
       process.chdir(simpleAddonPath);
       var proc = exec("run -v -b " + fakeBinary + " --binary-args \"-one -two -three\"", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-one -two -three");
+        done();
+      });
+    });
+  });
+
+  describe("-p/--profile", function () {
+    it("Passes in a relative profile path to Firefox with -profile", function (done) {
+      process.chdir(simpleAddonPath);
+      var proc = exec("run -v -b " + fakeBinary + " -p ./path/to/profile", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-profile ./path/to/profile");
+        done();
+      });
+    });
+    
+    it("Passes in a absolute profile path to Firefox with -profile", function (done) {
+      process.chdir(simpleAddonPath);
+      var proc = exec("run -v -b " + fakeBinary + " -p /path/to/profile", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-profile /path/to/profile");
+        done();
+      });
+    });
+    
+    it("Passes in a profile name to Firefox with -P", function (done) {
+      process.chdir(simpleAddonPath);
+      var proc = exec("run -v -b " + fakeBinary + " -p MY_PROFILE", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-P MY_PROFILE");
         done();
       });
     });
