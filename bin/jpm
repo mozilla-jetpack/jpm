@@ -14,7 +14,7 @@ var DEBUG_VALUES = ["overload", "binary", "retro", "verbose", "binaryArgs"];
 
 program
   .version(VERSION)
-  .option("-o, --overload", "Use development SDK instead of Firefox's built-in modules")
+  .option("-o, --overload [JETPACK_ROOT]", "Use development SDK instead of Firefox's built-in modules. Uses optional [JETPACK_ROOT] argument or JETPACK_ROOT environment variable.")
   .option("-b, --binary <path>", "path of Firefox binary to use.")
   .option("-p, --profile <path>", "path or name of Firefox profile to use.")
   .option("-v, --verbose", "More verbose logging to stdout.")
