@@ -1,6 +1,7 @@
 var fs = require("fs");
 var path = require("path");
 var utils = require("../utils");
+var settings = require("../../lib/settings");
 var chai = require("chai");
 var expect = chai.expect;
 var exec = utils.exec;
@@ -22,8 +23,10 @@ describe("jpm init", function () {
       expect(manifest.description).to.be.equal("");
       expect(manifest.main).to.be.equal("index.js");
       expect(manifest.author).to.be.equal("");
-      expect(manifest.engines.firefox).to.be.equal("*");
-      expect(manifest.engines.fennec).to.be.equal("*");
+      expect(manifest.engines.firefox).to.be.equal(
+        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
+      expect(manifest.engines.fennec).to.be.equal(
+        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
       expect(manifest.license).to.be.equal("MIT");
       done();
     });
@@ -54,8 +57,10 @@ describe("jpm init", function () {
       expect(manifest.description).to.be.equal(responses[3]);
       expect(manifest.main).to.be.equal(responses[4]);
       expect(manifest.author).to.be.equal(responses[5]);
-      expect(manifest.engines['custom-firefox']).to.be.equal("*");
-      expect(manifest.engines['nightly-firefox']).to.be.equal("*");
+      expect(manifest.engines['custom-firefox']).to.be.equal(
+        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
+      expect(manifest.engines['nightly-firefox']).to.be.equal(
+        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
       expect(manifest.license).to.be.equal(responses[7]);
       done();
     });
