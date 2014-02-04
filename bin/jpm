@@ -62,8 +62,11 @@ function prepare (actionCallback) {
     Object.keys(program).filter(function (option) {
       return ~DEBUG_VALUES.indexOf(option);
     }).forEach(function (option) {
-      if (program.verbose)
+      if (program.verbose && option !== "retro") {
         console.log(option, "set to", program[option]);
+      }
+      if (option === "retro")
+        console.warn("`retro` flag set; this feature should not be used after Firefox XX");
     });
 
     if (program.overload && !jetpackRoot) {
