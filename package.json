@@ -26,7 +26,8 @@
     "zip-dir": "*",
     "tmp": "*",
     "promzard": "*",
-    "read": "*"
+    "read": "*",
+    "semver": "*"
   },
   "devDependencies": {
     "mocha": "*",
