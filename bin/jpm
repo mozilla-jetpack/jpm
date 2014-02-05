@@ -19,7 +19,7 @@ program
   .option("-p, --profile <path>", "path or name of Firefox profile to use.")
   .option("-v, --verbose", "More verbose logging to stdout.")
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
-  .option("-r, --retro", "In development flag for transitioning to new style addons; uses bootstrap.js and install.rdf. Use until AOM supports native addons.")
+  .option("--force-aom", "In development flag for transitioning to new style addons; forces the lack of install.rdf/bootstrap.js creation regardless of what engine versions are running");
 
 program
   .command("xpi")
@@ -65,8 +65,8 @@ function prepare (actionCallback) {
       if (program.verbose && option !== "retro") {
         console.log(option, "set to", program[option]);
       }
-      if (option === "retro")
-        console.warn("`retro` flag set; this feature should not be used after Firefox XX");
+      if (option === "forceAOM")
+        console.warn("`forceAOM` flag set; this feature is experimental.");
     });
 
     if (program.overload && !jetpackRoot) {
