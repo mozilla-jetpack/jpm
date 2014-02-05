@@ -27,14 +27,17 @@
     "tmp": "*",
     "promzard": "*",
     "read": "*",
-    "semver": "*"
+    "semver": "*",
+    "mozilla-version-comparator": "*",
+    "mozilla-toolkit-versioning": "*"
   },
   "devDependencies": {
     "mocha": "*",
     "chai": "*",
     "unzip": "*",
     "rimraf": "*",
-    "glob": "*"
+    "glob": "*",
+    "async": "*"
   },
   "author": "Jordan Santell",
   "license": "MPL v2.0"

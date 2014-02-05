@@ -4,6 +4,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var utils = require("../../lib/utils");
 var binary = utils.normalizeBinary;
+var hasAOMSupport = utils.hasAOMSupport;
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var prevDir, prevBinary;
 
@@ -59,5 +60,35 @@ describe("lib/utils", function () {
     process.env.JPM_FIREFOX_BINARY = undefined;
     expect(binary("/Application/FirefoxNightly.app", "darwin")).to.be.equal(
       "/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin");
+  });
+
+  describe("hasAOMSupport", function () {
+    it("hasAOMSupport true for valid ranges", function () {
+      [">=31 <=34", ">=31.0a <=32", ">=31", ">=31.0a"].forEach(function (range) {
+        expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(true);
+      });
+    });
+    it("hasAOMSupport false for invalid ranges", function () {
+      [">=28 <=34", ">=30 <=32", ">=26", ">=30.0a"].forEach(function (range) {
+        expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(false);
+      });
+    });
+    it("hasAOMSupport false for unspecified min", function () {
+      ["<26", "<=32", "<40.0a"].forEach(function (range) {
+        expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(false);
+      });
+    });
+    it("hasAOMSupport false for no engines field", function () {
+      expect(hasAOMSupport({})).to.be.equal(false);
+    });
+    it("hasAOMSupport false for unpopulated engines field", function () {
+      expect(hasAOMSupport({ engines: {}})).to.be.equal(false);
+    });
+    it("hasAOMSupport false for one valid and one invalid engine", function () {
+      expect(hasAOMSupport({ engines: {
+        "firefox": ">=40.0a",
+        "fennec": "<31"
+      }})).to.be.equal(false);
+    });
   });
 });
