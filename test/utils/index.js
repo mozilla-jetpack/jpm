@@ -1,3 +1,4 @@
+var _ = require("underscore");
 var path = require("path");
 var execFile = require("child_process").execFile;
 var fs = require("fs-extra");
@@ -5,6 +6,7 @@ var rimraf = require("rimraf");
 var glob = require("glob");
 var unzip = require("unzip");
 var chai = require("chai");
+var async = require("async");
 var expect = chai.expect;
 var prevCwd;
 
@@ -18,12 +20,19 @@ function setup (done) {
 exports.setup = setup;
 
 // After each test, revert to previous cwd, nuke the temp directory
-// and clear out any XPIs in the `./test/addons/` directory
+// and clear out any XPIs, bootstrap.js, or install.rdf in the
+// `./test/addons/` directory
 function tearDown (done) {
   process.chdir(prevCwd);
   rimraf(tmpOutputDir, function () {
-    glob(path.join(__dirname, "../addons/**/*.xpi"), function (err, xpis) {
-      xpis.forEach(fs.unlinkSync);
+    var paths = [
+      "../addons/**/*.xpi",
+      "../addons/**/bootstrap.js",
+      "../addons/**/install.rdf"
+    ].map(function (p) { return path.join(__dirname, p); });
+    
+    async.map(paths, glob, function (err, files) {
+      _.flatten(files).forEach(fs.unlinkSync);
       done();
     });
   });
