@@ -1,9 +1,12 @@
 {
   "title": "My Simple Addon",
-  "id": "simple-addon",
+  "id": "simple-addon@jetpack",
   "name": "simple-addon",
   "description": "",
   "main": "index.js",
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "Firefox": ">=36.0"
+  }
 }

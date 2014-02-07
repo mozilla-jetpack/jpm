@@ -109,3 +109,13 @@ function compareDirs (dir1, dir2, done) {
   done();
 }
 exports.compareDirs = compareDirs;
+
+function isFile (filePath) {
+  return fs.statSync(filePath).isFile();
+}
+exports.isFile = isFile;
+
+function isDir (filePath) {
+  return fs.statSync(filePath).isDirectory();
+}
+exports.isDir = isDir;

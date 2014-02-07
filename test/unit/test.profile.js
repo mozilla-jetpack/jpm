@@ -29,6 +29,7 @@ describe("lib/profile", function () {
   it("creates a profile with an addon installed when given a XPI", function (done) {
     profile({ xpi: simpleXpiPath }).then(function (profilePath) {
       var addonPath = path.join(profilePath, "extensions", "simple-addon@jetpack");
+      console.log(fs.readdirSync(profilePath + "/extensions"));
       var files = fs.readdirSync(addonPath, "utf8");
       var index = fs.readFileSync(path.join(addonPath, "index.js"));
       var manifest = fs.readFileSync(path.join(addonPath, "package.json"));
