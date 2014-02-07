@@ -6,7 +6,7 @@ var expect = chai.expect;
 var profile = require("../../lib/profile");
 var PREFS = require("../../data/preferences");
 
-var simpleXpiPath = path.join(__dirname, '..', 'xpis', 'simple-addon.xpi');
+var simpleXpiPath = path.join(__dirname, '..', 'xpis', 'simple-addon@jetpack.xpi');
 
 describe("lib/profile", function () {
   it("creates a profile and returns the path", function (done) {
@@ -28,7 +28,7 @@ describe("lib/profile", function () {
 
   it("creates a profile with an addon installed when given a XPI", function (done) {
     profile({ xpi: simpleXpiPath }).then(function (profilePath) {
-      var addonPath = path.join(profilePath, "extensions", "simple-addon");
+      var addonPath = path.join(profilePath, "extensions", "simple-addon@jetpack");
       var files = fs.readdirSync(addonPath, "utf8");
       var index = fs.readFileSync(path.join(addonPath, "index.js"));
       var manifest = fs.readFileSync(path.join(addonPath, "package.json"));
