@@ -37,7 +37,8 @@
     "unzip": "*",
     "rimraf": "*",
     "glob": "*",
-    "async": "*"
+    "async": "*",
+    "xmldom": "*"
   },
   "author": "Jordan Santell",
   "license": "MPL v2.0"
