@@ -3,7 +3,7 @@ jpm
 
 [![Build Status](https://travis-ci.org/mozilla/jpm.png)](https://travis-ci.org/mozilla/jpm)
 
-Jetpack Manager for Node.js
+[Jetpack](https://wiki.mozilla.org/Jetpack) Manager for Node.js
 
 ## Usage
 
