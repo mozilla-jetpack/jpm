@@ -18,7 +18,8 @@ describe("lib/xpi", function () {
     process.chdir(simpleAddonPath);
     var manifest = require(path.join(simpleAddonPath, "package.json"));
     xpi(manifest).then(function (xpiPath) {
-      expect(xpiPath).to.be.equal(path.join(simpleAddonPath, "simple-addon.xpi"));
+      expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
+                                            "simple-addon@jetpack.xpi"));
       utils.unzipTo(xpiPath, tmpOutputDir, function () {
         utils.compareDirs(simpleAddonPath, tmpOutputDir, done);
       });
@@ -27,6 +28,6 @@ describe("lib/xpi", function () {
 });
 
 function cleanXPI (done) {
-  fs.unlinkSync(path.join(simpleAddonPath, "simple-addon.xpi"));
+  fs.unlinkSync(path.join(simpleAddonPath, "simple-addon@jetpack.xpi"));
   done();
 }
