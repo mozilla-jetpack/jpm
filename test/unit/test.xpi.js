@@ -52,6 +52,8 @@ describe("lib/xpi", function () {
       expect(files).to.not.contain("bootstrap.js");
     }).then(done, done);
   });
+
+  it("validates addon before zipping");
 });
 
 function cleanXPI (done) {
