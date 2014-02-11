@@ -4,6 +4,7 @@ var parse = require("mozilla-toolkit-versioning").parse;
 var chai = require("chai");
 var expect = chai.expect;
 var GUIDS = require("../../lib/settings").ids;
+var MIN_VERSION = require("../../lib/settings").MIN_VERSION;
 
 describe("lib/rdf", function () {
   describe("defaults", function () {
@@ -144,7 +145,7 @@ describe("lib/rdf", function () {
       expect(firefox.childNodes[5].childNodes[0].data).to.be.equal("33.0");
     });
 
-    it("replaces undefined min/max versions with asterisks", function () {
+    it("replaces undefined max versions with asterisks", function () {
       var xml = setupRDF({ engines: {
         fennec: ">=25.0"
       }});
@@ -154,6 +155,36 @@ describe("lib/rdf", function () {
       expect(fennec.childNodes[3].childNodes[0].data).to.be.equal("25.0");
       expect(fennec.childNodes[5].tagName).to.be.equal("em:maxVersion");
       expect(fennec.childNodes[5].childNodes[0].data).to.be.equal("*");
+    });
+    
+    it("replaces undefined min versions with asterisks", function () {
+      var xml = setupRDF({ engines: {
+        fennec: "<30.0"
+      }});
+      var apps = xml.getElementsByTagName("em:targetApplication");
+      var fennec = apps[0].childNodes[1]; // Description
+      expect(fennec.childNodes[3].tagName).to.be.equal("em:minVersion");
+      expect(fennec.childNodes[3].childNodes[0].data).to.be.equal(MIN_VERSION);
+      expect(fennec.childNodes[5].tagName).to.be.equal("em:maxVersion");
+      expect(fennec.childNodes[5].childNodes[0].data).to.be.equal("30.0.-1");
+    });
+    it("creates default Firefox targetApplication if no engines defined", function () {
+      var xml = setupRDF({ engines: {}});
+      var apps = xml.getElementsByTagName("em:targetApplication");
+      var firefox = apps[0].childNodes[1]; // Description
+      expect(firefox.childNodes[3].tagName).to.be.equal("em:minVersion");
+      expect(firefox.childNodes[3].childNodes[0].data).to.be.equal(MIN_VERSION);
+      expect(firefox.childNodes[5].tagName).to.be.equal("em:maxVersion");
+      expect(firefox.childNodes[5].childNodes[0].data).to.be.equal("*");
+    });
+    it("creates default Firefox targetApplication if no engines field", function () {
+      var xml = setupRDF({});
+      var apps = xml.getElementsByTagName("em:targetApplication");
+      var firefox = apps[0].childNodes[1]; // Description
+      expect(firefox.childNodes[3].tagName).to.be.equal("em:minVersion");
+      expect(firefox.childNodes[3].childNodes[0].data).to.be.equal(MIN_VERSION);
+      expect(firefox.childNodes[5].tagName).to.be.equal("em:maxVersion");
+      expect(firefox.childNodes[5].childNodes[0].data).to.be.equal("*");
     });
   });
 });
