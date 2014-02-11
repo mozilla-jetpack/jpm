@@ -1,0 +1,13 @@
+{
+  "title": "My Unpacked Addon",
+  "id": "unpacked-addon@jetpack",
+  "name": "unpacked-addon",
+  "unpack": true,
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "Firefox": ">=36.0"
+  }
+}

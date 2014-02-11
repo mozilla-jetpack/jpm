@@ -6,7 +6,8 @@ var expect = chai.expect;
 var profile = require("../../lib/profile");
 var PREFS = require("../../data/preferences");
 
-var simpleXpiPath = path.join(__dirname, '..', 'xpis', 'simple-addon@jetpack.xpi');
+var simpleXpiPath = path.join(__dirname, "..", "xpis", "simple-addon@jetpack.xpi");
+var unpackedXpiPath = path.join(__dirname, "..", "xpis", "unpacked-addon@jetpack.xpi");
 
 describe("lib/profile", function () {
   it("creates a profile and returns the path", function (done) {
@@ -26,15 +27,21 @@ describe("lib/profile", function () {
     .then(done, done);
   });
 
-  it("creates a profile with an addon installed when given a XPI", function (done) {
-    profile({ xpi: simpleXpiPath }).then(function (profilePath) {
-      var addonPath = path.join(profilePath, "extensions", "simple-addon@jetpack");
-      console.log(fs.readdirSync(profilePath + "/extensions"));
-      var files = fs.readdirSync(addonPath, "utf8");
+  it("creates a profile with an addon installed when given a XPI unpacked", function (done) {
+    profile({ xpi: unpackedXpiPath }).then(function (profilePath) {
+      var addonPath = path.join(profilePath, "extensions", "unpacked-addon@jetpack");
       var index = fs.readFileSync(path.join(addonPath, "index.js"));
       var manifest = fs.readFileSync(path.join(addonPath, "package.json"));
       expect(index).to.be.ok;
       expect(manifest).to.be.ok;
+    })
+    .then(done, done);
+  });
+  
+  it("creates a profile with an addon installed when given a XPI packed", function (done) {
+    profile({ xpi: simpleXpiPath }).then(function (profilePath) {
+      var addonPath = path.join(profilePath, "extensions", "simple-addon@jetpack.xpi");
+      expect(fs.statSync(addonPath).isFile()).to.be.ok;
     })
     .then(done, done);
   });
@@ -49,9 +56,9 @@ function comparePrefs (defaults, prefs) {
     var value = parsed[2];
 
     // Cast booleans and numbers in string formative to primitives
-    if (value === 'true')
+    if (value === "true")
       value = true;
-    else if (value === 'false')
+    else if (value === "false")
       value = false;
     else if (!isNaN(parseFloat(value)) && isFinite(value))
       value = +value;
