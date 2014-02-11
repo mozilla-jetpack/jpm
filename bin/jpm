@@ -29,7 +29,7 @@ program
     xpi(manifest, program).then(function (xpiPath) {
       console.log("Successfully created xpi at " + xpiPath);
     }, function (reason) {
-      console.error("xpi creation failed.", reason);
+      console.error("xpi creation failed: " + reason);
     });
   }));
 

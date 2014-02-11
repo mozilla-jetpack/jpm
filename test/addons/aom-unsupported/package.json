@@ -1,6 +1,5 @@
 {
   "title": "AOM Unsupported Addon",
-  "id": "aom-unsupported@jetpack",
   "name": "aom-unsupported",
   "description": "Has a lower version of Firefox support, so AOM cannot natively support this addon without install.rdf/bootstrap.js",
   "main": "index.js",

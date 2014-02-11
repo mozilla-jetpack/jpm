@@ -7,7 +7,7 @@
     "jpm": "./bin/jpm"
   },
   "scripts": {
-    "test": "export NODE_ENV=test && ./node_modules/.bin/mocha --reporter spec --ui bdd test/**/test.*.js"
+    "test": "export NODE_ENV=test && ./node_modules/.bin/mocha --reporter spec --ui bdd test/unit/test.*.js"
   },
   "repository": {
     "type": "git",

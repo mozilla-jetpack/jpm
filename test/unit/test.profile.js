@@ -6,8 +6,8 @@ var expect = chai.expect;
 var profile = require("../../lib/profile");
 var PREFS = require("../../data/preferences");
 
-var simpleXpiPath = path.join(__dirname, "..", "xpis", "simple-addon@jetpack.xpi");
-var unpackedXpiPath = path.join(__dirname, "..", "xpis", "unpacked-addon@jetpack.xpi");
+var simpleXpiPath = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
+var unpackedXpiPath = path.join(__dirname, "..", "xpis", "@unpacked-addon.xpi");
 
 describe("lib/profile", function () {
   it("creates a profile and returns the path", function (done) {

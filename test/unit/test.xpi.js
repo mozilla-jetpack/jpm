@@ -20,7 +20,7 @@ describe("lib/xpi", function () {
     var manifest = require(path.join(simpleAddonPath, "package.json"));
     xpi(manifest).then(function (xpiPath) {
       expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
-                                            "simple-addon@jetpack.xpi"));
+                                            "@simple-addon.xpi"));
       utils.unzipTo(xpiPath, tmpOutputDir, function () {
         utils.compareDirs(simpleAddonPath, tmpOutputDir, done);
       });
@@ -32,7 +32,7 @@ describe("lib/xpi", function () {
     var manifest = require(path.join(aomUnsupportedPath, "package.json"));
     xpi(manifest).then(function (xpiPath) {
       expect(xpiPath).to.be.equal(path.join(aomUnsupportedPath,
-                                            "aom-unsupported@jetpack.xpi"));
+                                            "@aom-unsupported.xpi"));
       utils.unzipTo(xpiPath, tmpOutputDir, function () {
         var files = ["package.json", "index.js", "install.rdf", "bootstrap.js"];
         files.forEach(function (file) {
@@ -53,10 +53,18 @@ describe("lib/xpi", function () {
     }).then(done, done);
   });
 
-  it("validates addon before zipping");
+  it("validates addon before zipping", function (done) {
+    var dir = path.join(__dirname, "fixtures", "validate", "invalid-id");
+    process.chdir(dir);
+    var manifest = require(path.join(dir, "package.json"));
+    xpi(manifest).then(utils.invalidResolve, function (errors) {
+      expect(errors).to.be.ok;
+      expect(errors.toString()).to.contain("must be a valid ID");
+    }).then(done, done);
+  });
 });
 
 function cleanXPI (done) {
-  fs.unlinkSync(path.join(simpleAddonPath, "simple-addon@jetpack.xpi"));
+  fs.unlinkSync(path.join(simpleAddonPath, "@simple-addon.xpi"));
   done();
 }

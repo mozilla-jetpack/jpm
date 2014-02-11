@@ -1,8 +1,8 @@
 {
   "title": "My Unpacked Addon",
-  "id": "unpacked-addon@jetpack",
   "name": "unpacked-addon",
   "unpack": true,
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "author": "",

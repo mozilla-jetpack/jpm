@@ -1,0 +1,4 @@
+{
+  "name":"my-addon",
+  "main":"./lib/i-do-not-exist"
+}
