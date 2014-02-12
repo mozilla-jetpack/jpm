@@ -14,7 +14,7 @@ var DEBUG_VALUES = ["binary", "retro", "verbose", "binaryArgs"];
 
 program
   .version(VERSION)
-  .option("--sdk-path <path>", "Path to an SDK, to override SDK modules in Firefox (JETPACK_PATH env variable can be used instead).")
+  .option("--sdk-path <path>", "Path to the Addon-SDK to override SDK modules built into Firefox (JETPACK_PATH env variable can be used instead).")
   .option("-b, --binary <path>", "Path of Firefox binary to use.")
   .option("-p, --profile <path>", "Path or name of Firefox profile to use.")
   .option("-v, --verbose", "More verbose logging to stdout.")
