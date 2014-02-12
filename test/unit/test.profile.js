@@ -29,7 +29,7 @@ describe("lib/profile", function () {
 
   it("creates a profile with an addon installed when given a XPI unpacked", function (done) {
     profile({ xpi: unpackedXpiPath }).then(function (profilePath) {
-      var addonPath = path.join(profilePath, "extensions", "unpacked-addon@jetpack");
+      var addonPath = path.join(profilePath, "extensions", "@unpacked-addon");
       var index = fs.readFileSync(path.join(addonPath, "index.js"));
       var manifest = fs.readFileSync(path.join(addonPath, "package.json"));
       expect(index).to.be.ok;
@@ -40,7 +40,7 @@ describe("lib/profile", function () {
   
   it("creates a profile with an addon installed when given a XPI packed", function (done) {
     profile({ xpi: simpleXpiPath }).then(function (profilePath) {
-      var addonPath = path.join(profilePath, "extensions", "simple-addon@jetpack.xpi");
+      var addonPath = path.join(profilePath, "extensions", "@simple-addon.xpi");
       expect(fs.statSync(addonPath).isFile()).to.be.ok;
     })
     .then(done, done);
