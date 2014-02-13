@@ -1,0 +1,8 @@
+{
+  "title": "Param dump",
+  "id": "@param-dump",
+  "name": "param-dump",
+  "engines": {
+    "Firefox": ">= 36"
+  }
+}

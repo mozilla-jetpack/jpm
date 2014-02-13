@@ -5,9 +5,14 @@ var expect = chai.expect;
 var exec = utils.exec;
 var isWindows = /^win/.test(process.platform);
 
-var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
+
+var addonsPath = path.join(__dirname, "..", "addons");
+var simpleAddonPath = path.join(addonsPath, "simple-addon");
+var paramDumpPath = path.join(addonsPath, "param-dump");
 var fakeBinary = path.join(__dirname, "..", "utils", "dummybinary" +
   (isWindows ? ".bat" : ".sh"));
+
+var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
 
 describe("jpm run", function () {
   beforeEach(utils.setup);
@@ -53,7 +58,7 @@ describe("jpm run", function () {
         done();
       });
     });
-    
+
     it("Passes in a absolute profile path to Firefox with -profile", function (done) {
       process.chdir(simpleAddonPath);
       var proc = exec("run -v -b " + fakeBinary + " -p /path/to/profile", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
@@ -62,13 +67,38 @@ describe("jpm run", function () {
         done();
       });
     });
-    
+
     it("Passes in a profile name to Firefox with -P", function (done) {
       process.chdir(simpleAddonPath);
       var proc = exec("run -v -b " + fakeBinary + " -p MY_PROFILE", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-P MY_PROFILE");
         done();
+      });
+    });
+
+    describe("options passed to an add-on", function() {
+
+      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: "nightly" } }
+
+      function readParams(stdout) {
+        var output = stdout.toString()
+        var start = "PARAMS DUMP START";
+        var end = "PARAMS DUMP END";
+        var data = output.substring(output.indexOf(start) + start.length,
+                                    output.indexOf(end));
+        return JSON.parse(data);
+      }
+
+      process.chdir(paramDumpPath);
+      it("Command executed is passed into add-on", function(done) {
+        var task = exec("run -v", options, function(error, stdout, stderr) {
+          expect(error).to.not.be.ok;
+          var params = readParams(stdout);
+          expect(params.command).to.equal("run");
+          expect(params.verbose).to.equal(true);
+          done();
+        });
       });
     });
   });
