@@ -27,12 +27,18 @@ const read = (name, defaultValue=null) => {
 
 const params = {
   command: read("extensions.@param-dump.sdk.load.command"),
-  filter: read("extensions.@param-dump.sdk.test.filter"),
+
   profileMemory: read("extensions.@param-dump.sdk.profile.memory"),
+  checkMemory: read("extensions.@param-dump.sdk.profile.leaks"),
+
+  filter: read("extensions.@param-dump.sdk.test.filter"),
   stopOnError: read("extensions.@param-dump.sdk.test.stop") === 1,
+  times: read("extensions.@param-dump.sdk.test.iterations"),
+
   tbpl: read("extensions.@param-dump.sdk.output.format") === "tbpl",
   verbose: read("extensions.@param-dump.sdk.output.logLevel") === "verbose",
-  sdkPath: read("extensions.modules.@param-dump.path.")
+
+  sdkPath: read("extensions.modules.@param-dump.path."),
 };
 
 console.log("PARAMS DUMP START", JSON.stringify(params), "PARAMS DUMP END");

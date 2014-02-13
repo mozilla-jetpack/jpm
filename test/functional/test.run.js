@@ -79,7 +79,7 @@ describe("jpm run", function () {
 
     describe("options passed to an add-on", function() {
 
-      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: "nightly" } }
+      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } }
 
       function readParams(stdout) {
         var output = stdout.toString()
@@ -90,13 +90,53 @@ describe("jpm run", function () {
         return JSON.parse(data);
       }
 
-      process.chdir(paramDumpPath);
-      it("Command executed is passed into add-on", function(done) {
+      it("run with only -v option", function(done) {
+        process.chdir(paramDumpPath);
         var task = exec("run -v", options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
+
           var params = readParams(stdout);
+
           expect(params.command).to.equal("run");
+
+          expect(params.profileMemory).to.equal(null);
+          expect(params.checkMemory).to.equal(null);
+
+          expect(params.filter).to.equal(null);
+          expect(params.times).to.equal(null);
+          expect(params.stopOnError).to.equal(false);
+
+          expect(params.tbpl).to.equal(false);
           expect(params.verbose).to.equal(true);
+
+          expect(params.sdkPath).to.equal(null);
+
+          done();
+        });
+      });
+
+      it("run with options should receive options", function(done) {
+        process.chdir(paramDumpPath);
+        var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --tbpl"
+        var task = exec(cmd, options, function(error, stdout, stderr) {
+          expect(error).to.not.be.ok;
+
+          var params = readParams(stdout);
+
+          expect(params.command).to.equal("run");
+
+          expect(params.profileMemory).to.equal(true);
+          expect(params.checkMemory).to.equal(true);
+
+          expect(params.filter).to.equal("bar");
+          expect(params.times).to.equal(3);
+          expect(params.stopOnError).to.equal(true);
+
+          expect(params.tbpl).to.equal(true);
+          expect(params.verbose).to.equal(true);
+
+          expect(params.sdkPath).to.equal(null);
+
           done();
         });
       });
