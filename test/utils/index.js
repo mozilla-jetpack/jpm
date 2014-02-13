@@ -8,6 +8,7 @@ var unzip = require("unzip");
 var chai = require("chai");
 var async = require("async");
 var expect = chai.expect;
+var assert = chai.assert;
 var prevCwd;
 
 var tmpOutputDir = exports.tmpOutputDir = path.join(__dirname, "../", "tmp");
@@ -120,3 +121,8 @@ function isDir (filePath) {
   return fs.statSync(filePath).isDirectory();
 }
 exports.isDir = isDir;
+
+function invalidResolve () {
+  assert.fail(null, null, 'promise should not resolve');
+}
+exports.invalidResolve = invalidResolve;

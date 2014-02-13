@@ -9,8 +9,8 @@ var MIN_VERSION = require("../../lib/settings").MIN_VERSION;
 describe("lib/rdf", function () {
   describe("defaults", function () {
     it("uses default values when none specified", function () {
-      var xml = setupRDF({});
-      expect(getData(xml, "em:id")).to.be.equal("unknown@jetpack");
+      var xml = setupRDF({ id: "myaddon@jetpack" });
+      expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
       // This should throw elsewhere
       expect(getData(xml, "em:version")).to.be.equal("undefined");
       expect(getData(xml, "em:bootstrap")).to.be.equal("true");
