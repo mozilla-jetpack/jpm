@@ -61,6 +61,16 @@ describe("lib/utils", function () {
     expect(binary("/Application/FirefoxNightly.app", "darwin")).to.be.equal(
       "/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin");
   });
+  
+  it("normalizeBinary() uses JPM_FIREFOX_BINARY if no path specified", function () {
+    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
+    expect(binary()).to.be.equal("/my/custom/path");
+  });
+  
+  it("normalizeBinary() uses path over JPM_FIREFOX_BINARY if specified", function () {
+    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
+    expect(binary("/specific/path")).to.be.equal("/specific/path");
+  });
 
   it("normalizeBinary() normalizes special names like: firefox, nightly, etc...", function() {
     var args = 0;
