@@ -85,6 +85,7 @@ describe("jpm run", function () {
         var output = stdout.toString()
         var start = "PARAMS DUMP START";
         var end = "PARAMS DUMP END";
+        console.log("output of stdout\n\n\n\n\n\n\n", binary, output);
         var data = output.substring(output.indexOf(start) + start.length,
                                     output.indexOf(end));
         return JSON.parse(data);
