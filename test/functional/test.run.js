@@ -95,7 +95,6 @@ describe("jpm run", function () {
         var task = exec("run -v", options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
 
-          process.stdout.write(">>>>>\n" + stdout + "\n<<<<<<\n");
           var params = readParams(stdout);
 
           expect(params.command).to.equal("run");
@@ -114,6 +113,7 @@ describe("jpm run", function () {
 
           done();
         });
+        task.stdout.pipe(process.stdout);
       });
 
       it("run with options should receive options", function(done) {
@@ -121,8 +121,6 @@ describe("jpm run", function () {
         var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
-
-          process.stdout.write(">>>>>\n" + stdout + "\n<<<<<<\n");
 
           var params = readParams(stdout);
 
@@ -142,6 +140,7 @@ describe("jpm run", function () {
 
           done();
         });
+        task.stdout.pipe(process.stdout);
       });
     });
   });
