@@ -31,7 +31,7 @@ function tearDown (done) {
       "../addons/**/bootstrap.js",
       "../addons/**/install.rdf"
     ].map(function (p) { return path.join(__dirname, p); });
-    
+
     async.map(paths, glob, function (err, files) {
       _.flatten(files).forEach(fs.unlinkSync);
       done();
@@ -74,7 +74,8 @@ function formatExecArgs (s) {
 function exec (args, options, callback) {
   options = options || {};
   return execFile(path.join(__dirname, "../../bin/jpm"), formatExecArgs(args), {
-    cwd: options.cwd || tmpOutputDir
+    cwd: options.cwd || tmpOutputDir,
+    env: _.extend({}, options.env, process.env)
   }, function (err) {
     if (callback)
       callback.apply(null, arguments);

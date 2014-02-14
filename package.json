@@ -7,7 +7,7 @@
     "jpm": "./bin/jpm"
   },
   "scripts": {
-    "test": "export NODE_ENV=test && ./node_modules/.bin/mocha --reporter spec --ui bdd test/**/test.*.js"
+    "test": "export NODE_ENV=test && ./node_modules/.bin/mocha --reporter spec --ui bdd test/**/test.*.js --timeout 20000"
   },
   "repository": {
     "type": "git",
