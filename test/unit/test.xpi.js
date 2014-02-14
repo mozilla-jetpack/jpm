@@ -42,21 +42,6 @@ describe("lib/xpi", function () {
       });
     }).then(null, done);
   });
-  
-  it("Created install.rdf/bootstrap.js for AOM-unsupported addons are 644 mode", function (done) {
-    process.chdir(aomUnsupportedPath);
-    var manifest = require(path.join(aomUnsupportedPath, "package.json"));
-    xpi(manifest).then(function (xpiPath) {
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
-        var files = ["install.rdf", "bootstrap.js"];
-        files.forEach(function (file) {
-          var stat = fs.statSync(path.join(tmpOutputDir, file));
-          expect(parseInt(stat.mode.toString(8), 10)).to.be.equal(100644);
-        });
-        done();
-      });
-    }).then(null, done);
-  });
 
   it("Does not litter AOM-unsupported files", function (done) {
     process.chdir(aomUnsupportedPath);
