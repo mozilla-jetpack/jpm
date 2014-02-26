@@ -19,7 +19,7 @@ program
   .option("-p, --profile <path>", "Path or name of Firefox profile to use.")
   .option("-v, --verbose", "More verbose logging to stdout.")
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
-  .option("--filter", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
+  .option("--filter <pattern>", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
                       "optionally match TESTNAME, both regexps")
   .option("--stop-on-error", "Stop running tests after the first failure")
   .option("--tbpl", "Print test output in TBPL format")
