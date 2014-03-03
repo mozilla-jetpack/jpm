@@ -41,5 +41,5 @@ const params = {
   sdkPath: read("extensions.modules.@param-dump.path."),
 };
 
-console.log("PARAMS DUMP START", JSON.stringify(params), "PARAMS DUMP END");
+console.log("PARAMS DUMP START" + JSON.stringify(params).trim() + "PARAMS DUMP END");
 exit();

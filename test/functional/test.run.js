@@ -87,7 +87,14 @@ describe("jpm run", function () {
         var end = "PARAMS DUMP END";
         var data = output.substring(output.indexOf(start) + start.length,
                                     output.indexOf(end));
-        return JSON.parse(data);
+        var json = {};
+        try {
+          json = JSON.parse(data);
+        }
+        catch (e) {
+          console.log('Something is wrong with params data: ' + data);
+        }
+        return json;
       }
 
       it("run with only -v option", function(done) {
