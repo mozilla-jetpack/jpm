@@ -101,6 +101,7 @@ describe("jpm run", function () {
         process.chdir(paramDumpPath);
         var task = exec("run -v", options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
+          expect(stderr).to.not.be.ok;
 
           var params = readParams(stdout);
 
@@ -127,6 +128,7 @@ describe("jpm run", function () {
         var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
+          expect(stderr).to.not.be.ok;
 
           var params = readParams(stdout);
 
