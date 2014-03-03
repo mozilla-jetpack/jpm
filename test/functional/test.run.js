@@ -92,7 +92,7 @@ describe("jpm run", function () {
           json = JSON.parse(data);
         }
         catch (e) {
-          console.log('Something is wrong with params data: ' + data);
+          console.log('Something is wrong with output:\n' + output);
         }
         return json;
       }
