@@ -102,6 +102,7 @@ describe("jpm run", function () {
         var task = exec("run -v", options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
           expect(stderr).to.not.be.ok;
+          console.log(stdout);
 
           var params = readParams(stdout);
 
