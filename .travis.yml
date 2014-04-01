@@ -15,5 +15,8 @@ before_script:
   - Xvfb :1 -screen 0 1280x960x24 &
 
 script:
+  - pwd
+  - echo "$TRAVIS_BUILD_DIR"
   - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox-bin
+  - echo "$JPM_FIREFOX_BINARY"
   - DISPLAY=:1 npm test
