@@ -19,5 +19,5 @@ script:
   - echo "$TRAVIS_BUILD_DIR"
   - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox-bin
   - echo "$JPM_FIREFOX_BINARY"
-  - ./test.sh
+  - source test.sh
   - DISPLAY=:1 npm test
