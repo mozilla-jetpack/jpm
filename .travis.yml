@@ -3,7 +3,11 @@ node_js:
   - "0.10"
   - "0.8"
 
+addons:
+  firefox: "28.0"
+
 before_script:
+  - firefox --version
   - pwd
   - uname -a
   - cd ..
