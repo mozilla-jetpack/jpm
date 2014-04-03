@@ -78,7 +78,6 @@ describe("jpm run", function () {
     });
 
     describe("options passed to an add-on", function() {
-
       var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } }
 
       function readParams(stdout) {
