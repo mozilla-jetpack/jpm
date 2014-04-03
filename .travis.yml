@@ -9,6 +9,7 @@ addons:
 before_script:
   - pwd
   - uname -a
+  - firefox --version
 
 script:
   - export JPM_FIREFOX_BINARY=firefox
