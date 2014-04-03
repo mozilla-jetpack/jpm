@@ -12,7 +12,6 @@ before_script:
   - bzip2 -cd firefox.tar.bz2 | tar xvf -
   - cd firefox
   - ls -al
-  - export PATH=$TRAVIS_BUILD_DIR/../firefox/:$PATH
   - cd $TRAVIS_BUILD_DIR
   - pwd
   - Xvfb :1 -screen 0 1280x960x24 &
@@ -20,7 +19,7 @@ before_script:
 script:
   - pwd
   - echo "$TRAVIS_BUILD_DIR"
-  - export JPM_FIREFOX_BINARY=firefox
+  - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox
   - echo "$JPM_FIREFOX_BINARY"
   - source test.sh
   - DISPLAY=:1 npm test
