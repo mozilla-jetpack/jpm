@@ -11,6 +11,7 @@ before_script:
   - uname -a
   - firefox --version
   - echo `which firefox`
+  - Xvfb :1 -screen 0 1280x960x24 &
 
 script:
   - export JPM_FIREFOX_BINARY=`which firefox`
