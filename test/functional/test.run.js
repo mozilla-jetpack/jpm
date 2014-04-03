@@ -98,6 +98,7 @@ describe("jpm run", function () {
       }
 
       it("run with only -v option", function(done) {
+        this.timeout(60000); // 1min
         process.chdir(paramDumpPath);
         var task = exec("run -v", options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
