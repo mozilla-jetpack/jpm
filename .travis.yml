@@ -3,17 +3,27 @@ node_js:
   - "0.10"
   - "0.8"
 
+addons:
+  firefox: "28.0"
+
 before_script:
+  - firefox --version
   - pwd
   - uname -a
   - cd ..
   - url="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-trunk/firefox-30.0a1.en-US.linux-i686.tar.bz2"
   - wget -O firefox.tar.bz2 "$url"
   - bzip2 -cd firefox.tar.bz2 | tar xvf -
+  - cd firefox
+  - ls -al
   - cd $TRAVIS_BUILD_DIR
   - pwd
   - Xvfb :1 -screen 0 1280x960x24 &
 
 script:
+  - pwd
+  - echo "$TRAVIS_BUILD_DIR"
   - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox
+  - echo "$JPM_FIREFOX_BINARY"
+  - source test.sh
   - DISPLAY=:1 npm test

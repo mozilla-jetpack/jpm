@@ -78,7 +78,6 @@ describe("jpm run", function () {
     });
 
     describe("options passed to an add-on", function() {
-
       var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } }
 
       function readParams(stdout) {
@@ -102,6 +101,7 @@ describe("jpm run", function () {
         var task = exec("run -v", options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
           expect(stderr).to.not.be.ok;
+          console.log(stdout);
 
           var params = readParams(stdout);
 

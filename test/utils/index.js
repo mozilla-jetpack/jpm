@@ -74,11 +74,20 @@ function formatExecArgs (s) {
 function exec (args, options, callback) {
   options = options || {};
   var env = _.extend({}, options.env, process.env);
-
-  return execFile(path.join(__dirname, "../../bin/jpm"), formatExecArgs(args), {
+  var execFilePath = path.join(__dirname, "../../bin/jpm");
+  var execArgs = formatExecArgs(args);
+  var execOptions = {
     cwd: options.cwd || tmpOutputDir,
     env: env
-  }, function (err) {
+  };
+
+  if (execArgs[0] == 'run') {
+    console.log(execFilePath);
+    console.log(JSON.stringify(execArgs));
+    console.log(execOptions.cwd);
+  }
+
+  return execFile(execFilePath, execArgs, execOptions, function (err) {
     if (callback)
       callback.apply(null, arguments);
     else if (err)
