@@ -12,5 +12,4 @@ before_script:
   - firefox --version
 
 script:
-  - export JPM_FIREFOX_BINARY=firefox
   - DISPLAY=:1 npm test
