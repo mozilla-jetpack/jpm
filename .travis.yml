@@ -10,6 +10,8 @@ before_script:
   - pwd
   - uname -a
   - firefox --version
+  - echo `where firefox`
 
 script:
+  - export JPM_FIREFOX_BINARY=`where firefox`
   - DISPLAY=:1 npm test
