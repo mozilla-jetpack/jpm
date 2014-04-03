@@ -17,7 +17,7 @@ before_script:
 script:
   - pwd
   - echo "$TRAVIS_BUILD_DIR"
-  - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox-bin
+  - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox
   - echo "$JPM_FIREFOX_BINARY"
   - source test.sh
   - DISPLAY=:1 npm test
