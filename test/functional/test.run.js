@@ -101,6 +101,9 @@ describe("jpm run", function () {
         this.timeout(60000); // 1min
         process.chdir(paramDumpPath);
         var task = exec("run -v", options, function(error, stdout, stderr) {
+          console.log('error:\n' + error);
+          console.log('stdout:\n' + stdout);
+          console.log('stderr:\n' + stderr);
           expect(error).to.not.be.ok;
           expect(stderr).to.not.be.ok;
 
