@@ -104,13 +104,14 @@ describe("jpm run", function () {
           console.log('error:\n' + error);
           console.log('stdout:\n' + stdout);
           console.log('stderr:\n' + stderr);
+
           expect(error).to.not.be.ok;
           expect(stderr).to.not.be.ok;
 
           var params = readParams(stdout);
-
+console.log('1');
           expect(params.command).to.equal("run");
-
+console.log('2');
           expect(params.profileMemory).to.equal(null);
           expect(params.checkMemory).to.equal(null);
 
@@ -131,6 +132,10 @@ describe("jpm run", function () {
         process.chdir(paramDumpPath);
         var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
+          console.log('error:\n' + error);
+          console.log('stdout:\n' + stdout);
+          console.log('stderr:\n' + stderr);
+
           expect(error).to.not.be.ok;
           expect(stderr).to.not.be.ok;
 
