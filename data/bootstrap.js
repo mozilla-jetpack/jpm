@@ -25,7 +25,7 @@ const appInfo = Cc["@mozilla.org/xre/app-info;1"].
                 getService(Ci.nsIXULAppInfo);
 const vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
            getService(Ci.nsIVersionComparator);
-const { console } = Cu.import('resource://gre/modules/devtools/Console.jsm', {});
+
 const { NetUtil } = Cu.import("resource://gre/modules/NetUtil.jsm", {});
 const { Promise: { defer } } = Cu.import("resource://gre/modules/Promise.jsm", {});
 const { Task: { spawn } } = Cu.import("resource://gre/modules/Task.jsm", {});
@@ -199,7 +199,6 @@ const startup = (addon, reasonCode) => {
   spawn(function() {
     try {
       const config = readConfig(rootURI);
-
       const { metadata, options, isNative } = (yield config);
       const permissions = Object.freeze(metadata.permissions || {});
       const domain = readDomain(id);
@@ -222,21 +221,21 @@ const startup = (addon, reasonCode) => {
 
       console.log("MAPPED", mappedURI);
 
-      // TODO: Remove this hack
-      setPrefs("extensions.modules." + id + ".path", {
-        "": "file:///Users/gozala/Projects/addon-sdk/lib/"
-      });
-
       const paths = readPaths(options, id, name, domain, baseURI, isNative);
       console.log("PATHS", paths);
 
       const loaderID = isNative ? "toolkit/loader" : "sdk/loader/cuddlefish";
+      console.log(paths[""]);
+      console.log(loaderID);
       const loaderURI = paths[""] + loaderID + ".js";
 
       console.log("LOADER", loaderURI);
 
       loaderSandbox = loadSandbox(loaderURI);
+
       const loaderModule = loaderSandbox.exports;
+      console.log("LOADER made");
+
       unload = loaderModule.unload;
 
       setPrefs("extensions." + id + ".sdk", {
@@ -267,8 +266,7 @@ const startup = (addon, reasonCode) => {
           leaks: options.check_memory ? "refcount" : null
         }
       });
-
-
+      console.log("set prefs");
 
       const modules = {};
 
@@ -282,7 +280,9 @@ const startup = (addon, reasonCode) => {
       loader = loaderModule.Loader({
         id: id,
         isNative: isNative,
+        prefixURI: baseURI,
         rootURI: baseURI,
+        name: name,
         paths: paths,
         manifest: options.manifest || metadata,
         metadata: metadata,
@@ -291,11 +291,8 @@ const startup = (addon, reasonCode) => {
 
       console.log("LOADER", loader);
 
-
       const module = loaderModule.Module(loaderID, loaderURI);
       const require = loaderModule.Require(loader, module);
-
-      console.log("REQUIRE", require);
 
       require("sdk/addon/runner").startup(reasonCode, {
         loader: loader,
