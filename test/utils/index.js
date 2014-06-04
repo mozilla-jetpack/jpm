@@ -8,6 +8,7 @@ var unzip = require("unzip");
 var chai = require("chai");
 var async = require("async");
 var expect = chai.expect;
+var assert = chai.assert;
 var prevCwd;
 
 var tmpOutputDir = exports.tmpOutputDir = path.join(__dirname, "../", "tmp");
@@ -30,7 +31,7 @@ function tearDown (done) {
       "../addons/**/bootstrap.js",
       "../addons/**/install.rdf"
     ].map(function (p) { return path.join(__dirname, p); });
-    
+
     async.map(paths, glob, function (err, files) {
       _.flatten(files).forEach(fs.unlinkSync);
       done();
@@ -72,8 +73,11 @@ function formatExecArgs (s) {
 
 function exec (args, options, callback) {
   options = options || {};
+  var env = _.extend({}, options.env, process.env);
+
   return execFile(path.join(__dirname, "../../bin/jpm"), formatExecArgs(args), {
-    cwd: options.cwd || tmpOutputDir
+    cwd: options.cwd || tmpOutputDir,
+    env: env
   }, function (err) {
     if (callback)
       callback.apply(null, arguments);
@@ -119,3 +123,8 @@ function isDir (filePath) {
   return fs.statSync(filePath).isDirectory();
 }
 exports.isDir = isDir;
+
+function invalidResolve () {
+  assert.fail(null, null, 'promise should not resolve');
+}
+exports.invalidResolve = invalidResolve;

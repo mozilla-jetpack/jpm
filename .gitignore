@@ -7,6 +7,9 @@ lib-cov
 *.pid
 *.gz
 
+# OSX
+.DS_Store
+
 pids
 logs
 results

@@ -7,14 +7,15 @@
     "jpm": "./bin/jpm"
   },
   "scripts": {
-    "test": "export NODE_ENV=test && ./node_modules/.bin/mocha --reporter spec --ui bdd test/**/test.*.js"
+    "test": "export NODE_ENV=test && ./node_modules/.bin/mocha --reporter spec --ui bdd test/**/test.*.js --timeout 20000"
   },
   "repository": {
     "type": "git",
     "url": "http://github.com/mozilla/jpm"
   },
   "dependencies": {
-    "firefox-profile": "0.2.5",
+    "jetpack-id": "0.0.1",
+    "firefox-profile": "jsantell/firefox-profile-js",
     "commander": "2.1.0",
     "jsontoxml": "0.0.11",
     "fs-promise": "0.0.2",

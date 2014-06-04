@@ -10,15 +10,22 @@ var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var jetpackRoot = process.env["JETPACK_ROOT"];
 var manifest = utils.getManifest() || {};
-var DEBUG_VALUES = ["overload", "binary", "retro", "verbose", "binaryArgs"];
+var DEBUG_VALUES = ["binary", "retro", "verbose", "binaryArgs"];
 
 program
   .version(VERSION)
-  .option("-o, --overload [JETPACK_ROOT]", "Use development SDK instead of Firefox's built-in modules. Uses optional [JETPACK_ROOT] argument or JETPACK_ROOT environment variable.")
-  .option("-b, --binary <path>", "path of Firefox binary to use.")
-  .option("-p, --profile <path>", "path or name of Firefox profile to use.")
+  .option("--sdk-path <path>", "Path to the Addon-SDK to override SDK modules built into Firefox (JETPACK_PATH env variable can be used instead).")
+  .option("-b, --binary <path>", "Path of Firefox binary to use.")
+  .option("-p, --profile <path>", "Path or name of Firefox profile to use.")
   .option("-v, --verbose", "More verbose logging to stdout.")
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
+  .option("--filter <pattern>", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
+                      "optionally match TESTNAME, both regexps")
+  .option("--stop-on-error", "Stop running tests after the first failure")
+  .option("--tbpl", "Print test output in TBPL format")
+  .option("--times <n>", "Number of times to run tests")
+  .option("--check-memory", "Enable leaked tracker that attempts to report compartments leaked")
+  .option("--profile-memory", "Enable profiling of memory usage")
   .option("--force-aom", "In development flag for transitioning to new style addons; forces the lack of install.rdf/bootstrap.js creation regardless of what engine versions are running");
 
 program
@@ -29,7 +36,7 @@ program
     xpi(manifest, program).then(function (xpiPath) {
       console.log("Successfully created xpi at " + xpiPath);
     }, function (reason) {
-      console.error("xpi creation failed.", reason);
+      console.error("xpi creation failed: " + reason);
     });
   }));
 
@@ -68,15 +75,6 @@ function prepare (actionCallback) {
       if (option === "forceAOM")
         console.warn("`forceAOM` flag set; this feature is experimental.");
     });
-
-    if (program.overload && !jetpackRoot) {
-      program.overload = false;
-      console.warn("Can not overload modules without JETPACK_ROOT being unset. Using built in modules.");
-    } else if (program.overload) {
-      program.jetpackRoot = jetpackRoot;
-      console.log("Using SDK modules in " + jetpackRoot);
-    }
-
     console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
 
     actionCallback.apply(null, args);
