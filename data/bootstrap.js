@@ -26,6 +26,10 @@ const appInfo = Cc["@mozilla.org/xre/app-info;1"].
 const vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
            getService(Ci.nsIVersionComparator);
 
+const { NetUtil } = Cu.import("resource://gre/modules/NetUtil.jsm", {});
+const { Promise: { defer } } = Cu.import("resource://gre/modules/Promise.jsm", {});
+const { Task: { spawn } } = Cu.import("resource://gre/modules/Task.jsm", {});
+
 const REASON = [ 'unknown', 'startup', 'shutdown', 'enable', 'disable',
                  'install', 'uninstall', 'upgrade', 'downgrade' ];
 
@@ -36,295 +40,254 @@ let unload = null;
 let loaderSandbox = null;
 let nukeTimer = null;
 
-// Utility function that synchronously reads local resource from the given
-// `uri` and returns content string.
-function readURI(uri) {
-  let ioservice = Cc['@mozilla.org/network/io-service;1'].
-    getService(Ci.nsIIOService);
-  let channel = ioservice.newChannel(uri, 'UTF-8', null);
-  let stream = channel.open();
-
-  let cstream = Cc['@mozilla.org/intl/converter-input-stream;1'].
-    createInstance(Ci.nsIConverterInputStream);
-  cstream.init(stream, 'UTF-8', 0, 0);
-
-  let str = {};
-  let data = '';
-  let read = 0;
-  do {
-    read = cstream.readString(0xffffffff, str);
-    data += str.value;
-  } while (read != 0);
-
-  cstream.close();
-
-  return data;
+const readPref = type => path => {
+  try {
+    return prefService["get" + type + "Pref"](path);
+  }
+  catch (_) {
+    return null;
+  }
 }
+
+const readBoolPref = readPref("Bool");
+
+// Utility function reads URI async. Returns promise for the read
+// content.
+const readURI = (uri, charset="utf-8") => {
+  const channel = NetUtil.newChannel(uri, charset, null);
+  const { promise, resolve, reject } = defer();
+
+  try {
+    NetUtil.asyncFetch(channel, (stream, result) => {
+      if (Components.isSuccessCode(result)) {
+        const count = stream.available();
+        const data = NetUtil.readInputStreamToString(stream, count, {charset : charset});
+
+        resolve(data);
+      } else {
+        reject(Error("Failed to read: '" + uri + "' (Error Code: " + result + ")"));
+      }
+    });
+  }
+  catch ({message}) {
+    reject(Error("Failed to read: '" + uri + "' (Error: " + message + ")"));
+  }
+
+  return promise;
+}
+
 
 // We don't do anything on install & uninstall yet, but in a future
 // we should allow add-ons to cleanup after uninstall.
-function install(data, reason) {}
-function uninstall(data, reason) {}
+const install = (data, reason) => {}
+const uninstall = (data, reason) => {}
 
-function startup(data, reasonCode) {
-  try {
-    let reason = REASON[reasonCode];
-    // URI for the root of the XPI file.
-    // 'jar:' URI if the addon is packed, 'file:' URI otherwise.
-    // (Used by l10n module in order to fetch `locale` folder)
-    let rootURI = data.resourceURI.spec;
-
-    // TODO: Maybe we should perform read harness-options.json asynchronously,
-    // since we can't do anything until 'sessionstore-windows-restored' anyway.
-    let manifest, options;
-    let isNative = false;
+// Reads run configuration asynchronously, returns promise
+// for the config JSON.
+const readConfig = (rootURI) => {
+  const { resolve, reject, promise } = defer();
+  spawn(function () {
+    let config = null;
     try {
-      options = JSON.parse(readURI(rootURI + './harness-options.json'));
-      manifest = options.manifest;
-    } catch (e) {
-      manifest = JSON.parse(readURI(rootURI + './package.json'));
+      const options = JSON.parse(yield (readURI(rootURI + "./harness-options.json")));
+      config = {
+        options: options,
+        metadata: options.metadata[options.name],
+        isNative: false
+      };
+    }
+    catch (_) {
       try {
-        options = JSON.parse(readURI(rootURI + './config.json'));
-      } catch (e) {
-        options = {};
+        config = {
+          isNative: true,
+          options: {},
+          metadata: JSON.parse(yield readURI(rootURI + './package.json'))
+        };
       }
-      isNative = true;
+      catch(_) {}
     }
+    resolve(config);
+  });
 
-    let id = isNative ?
-      (manifest.id || (~manifest.name.indexOf('@') ?
-        manifest.name :
-        manifest.name + '@jetpack')) :
-      options.jetpackID;
-    let name = isNative ? manifest.name : options.name;
+  return promise;
+}
 
-    if (!isNative) {
-      // Clean the metadata
-      options.metadata[name]['permissions'] = options.metadata[name]['permissions'] || {};
+const UUID_PATTERN = /^\{([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\}$/;
+// Takes add-on ID and normalizes it to a domain name so that add-on
+// can be mapped to resource://domain/
+const readDomain = id =>
+  // If only `@` character is the first one, than just substract it,
+  // otherwise fallback to legacy normalization code path. Note: `.`
+  // is valid character for resource substitutaiton & we intend to
+  // make add-on URIs intuitive, so it's best to just stick to an
+  // add-on author typed input.
+  id.lastIndexOf("@") === 0 ? id.substr(1).toLowerCase() :
+  id.toLowerCase().
+     replace(/@/g, "-at-").
+     replace(/\./g, "-dot-").
+     replace(UUID_PATTERN, "$1");
 
-      // freeze the permissionss
-      Object.freeze(options.metadata[name]['permissions']);
-      // freeze the metadata
-      Object.freeze(options.metadata[name]);
-    }
+const readPaths = (options, id, name, domain, baseURI, isNative=false) => {
+  let paths = {
+    "": "resource://gre/modules/commonjs/",
+    "./": isNative ? baseURI : baseURI + name + '/lib/',
+    "./tests/": isNative ? baseURI : baseURI + name + '/tests/'
+  };
 
-    // Register a new resource 'domain' for this addon which is mapping to
-    // XPI's `resources` folder.
-    // Generate the domain name by using jetpack ID, which is the extension ID
-    // by stripping common characters that doesn't work as a domain name:
-    let uuidRe =
-      /^\{([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\}$/;
+  Object.keys(options.manifest || {}).reduce((paths, prefix) => {
+    paths[prefix + "/"] = baseURI + prefix + "/lib/";
+    paths[prefix + "tests/"] = baseURI + prefix + "/tests/";
+    return paths;
+  }, paths);
 
-    let domain = id.
-      toLowerCase().
-      replace(/@/g, '-at-').
-      replace(/\./g, '-dot-').
-      replace(uuidRe, '$1');
-
-    let prefixURI = 'resource://' + domain + '/';
-    let resourcesURIPath = isNative ? rootURI + '/' : rootURI + '/resources/';
-    let resourcesURI = ioService.newURI(resourcesURIPath, null, null);
-    resourceHandler.setSubstitution(domain, resourcesURI);
-
-    // Create path to URLs mapping supported by loader.
-    let addonPath = isNative ? prefixURI : prefixURI + name + '/lib/';
-    let testPath = isNative ? prefixURI : prefixURI + name + '/tests/';
-    let paths = {
-      // Relative modules resolve to add-on package lib
-      './': addonPath,
-      './tests/': testPath,
-      '': 'resource://gre/modules/commonjs/'
-    };
-
-    // Maps addon lib and tests ressource folders for each package
-    if (!isNative) {
-      paths = Object.keys(options.metadata).reduce(function(result, name) {
-        result[name + '/'] = prefixURI + name + '/lib/'
-        result[name + '/tests/'] = prefixURI + name + '/tests/'
-        return result;
-      }, paths);
-    }
-
-    // We need to map tests folder when we run sdk tests whose package name
-    // is stripped
-    if (name == 'addon-sdk')
-      paths['tests/'] = prefixURI + name + '/tests/';
-
-    let useBundledSDK = options['force-use-bundled-sdk'];
-    if (!useBundledSDK) {
-      try {
-        useBundledSDK = prefService.getBoolPref("extensions.addon-sdk.useBundledSDK");
-      }
-      catch (e) {
-        // Pref doesn't exist, allow using Firefox shipped SDK
-      }
-    }
-
-    // Starting with Firefox 21.0a1, we start using modules shipped into firefox
-    // Still allow using modules from the xpi if the manifest tell us to do so.
-    // And only try to look for sdk modules in xpi if the xpi actually ship them
-    if (options['is-sdk-bundled'] &&
-        (vc.compare(appInfo.version, '21.0a1') < 0 || useBundledSDK)) {
-      // Maps sdk module folders to their resource folder
-      paths[''] = prefixURI + 'addon-sdk/lib/';
-      // test.js is usually found in root commonjs or SDK_ROOT/lib/ folder,
-      // so that it isn't shipped in the xpi. Keep a copy of it in sdk/ folder
-      // until we no longer support SDK modules in XPI:
-      paths['test'] = prefixURI + 'addon-sdk/lib/sdk/test.js';
-    }
-
-    // Retrieve list of module folder overloads based on preferences in order to
-    // eventually used a local modules instead of files shipped into Firefox.
-    let branch = prefService.getBranch('extensions.modules.' + id + '.path');
-    paths = branch.getChildList('', {}).reduce(function (result, name) {
-      // Allows overloading of any sub folder by replacing . by / in pref name
-      let path = name.substr(1).split('.').join('/');
-      // Only accept overloading folder by ensuring always ending with `/`
-      if (path) path += '/';
-      let fileURI = branch.getCharPref(name);
-
-      // On mobile, file URI has to end with a `/` otherwise, setSubstitution
-      // takes the parent folder instead.
-      if (fileURI[fileURI.length-1] !== '/')
-        fileURI += '/';
-
-      // Maps the given file:// URI to a resource:// in order to avoid various
-      // failure that happens with file:// URI and be close to production env
-      let resourcesURI = ioService.newURI(fileURI, null, null);
-      let resName = 'extensions.modules.' + domain + '.commonjs.path' + name;
-      resourceHandler.setSubstitution(resName, resourcesURI);
-
-      result[path] = 'resource://' + resName + '/';
-      return result;
-    }, paths);
-
-    let loaderURI;
+  if (name == "addon-sdk")
+    paths["tests/"] = baseURI + "addon-sdk/tests/";
 
 
-    if (isNative) {
-      let toolkitLoaderPath = 'toolkit/loader.js';
-      let toolkitLoaderURI = 'resource://gre/modules/commonjs/' + toolkitLoaderPath;
-      if (paths['sdk/']) { // sdk folder has been overloaded
-                           // (from pref, or cuddlefish is still in the xpi)
-        loaderURI = paths['sdk/'] + '../' + toolkitLoaderPath;
-      }
-      else if (paths['']) { // root modules folder has been overloaded
-        loaderURI = paths[''] + toolkitLoaderPath;
-      } else {
-        loaderURI = toolkitLoaderURI;
-      }
-    } else {
-      // Import `cuddlefish.js` module using a Sandbox and bootstrap loader.
-      let cuddlefishPath = 'loader/cuddlefish.js';
-      let cuddlefishURI = 'resource://gre/modules/commonjs/sdk/' + cuddlefishPath;
-      if (paths['sdk/']) { // sdk folder has been overloaded
-                           // (from pref, or cuddlefish is still in the xpi)
-        loaderURI = paths['sdk/'] + cuddlefishPath;
-      }
-      else if (paths['']) { // root modules folder has been overloaded
-        loaderURI = paths[''] + 'sdk/' + cuddlefishPath;
-      } else {
-        loaderURI = cuddlefishURI;
-      }
-    }
+  // If SDK is bundled and it is required to use bundled version
+  // of the SDK setup paths to do so.
+  const isSDKBundled = options["is-sdk-bundled"];
+  const useBundledSDK = options["force-use-bundled-sdk"] ||
+                        readBoolPref("extensions.addon-sdk.useBundledSDK");
 
-    loaderSandbox = loadSandbox(loaderURI);
-    let loaderModule = loaderSandbox.exports;
-
-
-    unload = loaderModule.unload;
-    let loaderOptions = {
-      // Flag to determine whether or not to use native-style loader or not
-      // If false, will be using Cuddlefish Loader, and otherwise will be
-      // using toolkit/loader with `isNative` flag true
-      isNative: isNative,
-
-      paths: paths,
-      // modules manifest.
-      manifest: manifest,
-
-      // Add-on ID used by different APIs as a unique identifier.
-      id: id,
-      // Add-on name.
-      name: name,
-      // Add-on version.
-      // Use `version` if available (native loader), or fall back to
-      // metadata[name].version
-      version: isNative ? options.version : options.metadata[name].version,
-      // Add-on package descriptor.
-      // Use `options` if native-loader, or metadata otherwise
-      metadata: isNative ? options : options.metadata[name],
-      // Add-on load reason.
-      loadReason: reason,
-
-      prefixURI: prefixURI,
-      // Add-on URI.
-      rootURI: isNative ? addonPath : rootURI,
-      // options used by system module.
-      // File to write 'OK' or 'FAIL' (exit code emulation).
-      resultFile: options.resultFile,
-      // Arguments passed as --static-args
-      staticArgs: options.staticArgs,
-
-      // Arguments related to test runner.
-      modules: {
-        '@test/options': {
-          allTestModules: options.allTestModules,
-          iterations: options.iterations,
-          filter: options.filter,
-          profileMemory: options.profileMemory,
-          stopOnError: options.stopOnError,
-          verbose: options.verbose,
-          parseable: options.parseable,
-          checkMemory: options.check_memory,
-          paths: paths
-        }
-      }
-    };
-
-    // Manually set the loader's module cache to include itself;
-    // this is due to several modules requiring 'toolkit/loader',
-    // which fails due to lack of `Components`
-    if (isNative)
-      loaderOptions.modules['toolkit/loader'] = loaderSandbox.exports;
-
-    let loader = loaderModule.Loader(loaderOptions);
-    let { console } = Cu.import('resource://gre/modules/devtools/Console.jsm', {});
-    ['rootURI', 'mapping', 'manifest', 'main'].forEach((key) => {
-      console.log(key, loader[key]);
-    });
-
-    let module = loaderModule.Module(isNative ? 'toolkit/loader' : 'sdk/loader/cuddlefish', loaderURI);
-    let require = loaderModule.Require(loader, module);
-
-    // Normalize `options.mainPath` so that it looks like one that will come
-    // in a new version of linker.
-    //
-    // For native loader, the sdk/addon/runner will call loaderModule.main
-    // on loader, which will resolve the main file based off of manifest
-    let main = options.mainPath;
-
-    // Only specify prefsURI if a native-flagged addon specified it
-    // in the manifest, other wise, use the default path which 
-    // was created by CFX
-    let prefsURI = isNative ?
-      (manifest.prefs ? rootURI + manifest.prefs : undefined) :
-      rootURI + '/defaults/preferences/prefs.js';
-
-    require('sdk/addon/runner').startup(reason, {
-      loader: loader,
-      main: main,
-      prefsURI: prefsURI
-    });
-  } catch (error) {
-    dump('Bootstrap error: ' +
-         (error.message ? error.message : String(error)) + '\n' +
-         (error.stack || error.fileName + ': ' + error.lineNumber) + '\n');
-    throw error;
+  if (isSDKBundled && useBundledSDK) {
+    paths[""] = baseURI + "addon-sdk/lib/";
+    paths["test"] = baseURI + "addon-sdk/lib/sdk/test.js";
   }
+
+  const branch = prefService.getBranch("extensions.modules." + id + ".path");
+  branch.getChildList("", {}).reduce((paths, name) => {
+    const path = name.substr(1).split(".").join("/");
+    const prefix = path.length ? path + "/" : path;
+    const value = branch.getCharPref(name);
+    const fileURI = value[value.length - 1] === "/" ? value :
+                    value + "/";
+    const key = "extensions.modules." + domain + ".commonjs.path" + name;
+    const uri = ioService.newURI(fileURI, null, null);
+    resourceHandler.setSubstitution(key, uri);
+
+    paths[prefix] = "resource://" + key + "/";
+    return paths;
+  }, paths);
+
+  return paths;
+}
+
+// Takes JSON `options` and sets prefs for each key under
+// the given `root`. Given `options` may contain nested
+// objects.
+const setPrefs = (root, options) =>
+  void Object.keys(options).forEach(id => {
+    const key = root + "." + id;
+    const value = options[id]
+    const type = typeof(value);
+
+    value === null ? void(0) :
+    value === undefined ? void(0) :
+    type === "boolean" ? prefService.setBoolPref(key, value) :
+    type === "string" ? prefService.setCharPref(key, value) :
+    type === "number" ? prefService.setIntPref(key, parseInt(value)) :
+    type === "object" ? setPrefs(key, value) :
+    void(0);
+  });
+
+
+
+const startup = (addon, reasonCode) => {
+  const { id, version, resourceURI: { spec: rootURI } } = addon;
+  spawn(function() {
+    try {
+      const config = readConfig(rootURI);
+      const { metadata, options, isNative } = (yield config);
+      const permissions = Object.freeze(metadata.permissions || {});
+      const domain = readDomain(id);
+      const name = metadata.name;
+
+      const baseURI = "resource://" + domain + "/";
+
+      const prefsURI = baseURI + "defaults/preferences/prefs.js";
+
+      const mappedURI = isNative ? rootURI + '/' : rootURI + '/resources/';
+      resourceHandler.setSubstitution(domain, ioService.newURI(mappedURI, null, null));
+
+      const paths = readPaths(options, id, name, domain, baseURI, isNative);
+
+      const loaderID = isNative ? "toolkit/loader" : "sdk/loader/cuddlefish";
+      const loaderURI = paths[""] + loaderID + ".js";
+
+      loaderSandbox = loadSandbox(loaderURI);
+
+      const loaderModule = loaderSandbox.exports;
+
+      unload = loaderModule.unload;
+
+      setPrefs("extensions." + id + ".sdk", {
+        id: id,
+        version: version,
+        domain: domain,
+        mainPath: options.mainPath,
+        baseURI: baseURI,
+        rootURI: rootURI,
+        load: {
+          reason: reasonCode
+        },
+        input: {
+          staticArgs: JSON.stringify(options.staticArgs)
+        },
+        output: {
+          resultFile: options.resultFile,
+          style: options.parseable ? "tbpl" : null,
+          logLevel: options.verbose ? "verbose" : null,
+        },
+        test: {
+          stop: options.stopOnError ? 1 : null,
+          filter: options.filter,
+          iterations: options.iterations,
+        },
+        profile: {
+          memory: options.profileMemory,
+          leaks: options.check_memory ? "refcount" : null
+        }
+      });
+
+      const modules = {};
+
+      // Manually set the loader's module cache to include itself;
+      // which otherwise fails due to lack of `Components`.
+      modules[loaderID] = loaderModule;
+      modules["@test/options"] = Object.freeze({
+        allTestModules: options.allTestModules
+      });
+
+      loader = loaderModule.Loader({
+        id: id,
+        isNative: isNative,
+        prefixURI: baseURI,
+        rootURI: baseURI,
+        name: name,
+        paths: paths,
+        manifest: options.manifest || metadata,
+        metadata: metadata,
+        modules: modules
+      });
+
+      const module = loaderModule.Module(loaderID, loaderURI);
+      const require = loaderModule.Require(loader, module);
+
+      require("sdk/addon/runner").startup(reasonCode, {
+        loader: loader,
+        prefsURI: prefsURI,
+        main: options.mainPath
+      });
+    }
+    catch (error) {
+      console.error("Failed to bootstrap addon: ", id, error);
+      throw error;
+    }
+  });
 };
 
-function loadSandbox(uri) {
+const loadSandbox = (uri) => {
   let proto = {
     sandboxPrototype: {
       loadSandbox: loadSandbox,
@@ -348,19 +311,18 @@ function loadSandbox(uri) {
   return sandbox;
 }
 
-function unloadSandbox(sandbox) {
-  if ("nukeSandbox" in Cu)
-    Cu.nukeSandbox(sandbox);
-}
+const unloadSandbox = sandbox =>
+  Cu.nukeSandbox && sandbox && Cu.nukeSandbox(sandbox);
 
-function setTimeout(callback, delay) {
-  let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-  timer.initWithCallback({ notify: callback }, delay,
+const setTimeout = (callback, delay=0) => {
+  const timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+  timer.initWithCallback({ notify: callback },
+                         delay,
                          Ci.nsITimer.TYPE_ONE_SHOT);
   return timer;
 }
 
-function shutdown(data, reasonCode) {
+const shutdown = (data, reasonCode) => {
   let reason = REASON[reasonCode];
   if (loader) {
     unload(loader, reason);
@@ -382,13 +344,14 @@ function nukeModules() {
   nukeTimer = null;
   // module objects store `exports` which comes from sandboxes
   // We should avoid keeping link to these object to avoid leaking sandboxes
-  for (let key in loader.modules) {
-    delete loader.modules[key];
+  for (let id in loader.modules) {
+    delete loader.modules[id];
   }
+
   // Direct links to sandboxes should be removed too
-  for (let key in loader.sandboxes) {
-    let sandbox = loader.sandboxes[key];
-    delete loader.sandboxes[key];
+  for (let id in loader.sandboxes) {
+    let sandbox = loader.sandboxes[id];
+    delete loader.sandboxes[id];
     // Bug 775067: From FF17 we can kill all CCW from a given sandbox
     unloadSandbox(sandbox);
   }
