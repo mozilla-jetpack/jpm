@@ -35,7 +35,6 @@ const REASON = [ 'unknown', 'startup', 'shutdown', 'enable', 'disable',
 
 const bind = Function.call.bind(Function.bind);
 
-
 let loader = null;
 let unload = null;
 let loaderSandbox = null;
@@ -187,7 +186,7 @@ const setPrefs = (root, options) =>
     value === undefined ? void(0) :
     type === "boolean" ? prefService.setBoolPref(key, value) :
     type === "string" ? prefService.setCharPref(key, value) :
-    type === "number" ? prefService.setIntPref(key, value) :
+    type === "number" ? prefService.setIntPref(key, parseInt(value)) :
     type === "object" ? setPrefs(key, value) :
     void(0);
   });
@@ -204,37 +203,21 @@ const startup = (addon, reasonCode) => {
       const domain = readDomain(id);
       const name = metadata.name;
 
-      console.log("ROOT:", rootURI);
-
-      console.log("DOMAIN:", domain);
-
       const baseURI = "resource://" + domain + "/";
 
-      console.log("BASE", baseURI);
-
       const prefsURI = baseURI + "defaults/preferences/prefs.js";
-
-      console.log("PREFS", prefsURI);
 
       const mappedURI = isNative ? rootURI + '/' : rootURI + '/resources/';
       resourceHandler.setSubstitution(domain, ioService.newURI(mappedURI, null, null));
 
-      console.log("MAPPED", mappedURI);
-
       const paths = readPaths(options, id, name, domain, baseURI, isNative);
-      console.log("PATHS", paths);
 
       const loaderID = isNative ? "toolkit/loader" : "sdk/loader/cuddlefish";
-      console.log(paths[""]);
-      console.log(loaderID);
       const loaderURI = paths[""] + loaderID + ".js";
-
-      console.log("LOADER", loaderURI);
 
       loaderSandbox = loadSandbox(loaderURI);
 
       const loaderModule = loaderSandbox.exports;
-      console.log("LOADER made");
 
       unload = loaderModule.unload;
 
@@ -259,14 +242,13 @@ const startup = (addon, reasonCode) => {
         test: {
           stop: options.stopOnError ? 1 : null,
           filter: options.filter,
-          iterations: parseInt(options.iterations),
+          iterations: options.iterations,
         },
         profile: {
           memory: options.profileMemory,
           leaks: options.check_memory ? "refcount" : null
         }
       });
-      console.log("set prefs");
 
       const modules = {};
 
@@ -288,8 +270,6 @@ const startup = (addon, reasonCode) => {
         metadata: metadata,
         modules: modules
       });
-
-      console.log("LOADER", loader);
 
       const module = loaderModule.Module(loaderID, loaderURI);
       const require = loaderModule.Require(loader, module);
