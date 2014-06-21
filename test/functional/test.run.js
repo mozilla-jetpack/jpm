@@ -96,16 +96,23 @@ describe("jpm run", function () {
       }
 
       it("run with only -v option", function(done) {
+        this.timeout(60000); // 1min
         process.chdir(paramDumpPath);
-        var task = exec("run -v", options, function(error, stdout, stderr) {
+        var cmd = "run -v";
+        console.log(cmd);
+        var task = exec(cmd, options, function(error, stdout, stderr) {
+          console.log('error:\n' + error);
+          console.log('stdout:\n' + stdout);
+          console.log('stderr:\n' + stderr);
+
           expect(error).to.not.be.ok;
           //expect(stderr).to.not.be.ok;
           //expect(stderr).to.not.be.ok;
 
           var params = readParams(stdout);
-
+console.log('1');
           expect(params.command).to.equal("run");
-
+console.log('2');
           expect(params.profileMemory).to.equal(null);
           expect(params.checkMemory).to.equal(null);
 
@@ -124,13 +131,19 @@ describe("jpm run", function () {
 
       it("run with options should receive options", function(done) {
         process.chdir(paramDumpPath);
-        var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --tbpl"
+        var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --tbpl";
+        console.log(cmd);
         var task = exec(cmd, options, function(error, stdout, stderr) {
+          console.log('error:\n' + error);
+          console.log('stdout:\n' + stdout);
+          console.log('stderr:\n' + stderr);
+
           expect(error).to.not.be.ok;
           //expect(stderr).to.not.be.ok;
 
+console.log('3');
           var params = readParams(stdout);
-
+console.log('4');
           expect(params.command).to.equal("run");
 
           expect(params.profileMemory).to.equal(true);
