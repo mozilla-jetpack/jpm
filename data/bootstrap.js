@@ -25,6 +25,11 @@ const appInfo = Cc["@mozilla.org/xre/app-info;1"].
                 getService(Ci.nsIXULAppInfo);
 const vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
            getService(Ci.nsIVersionComparator);
+const { get, exists } = Cc['@mozilla.org/process/environment;1'].
+                        getService(Ci.nsIEnvironment);
+
+const prefSvc = Cc["@mozilla.org/preferences-service;1"].
+                getService(Ci.nsIPrefService).getBranch(null);
 
 const { NetUtil } = Cu.import("resource://gre/modules/NetUtil.jsm", {});
 const { Promise: { defer } } = Cu.import("resource://gre/modules/Promise.jsm", {});
@@ -40,16 +45,22 @@ let unload = null;
 let loaderSandbox = null;
 let nukeTimer = null;
 
-const readPref = type => path => {
-  try {
-    return prefService["get" + type + "Pref"](path);
-  }
-  catch (_) {
-    return null;
+function getPref(name, defaultValue) {
+  defaultValue = defaultValue || null;
+  switch (prefSvc.getPrefType(name)) {
+  case Ci.nsIPrefBranch.PREF_STRING:
+    return prefSvc.getComplexValue(name, Ci.nsISupportsString).data;
+
+  case Ci.nsIPrefBranch.PREF_INT:
+    return prefSvc.getIntPref(name);
+
+  case Ci.nsIPrefBranch.PREF_BOOL:
+    return prefSvc.getBoolPref(name);
+
+  default:
+    return defaultValue;
   }
 }
-
-const readBoolPref = readPref("Bool");
 
 // Utility function reads URI async. Returns promise for the read
 // content.
@@ -148,7 +159,7 @@ const readPaths = (options, id, name, domain, baseURI, isNative=false) => {
   // of the SDK setup paths to do so.
   const isSDKBundled = options["is-sdk-bundled"];
   const useBundledSDK = options["force-use-bundled-sdk"] ||
-                        readBoolPref("extensions.addon-sdk.useBundledSDK");
+                        getPref("extensions.addon-sdk.useBundledSDK");
 
   if (isSDKBundled && useBundledSDK) {
     paths[""] = baseURI + "addon-sdk/lib/";
@@ -195,6 +206,10 @@ const setPrefs = (root, options) =>
 
 const startup = (addon, reasonCode) => {
   const { id, version, resourceURI: { spec: rootURI } } = addon;
+  const loadCommand = exists("CFX_COMMAND") ?
+                        get("CFX_COMMAND") :
+                        getPref("extensions." + id + ".sdk.load.command", undefined);
+
   spawn(function() {
     try {
       const config = readConfig(rootURI);
@@ -229,7 +244,8 @@ const startup = (addon, reasonCode) => {
         baseURI: baseURI,
         rootURI: rootURI,
         load: {
-          reason: reasonCode
+          reason: reasonCode,
+          command: loadCommand
         },
         input: {
           staticArgs: JSON.stringify(options.staticArgs)
@@ -273,11 +289,12 @@ const startup = (addon, reasonCode) => {
 
       const module = loaderModule.Module(loaderID, loaderURI);
       const require = loaderModule.Require(loader, module);
+      const mainPath = (loadCommand == "test") ? "sdk/test/runner" : options.mainPath;
 
       require("sdk/addon/runner").startup(reasonCode, {
         loader: loader,
         prefsURI: prefsURI,
-        main: options.mainPath
+        main: mainPath
       });
     }
     catch (error) {

@@ -20,6 +20,7 @@ let button = new ActionButton({
     });
   }
 });
+exports.button = button;
 
 let frame = new Frame({
     url: "./index.html",
@@ -49,3 +50,4 @@ let toolbar = new Toolbar({
     console.log("toolbar was hidden");
   }
 });
+exports.toolbar = toolbar;
