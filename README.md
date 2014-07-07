@@ -16,7 +16,11 @@ jpm
 
 ## Transitioning
 
-Currently, any addon with unspecified engines, or engines supporting versions of Firefox where AOM support for native jetpacks does not exist, jpm will add a `install.rdf` and `bootstrap.js` file for backwards compatability. This can be overridden with the `--force-aom` flag, which will not build with these additional files. This is mainly for testing AOM support while still in development.
+Currently, any add-on with unspecified engines, or engines supporting versions of Firefox where AOM support for native jetpacks does not exist, jpm will add a `install.rdf` and `bootstrap.js` file for backwards compatability. This can be overridden with the `--force-aom` flag, which will not build with these additional files. This is mainly for testing AOM support while still in development.
+
+### `jpm init`
+
+Provides a series of prompts to create a `package.json` for an addon.
 
 ### `jpm run`
 
@@ -29,8 +33,3 @@ Tests the current addon.
 ### `jpm xpi`
 
 Zips up the current addon into a `.xpi` file.
-
-### `jpm init`
-
-Provides a series of prompts to create a `package.json` for an addon.
-
