@@ -14,7 +14,7 @@
     "url": "http://github.com/mozilla/jpm"
   },
   "dependencies": {
-    "jetpack-id": "0.0.1",
+    "jetpack-id": "0.0.3",
     "firefox-profile": "jsantell/firefox-profile-js",
     "commander": "2.1.0",
     "jsontoxml": "0.0.11",
