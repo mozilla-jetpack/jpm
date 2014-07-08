@@ -75,7 +75,6 @@ function prepare (actionCallback) {
       if (option === "forceAOM")
         console.warn("`forceAOM` flag set; this feature is experimental.");
     });
-    console.log("Running " + program.mode + " on " + (manifest.title || manifest.name));
 
     actionCallback.apply(null, args);
   }
