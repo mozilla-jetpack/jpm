@@ -112,12 +112,12 @@ describe("lib/utils", function () {
 
   describe("hasAOMSupport", function () {
     it("hasAOMSupport true for valid ranges", function () {
-      [">=31 <=34", ">=31.0a <=32", ">=31", ">=31.0a"].forEach(function (range) {
+      [">=41 <=44", ">=41.0a <=42", ">=40", ">=41.0a"].forEach(function (range) {
         expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(true);
       });
     });
     it("hasAOMSupport false for invalid ranges", function () {
-      [">=28 <=34", ">=30 <=32", ">=26", ">=30.0a"].forEach(function (range) {
+      [">=28 <=34", ">=30 <=32", ">=26", ">=30.0a", ">=38 <=44"].forEach(function (range) {
         expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(false);
       });
     });

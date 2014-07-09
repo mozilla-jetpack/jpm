@@ -24,9 +24,9 @@ describe("jpm init", function () {
       expect(manifest.main).to.be.equal("index.js");
       expect(manifest.author).to.be.equal("");
       expect(manifest.engines.firefox).to.be.equal(
-        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
+        ">=" + settings.MIN_VERSION);
       expect(manifest.engines.fennec).to.be.equal(
-        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
+        ">=" + settings.MIN_VERSION);
       expect(manifest.license).to.be.equal("MIT");
       done();
     });
@@ -58,9 +58,9 @@ describe("jpm init", function () {
       expect(manifest.main).to.be.equal(responses[4]);
       expect(manifest.author).to.be.equal(responses[5]);
       expect(manifest.engines['custom-firefox']).to.be.equal(
-        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
+        ">=" + settings.MIN_VERSION);
       expect(manifest.engines['nightly-firefox']).to.be.equal(
-        ">=" + settings.MIN_VERSION + " <=" + settings.MAX_VERSION);
+        ">=" + settings.MIN_VERSION);
       expect(manifest.license).to.be.equal(responses[7]);
       done();
     });
