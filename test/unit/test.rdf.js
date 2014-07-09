@@ -30,7 +30,7 @@ describe("lib/rdf", function () {
 
   describe("attributes", function () {
     it("parses a correct ID", function () {
-      var xml = setupRDF({ id: "myaddon" });
+      var xml = setupRDF({ id: "myaddon@jetpack" });
       expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
     });
     it("passes in a version", function () {

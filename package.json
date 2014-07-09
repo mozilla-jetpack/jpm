@@ -14,7 +14,7 @@
     "url": "http://github.com/mozilla/jpm"
   },
   "dependencies": {
-    "jetpack-id": "0.0.3",
+    "jetpack-id": "0.0.4",
     "firefox-profile": "jsantell/firefox-profile-js",
     "commander": "2.1.0",
     "jsontoxml": "0.0.11",
@@ -30,7 +30,8 @@
     "read": "1.0.5",
     "semver": "2.2.1",
     "mozilla-version-comparator": "1.0.2",
-    "mozilla-toolkit-versioning": "0.0.1"
+    "mozilla-toolkit-versioning": "0.0.1",
+    "jetpack-validation": "0.0.2"
   },
   "devDependencies": {
     "mocha": "1.17.1",

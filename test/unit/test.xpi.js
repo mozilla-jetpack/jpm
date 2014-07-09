@@ -57,9 +57,8 @@ describe("lib/xpi", function () {
     var dir = path.join(__dirname, "fixtures", "validate", "invalid-id");
     process.chdir(dir);
     var manifest = require(path.join(dir, "package.json"));
-    xpi(manifest).then(utils.invalidResolve, function (errors) {
-      expect(errors).to.be.ok;
-      expect(errors.toString()).to.contain("must be a valid ID");
+    xpi(manifest).then(utils.invalidResolve, function (error) {
+      expect(error).to.be.ok;
     }).then(done, done);
   });
 });
