@@ -1,4 +1,4 @@
-var fs = require("fs");
+var fs = require("fs-extra");
 var path = require("path");
 var utils = require("../utils");
 var settings = require("../../lib/settings");
@@ -79,6 +79,56 @@ describe("jpm init", function () {
       done();
     });
   });
+  
+  it("copies in default index.js if it DNE", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "index.js"), "utf-8");
+      var sourceIndex = fs.readFileSync(path.join("..", "..", "data", "index.js"), "utf-8");
+      expect(dirIndex).to.be.equal(sourceIndex);
+      done();
+    });
+  });
+  
+  it("does not copy in default index.js if it exists", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    fs.writeFileSync(path.join(utils.tmpOutputDir, "index.js"), "hello");
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "index.js"), "utf-8");
+      expect(dirIndex).to.be.equal("hello");
+      done();
+    });
+  });
+  
+  it("copies in default test-index.js if it DNE", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirTest = fs.readFileSync(path.join(utils.tmpOutputDir, "test", "test-index.js"), "utf-8");
+      var sourceTest = fs.readFileSync(path.join("..", "..", "data", "test-index.js"), "utf-8");
+      expect(dirTest).to.be.equal(sourceTest);
+      done();
+    });
+  });
+  
+  it("does not copy in default test-index.js if it exists", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    fs.mkdirpSync(path.join(utils.tmpOutputDir, "test"));
+    fs.writeFileSync(path.join(utils.tmpOutputDir, "test", "test-index.js"), "hello");
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirTest = fs.readFileSync(path.join(utils.tmpOutputDir, "test", "test-index.js"), "utf-8");
+      expect(dirTest).to.be.equal("hello");
+      done();
+    });
+  });
+
 });
 
 /**
