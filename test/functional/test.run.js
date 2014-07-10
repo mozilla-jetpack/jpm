@@ -18,6 +18,29 @@ describe("jpm run", function () {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
 
+  describe("-v/--verbose", function () {
+    it("logs out only console messages from the addon without -v", function (done) {
+      process.chdir(paramDumpPath);
+      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run", options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("\nconsole\.log: param-dump:")
+        expect(stdout).to.contain("PARAMS DUMP START");
+        done();
+      });
+    });
+    
+    it("logs out everything from console with -v", function (done) {
+      process.chdir(paramDumpPath);
+      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run -v", options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout.split("\n").length).to.be.gt(20);
+        done();
+      });
+    });
+  });
+
   describe("-b/--binary <BINARY>", function () {
     it("Uses specified binary instead of default Firefox", function (done) {
       process.chdir(simpleAddonPath);
