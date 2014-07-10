@@ -1,0 +1,7 @@
+{
+  "title": "Loader Options",
+  "name": "loader-options",
+  "engines": {
+    "Firefox": ">=24"
+  }
+}
