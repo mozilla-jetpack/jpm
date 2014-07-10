@@ -1,6 +1,5 @@
-var fs = require("fs");
+var fs = require("fs-promise");
 var path = require("path");
-var rimraf = require("rimraf");
 var utils = require("../utils");
 var chai = require("chai");
 var expect = chai.expect;
@@ -9,7 +8,6 @@ var xpi = require("../../lib/xpi");
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var aomUnsupportedPath = path.join(__dirname, "..", "addons", "aom-unsupported");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
-var prevCwd;
 
 describe("lib/xpi", function () {
   beforeEach(utils.setup);
@@ -61,6 +59,23 @@ describe("lib/xpi", function () {
       expect(error).to.be.ok;
     }).then(done, done);
   });
+  
+  it("Does not zip up xpi files", function (done) {
+    process.chdir(simpleAddonPath);
+    var manifest = require(path.join(simpleAddonPath, "package.json"));
+    var xpiPath = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
+    var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
+    // Copy in a XPI since we remove it between tests for cleanup
+    fs.copy(xpiPath, newXpiPath).then(function () {
+      return xpi(manifest);
+    }).then(function (xpiPath) {
+      utils.unzipTo(xpiPath, tmpOutputDir, function () {
+        expect(utils.isFile(path.join(tmpOutputDir, "@simple-addon.xpi"))).to.be.equal(false);
+        done();
+      });
+    }).then(null, done);
+  });
+
 });
 
 function cleanXPI (done) {

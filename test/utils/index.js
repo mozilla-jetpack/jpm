@@ -115,7 +115,12 @@ function compareDirs (dir1, dir2, done) {
 exports.compareDirs = compareDirs;
 
 function isFile (filePath) {
-  return fs.statSync(filePath).isFile();
+  try {
+    var exists = fs.statSync(filePath).isFile();
+    return exists;
+  } catch (e) {
+    return false;
+  }
 }
 exports.isFile = isFile;
 
