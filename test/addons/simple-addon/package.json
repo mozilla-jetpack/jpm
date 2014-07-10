@@ -7,6 +7,6 @@
   "author": "",
   "license": "MIT",
   "engines": {
-    "Firefox": ">=36.0"
+    "Firefox": ">=41.0"
   }
 }
