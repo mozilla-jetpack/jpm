@@ -7,7 +7,9 @@
     "jpm": "./bin/jpm"
   },
   "scripts": {
-    "test": "export NODE_ENV=test && ./node_modules/.bin/mocha --reporter spec --ui bdd test/**/test.*.js --timeout 20000"
+    "test": "node ./test/run.js",
+    "functional": "node ./test/run.js functional",
+    "unit": "node ./test/run.js unit"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,6 @@
     "fs-extra": "0.8.1",
     "colors": "0.6.2",
     "when": "2.8.0",
-    "dive": "0.3.0",
     "underscore": "1.6.0",
     "zip-dir": "0.2.0",
     "tmp": "0.0.23",
@@ -34,6 +35,7 @@
     "jetpack-validation": "0.0.2"
   },
   "devDependencies": {
+    "dive": "0.3.0",
     "mocha": "1.17.1",
     "chai": "1.9.0",
     "unzip": "0.1.9",
