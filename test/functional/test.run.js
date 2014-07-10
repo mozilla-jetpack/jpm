@@ -8,6 +8,7 @@ var isWindows = /^win/.test(process.platform);
 var addonsPath = path.join(__dirname, "..", "addons");
 var simpleAddonPath = path.join(addonsPath, "simple-addon");
 var paramDumpPath = path.join(addonsPath, "param-dump");
+var loaderOptionsPath = path.join(addonsPath, "loader-options");
 var fakeBinary = path.join(__dirname, "..", "utils", "dummybinary" +
   (isWindows ? ".bat" : ".sh"));
 
@@ -147,6 +148,31 @@ describe("jpm run", function () {
 
           done();
         });
+      });
+    });
+  });
+
+  describe("SDK context", function () {
+    it("@loader/options#metadata loads in package.json", function (done) {
+      process.chdir(loaderOptionsPath);
+      var options = { cwd: loaderOptionsPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var task = exec("run -v", options, function(error, stdout, stderr) {
+        expect(error).to.not.be.ok;
+
+        var lines = stdout.toString().split("\n").filter(function (line) {
+          return /loader-options: @loader\/options/.test(line);
+        }).map(function (line) {
+          var segments = line.split(":");
+          while (segments.length > 2) segments.shift();
+          return segments;
+        });
+
+        expect(lines[0][0]).to.be.equal("title");
+        expect(lines[0][1]).to.be.equal("Loader Options");
+        expect(lines[1][0]).to.be.equal("name");
+        expect(lines[1][1]).to.be.equal("loader-options");
+
+        done();
       });
     });
   });
