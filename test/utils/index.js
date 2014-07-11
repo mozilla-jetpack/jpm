@@ -1,6 +1,7 @@
 var _ = require("underscore");
 var path = require("path");
-var execFile = require("child_process").execFile;
+var child_process = require("child_process");
+var execFile = child_process.execFile;
 var fs = require("fs-extra");
 var rimraf = require("rimraf");
 var glob = require("glob");
@@ -40,45 +41,14 @@ function tearDown (done) {
 }
 exports.tearDown = tearDown;
 
-/**
- * Utility for `exec` so we can pass in a string
- * and it preserves quoted values. Very rough and hacky, but
- * makes the interface for writing CLI tests better.
- * "-b value --binary-args \"value1 value2 value3\"" ->
- * ["-b", "value", "--binary-args", "value1 value2 value3"]
- */
-function formatExecArgs (s) {
-  var args = [];
-  var queue = "";
-  var startQuote = false;
-  for (var i = 0; i < s.length; i++) {
-    if (s[i] === " " && queue.length && !startQuote) {
-      args.push(queue);
-      queue = "";
-    }
-    else if (s[i] === "\"" || s[i] === "'") {
-      if (startQuote) {
-        args.push(queue);
-        queue = "";
-      } else
-        startQuote = true;
-    }
-    else
-      queue += s[i];
-  }
-  if (queue)
-    args.push(queue);
-  return args;
-}
-
 function exec (args, options, callback) {
   options = options || {};
   var env = _.extend({}, options.env, process.env);
 
-  return execFile(path.join(__dirname, "../../bin/jpm"), formatExecArgs(args), {
+  return child_process.exec("node " + path.join(__dirname, "../../bin/jpm") + " " + args, {
     cwd: options.cwd || tmpOutputDir,
     env: env
-  }, function (err) {
+  }, function (err, stdout, stderr) {
     if (callback)
       callback.apply(null, arguments);
     else if (err)

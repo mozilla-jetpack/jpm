@@ -17,7 +17,7 @@ describe("lib/utils", function () {
   afterEach(function () {
     if (prevBinary)
       process.env.JPM_FIREFOX_BINARY = prevBinary;
-    process.chdir(prevDir); 
+    process.chdir(prevDir);
   });
 
   it("getManifest() returns manifest in cwd()", function (done) {
@@ -59,14 +59,14 @@ describe("lib/utils", function () {
   it("normalizeBinary() finds OSX's full path when given .app", function () {
     process.env.JPM_FIREFOX_BINARY = undefined;
     expect(binary("/Application/FirefoxNightly.app", "darwin")).to.be.equal(
-      "/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin");
+      path.join("/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin"));
   });
-  
+
   it("normalizeBinary() uses JPM_FIREFOX_BINARY if no path specified", function () {
     process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
     expect(binary()).to.be.equal("/my/custom/path");
   });
-  
+
   it("normalizeBinary() uses path over JPM_FIREFOX_BINARY if specified", function () {
     process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
     expect(binary("/specific/path")).to.be.equal("/specific/path");
