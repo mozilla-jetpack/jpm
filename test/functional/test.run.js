@@ -29,7 +29,7 @@ describe("jpm run", function () {
         done();
       });
     });
-    
+
     it("logs out everything from console with -v", function (done) {
       process.chdir(paramDumpPath);
       var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};

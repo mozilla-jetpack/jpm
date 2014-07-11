@@ -4,6 +4,7 @@ var utils = require("../utils");
 var settings = require("../../lib/settings");
 var chai = require("chai");
 var expect = chai.expect;
+var assert = chai.assert;
 var exec = utils.exec;
 
 describe("jpm init", function () {
@@ -79,7 +80,7 @@ describe("jpm init", function () {
       done();
     });
   });
-  
+
   it("copies in default index.js if it DNE", function (done) {
     process.chdir(utils.tmpOutputDir);
     var responses = generateResponses();
@@ -91,7 +92,7 @@ describe("jpm init", function () {
       done();
     });
   });
-  
+
   it("does not copy in default index.js if it exists", function (done) {
     process.chdir(utils.tmpOutputDir);
     fs.writeFileSync(path.join(utils.tmpOutputDir, "index.js"), "hello");
@@ -103,7 +104,7 @@ describe("jpm init", function () {
       done();
     });
   });
-  
+
   it("copies in default test-index.js if it DNE", function (done) {
     process.chdir(utils.tmpOutputDir);
     var responses = generateResponses();
@@ -115,7 +116,7 @@ describe("jpm init", function () {
       done();
     });
   });
-  
+
   it("does not copy in default test-index.js if it exists", function (done) {
     process.chdir(utils.tmpOutputDir);
     fs.mkdirpSync(path.join(utils.tmpOutputDir, "test"));
