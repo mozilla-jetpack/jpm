@@ -1,0 +1,15 @@
+{
+  "title": "Invalid",
+  "name": "invalid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "Firefox": ">=34.0"
+  }
+
+
+  helloooo
+}

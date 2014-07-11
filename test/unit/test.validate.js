@@ -43,4 +43,10 @@ describe("lib/validate", function () {
       expect(error).to.be.ok;
     }).then(done, done);
   });
+
+  it("Fails if package.json cannot be parsed", function (done) {
+    validate(join(__dirname, "..", "addons", "invalid-json")).then(utils.invalidResolve, function (error) {
+      expect(error).to.be.ok;
+    }).then(done, done);
+  });
 });
