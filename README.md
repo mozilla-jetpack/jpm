@@ -33,3 +33,21 @@ Tests the current addon.
 ### `jpm xpi`
 
 Zips up the current addon into a `.xpi` file.
+
+## Testing
+
+To run the jpm test suite
+
+```
+npm test
+```
+
+To run just a specific type of test (functional, unit), run the associated script:
+
+```
+npm run unit
+```
+
+## License
+
+MPL 2.0
