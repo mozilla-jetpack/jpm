@@ -64,7 +64,7 @@ program
 program.parse(process.argv);
 
 // If no command (run, xpi, init, etc.) specified, display basic help
-if (typeof program.command !== "string") {
+if (isEmptyCommand(program)) {
   program.help();
 }
 
@@ -84,4 +84,14 @@ function prepare (mode, actionCallback) {
 
     actionCallback.apply(null, args);
   }
+}
+
+function isEmptyCommand (program) {
+  if (!program.args.length) {
+    return true;
+  }
+  if (!program.args.filter(function (a) { return typeof a === "object" }).length) {
+    return true;
+  }
+  return false;
 }
