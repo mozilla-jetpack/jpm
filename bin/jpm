@@ -63,6 +63,11 @@ program
 
 program.parse(process.argv);
 
+// If no command (run, xpi, init, etc.) specified, display basic help
+if (typeof program.command !== "string") {
+  program.help();
+}
+
 function prepare (mode, actionCallback) {
   return function () {
     var args = Array.prototype.slice.call(arguments, 0);
@@ -80,4 +85,3 @@ function prepare (mode, actionCallback) {
     actionCallback.apply(null, args);
   }
 }
-
