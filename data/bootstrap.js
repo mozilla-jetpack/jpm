@@ -205,6 +205,7 @@ const setPrefs = (root, options) =>
 
 
 const startup = (addon, reasonCode) => {
+  const reason = REASON[reasonCode];
   const { id, version, resourceURI: { spec: rootURI } } = addon;
   const loadCommand = exists("CFX_COMMAND") ?
                         get("CFX_COMMAND") :
@@ -244,7 +245,7 @@ const startup = (addon, reasonCode) => {
         baseURI: baseURI,
         rootURI: rootURI,
         load: {
-          reason: reasonCode,
+          reason: reason,
           command: loadCommand
         },
         input: {
@@ -291,7 +292,7 @@ const startup = (addon, reasonCode) => {
       const require = loaderModule.Require(loader, module);
       const mainPath = (loadCommand == "test") ? "sdk/test/runner" : options.mainPath;
 
-      require("sdk/addon/runner").startup(reasonCode, {
+      require("sdk/addon/runner").startup(reason, {
         loader: loader,
         prefsURI: prefsURI,
         main: mainPath
