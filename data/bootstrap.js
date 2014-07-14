@@ -272,9 +272,7 @@ const startup = (addon, reasonCode) => {
       // Manually set the loader's module cache to include itself;
       // which otherwise fails due to lack of `Components`.
       modules[loaderID] = loaderModule;
-      modules["@test/options"] = Object.freeze({
-        allTestModules: options.allTestModules
-      });
+      modules["@test/options"] = Object.freeze({});
 
       loader = loaderModule.Loader({
         id: id,
