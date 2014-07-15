@@ -32,6 +32,7 @@ npm link
 * `-v, --verbose` Prints additional debugging information.
 * `--binary-args <CMDARGS>` Passes the additional arguments into Firefox. Multiple arguments must be enclosed in quotes.
 * `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or otherwise assumed to be a profile name.
+* `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
 
 ### Commands
 
@@ -52,6 +53,12 @@ Turn current addon into a `.xpi` file for deployment and installation
 
 ```
 jpm xpi
+```
+
+Use local checkout of SDK modules for working on the SDK itself.
+
+```
+jpm run -o /path/to/addon-sdk
 ```
 
 ## Transitioning From CFX

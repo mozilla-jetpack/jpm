@@ -9,6 +9,7 @@ var addonsPath = path.join(__dirname, "..", "addons");
 var simpleAddonPath = path.join(addonsPath, "simple-addon");
 var paramDumpPath = path.join(addonsPath, "param-dump");
 var loaderOptionsPath = path.join(addonsPath, "loader-options");
+var overloadablePath = path.join(addonsPath, "overloadable");
 var fakeBinary = path.join(__dirname, "..", "utils", "dummybinary" +
   (isWindows ? ".bat" : ".sh"));
 
@@ -17,6 +18,51 @@ var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
 describe("jpm run", function () {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
+
+  describe("-o/--overload", function () {
+    it("overloads the SDK if overload set and uses [path] if given", function (done) {
+      process.env.JETPACK_ROOT = "";
+      var sdkPath = path.join(__dirname, "../fixtures/mock-sdk");
+      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run -v -o " + sdkPath, options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("OVERLOADED STARTUP");
+        done();
+      });
+    });
+
+    it("overloads the SDK if overload set and JETPACK_ROOT set", function (done) {
+      process.env.JETPACK_ROOT = path.join(__dirname, "../fixtures/mock-sdk");
+      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run -o -v", options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("OVERLOADED STARTUP");
+        done();
+      });
+    });
+
+    it("overloads the SDK with [path] if set over JETPACK_ROOT", function (done) {
+      process.env.JETPACK_ROOT = "/an/invalid/path";
+      var sdkPath = path.join(__dirname, "../fixtures/mock-sdk");
+      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run -v -o " + sdkPath, options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("OVERLOADED STARTUP");
+        done();
+      });
+    });
+
+    it("does not overload if overload set and JETPACK_ROOT is not set", function (done) {
+      process.env.JETPACK_ROOT = "";
+      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run -o -v", options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.not.contain("OVERLOADED STARTUP");
+        expect(stdout).to.contain("overloadable addon running");
+        done();
+      });
+    });
+  });
 
   describe("-v/--verbose", function () {
     it("logs out only console messages from the addon without -v", function (done) {

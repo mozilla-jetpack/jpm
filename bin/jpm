@@ -10,14 +10,14 @@ var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var jetpackRoot = process.env["JETPACK_ROOT"];
 var manifest = utils.getManifest() || {};
-var DEBUG_VALUES = ["binary", "retro", "verbose", "binaryArgs"];
+var DEBUG_VALUES = ["binary", "verbose", "binaryArgs", "overload"];
 
 program
   .version(VERSION)
-  .option("--sdk-path <path>", "Path to the Addon-SDK to override SDK modules built into Firefox (JETPACK_PATH env variable can be used instead).")
   .option("-b, --binary <path>", "Path of Firefox binary to use.")
   .option("-p, --profile <path>", "Path or name of Firefox profile to use.")
   .option("-v, --verbose", "More verbose logging to stdout.")
+  .option("-o, --overload [path]", "Overloads the built-in Firefox SDK modules with a local copy located at environment variable `JETPACK_ROOT` or `path` if supplied. Used for development on the SDK itself.")
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--filter <pattern>", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
                       "optionally match TESTNAME, both regexps")
@@ -74,11 +74,15 @@ function prepare (mode, actionCallback) {
     Object.keys(program).filter(function (option) {
       return ~DEBUG_VALUES.indexOf(option);
     }).forEach(function (option) {
-      if (program.verbose && option !== "retro") {
+      if (program.verbose) {
         console.log(option, "set to", program[option]);
       }
-      if (option === "forceAOM")
+      if (option === "forceAOM") {
         console.warn("`forceAOM` flag set; this feature is experimental.");
+      }
+      if (program.overload && (!process.env["JETPACK_ROOT"] && typeof program.overload === "boolean")) {
+        console.warn("`overload` flag specified, but no `JETPACK_ROOT` environment variable set. Using built in Firefox SDK instead.");
+      }
     });
     console.log("Running " + mode + " on " + (manifest.title || manifest.name));
 

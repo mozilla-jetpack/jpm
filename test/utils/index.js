@@ -11,11 +11,13 @@ var async = require("async");
 var expect = chai.expect;
 var assert = chai.assert;
 var prevCwd;
+var prevJetpackRoot;
 
 var tmpOutputDir = exports.tmpOutputDir = path.join(__dirname, "../", "tmp");
 
-// Before each test, make the temp directory and save cwd
+// Before each test, make the temp directory and save cwd, and store JETPACK_ROOT env
 function setup (done) {
+  prevJetpackRoot = process.env.JETPACK_ROOT;
   prevCwd = process.cwd();
   fs.mkdirp(tmpOutputDir, done);
 }
@@ -25,6 +27,7 @@ exports.setup = setup;
 // and clear out any XPIs, bootstrap.js, or install.rdf in the
 // `./test/addons/` directory
 function tearDown (done) {
+  process.env.JETPACK_ROOT = prevJetpackRoot;
   process.chdir(prevCwd);
   rimraf(tmpOutputDir, function () {
     var paths = [
