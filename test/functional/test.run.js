@@ -14,6 +14,11 @@ var overloadablePath = path.join(addonsPath, "overloadable");
 var fakeBinary = path.join(__dirname, "..", "utils", "dummybinary" +
   (isWindows ? ".bat" : ".sh"));
 
+function escape(str) {
+  var wrapper = isWindows ? "\"" : "";
+  return wrapper + str + wrapper;
+}
+
 var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
 
 describe("jpm run", function () {
@@ -143,9 +148,10 @@ describe("jpm run", function () {
   describe("-p/--profile", function () {
     it("Passes in a relative profile path to Firefox with -profile", function (done) {
       process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary + " -p ./path/to/profile", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var profilePath = [".", "path", "to", "profile"].join(path.sep);
+      var proc = exec("run -v -b " + fakeBinary + " -p " + profilePath, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-profile ./path/to/profile");
+        expect(stdout).to.contain("-profile " + escape(profilePath));
         done();
       });
     });
@@ -154,7 +160,7 @@ describe("jpm run", function () {
       process.chdir(simpleAddonPath);
       var proc = exec("run -v -b " + fakeBinary + " -p /path/to/profile", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-profile /path/to/profile");
+        expect(stdout).to.contain("-profile " + escape("/path/to/profile"));
         done();
       });
     });
@@ -258,10 +264,10 @@ describe("jpm run", function () {
           return segments;
         });
 
-        expect(lines[0][0]).to.be.equal("title");
-        expect(lines[0][1]).to.be.equal("Loader Options");
-        expect(lines[1][0]).to.be.equal("name");
-        expect(lines[1][1]).to.be.equal("loader-options");
+        expect(lines[0][0].trim()).to.be.equal("title");
+        expect(lines[0][1].trim()).to.be.equal("Loader Options");
+        expect(lines[1][0].trim()).to.be.equal("name");
+        expect(lines[1][1].trim()).to.be.equal("loader-options");
 
         done();
       });
