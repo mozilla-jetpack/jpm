@@ -23,6 +23,8 @@ const prefService = Cc['@mozilla.org/preferences-service;1'].
                     QueryInterface(Ci.nsIPrefBranch);
 const appInfo = Cc["@mozilla.org/xre/app-info;1"].
                 getService(Ci.nsIXULAppInfo);
+const ss = Cc['@mozilla.org/browser/sessionstartup;1'].
+           getService(Ci.nsISessionStartup)
 const vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
            getService(Ci.nsIVersionComparator);
 const { get, exists } = Cc['@mozilla.org/process/environment;1'].
@@ -211,7 +213,7 @@ const startup = (addon, reasonCode) => {
                         get("CFX_COMMAND") :
                         getPref("extensions." + id + ".sdk.load.command", undefined);
 
-  spawn(function() {
+  ss.onceInitialized.then(_ => spawn(function() {
     try {
       const config = readConfig(rootURI);
       const { metadata, options, isNative } = (yield config);
@@ -300,7 +302,7 @@ const startup = (addon, reasonCode) => {
       console.error("Failed to bootstrap addon: ", id, error);
       throw error;
     }
-  });
+  }));
 };
 
 const loadSandbox = (uri) => {
