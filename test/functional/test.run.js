@@ -1,3 +1,4 @@
+var fs = require("fs-promise");
 var path = require("path");
 var utils = require("../utils");
 var chai = require("chai");
@@ -18,6 +19,27 @@ var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
 describe("jpm run", function () {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
+
+  it("should not overwrite or delete xpi in current xpi", function (done) {
+    var size = null;
+    process.chdir(paramDumpPath);
+    // Copy over a different xpi and rename it to the would-be generated xpi name
+    fs.copy(path.join(__dirname, "..", "xpis", "@aom-unsupported.xpi"), path.join(paramDumpPath, "@param-dump.xpi")).then(function () {
+      return fs.stat(path.join(paramDumpPath, "@param-dump.xpi"));
+    }).then(function (stat) {
+      size = stat.size;
+      expect(size).to.be.greaterThan(0);
+
+      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run", options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        fs.stat(path.join(paramDumpPath, "@param-dump.xpi")).then(function (stat) {
+          expect(stat.size).to.be.equal(size);
+          done();
+        });
+      });
+    }).then(null, done);
+  });
 
   describe("-o/--overload", function () {
     it("overloads the SDK if overload set and uses [path] if given", function (done) {
