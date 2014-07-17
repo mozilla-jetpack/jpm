@@ -1,4 +1,4 @@
-var main = require("./main");
+var main = require("../");
 
 exports["test main"] = function(assert) {
   assert.pass("Unit test running!");
@@ -11,7 +11,7 @@ exports["test main async"] = function(assert, done) {
 
 exports["test dummy"] = function(assert, done) {
   main.dummy("foo", function(text) {
-    asser.ok((text === "foo"), "Is the text actually 'foo'");
+    assert.ok((text === "foo"), "Is the text actually 'foo'");
     done();
   });
 }
