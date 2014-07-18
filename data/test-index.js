@@ -14,6 +14,6 @@ exports["test dummy"] = function(assert, done) {
     assert.ok((text === "foo"), "Is the text actually 'foo'");
     done();
   });
-}
+};
 
 require("sdk/test").run(exports);
