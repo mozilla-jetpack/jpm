@@ -97,7 +97,7 @@ describe("jpm run", function () {
       var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("\nconsole\.log: param-dump:")
+        expect(stdout).to.contain("console\.log: param-dump:")
         expect(stdout).to.contain("PARAMS DUMP START");
         done();
       });
