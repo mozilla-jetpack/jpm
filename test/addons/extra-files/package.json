@@ -1,0 +1,7 @@
+{
+  "title": "Extra Files",
+  "name": "extra-files",
+  "engines": {
+    "Firefox": ">=24"
+  }
+}
