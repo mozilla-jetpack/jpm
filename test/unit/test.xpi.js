@@ -1,3 +1,4 @@
+var when = require("when");
 var fs = require("fs-promise");
 var path = require("path");
 var utils = require("../utils");
@@ -7,6 +8,7 @@ var xpi = require("../../lib/xpi");
 
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var aomUnsupportedPath = path.join(__dirname, "..", "addons", "aom-unsupported");
+var extraFilesPath = path.join(__dirname, "..", "addons", "extra-files");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
 
 describe("lib/xpi", function () {
@@ -75,7 +77,26 @@ describe("lib/xpi", function () {
       });
     }).then(null, done);
   });
-
+  
+  it("Does not zip up hidden files or test directory", function (done) {
+    process.chdir(extraFilesPath);
+    var manifest = require(path.join(extraFilesPath, "package.json"));
+    var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
+    // Copy in a XPI since we remove it between tests for cleanup
+    xpi(manifest).then(function (xpiPath) {  
+      utils.unzipTo(xpiPath, tmpOutputDir, function () {
+        when.all([".hidden", ".hidden-dir", "test"]
+          .map(function (p) { return path.join(tmpOutputDir, p); })
+          .map(function (p) { return fs.exists(p); }))
+          .then(function (results) {
+            results.forEach(function (exists) {
+              expect(exists).to.be.equal(false);
+            });
+            done();
+          });
+      });
+    }).then(null, done);
+  });
 });
 
 function cleanXPI (done) {
