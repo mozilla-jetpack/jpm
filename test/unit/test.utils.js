@@ -44,7 +44,7 @@ describe("lib/utils", function () {
     var binary = sandbox.require("../../lib/utils", {
       requires: {"winreg": function(){
         this.get = function(_, fn){
-          fn(null, {value: "fake\\binary\\path"});
+          fn(null, {value: expected});
         };
       }}
     }).normalizeBinary;
@@ -78,8 +78,8 @@ describe("lib/utils", function () {
     }).normalizeBinary;
 
     var promises = [
-      [[null, "windows", "x86"], path.join(envPath32, "Mozilla Firefox\\firefox.exe")],
-      [[null, "windows", "x86_64"], path.join(envPath64, "Mozilla Firefox\\firefox.exe")]
+      [[null, "windows", "x86"], path.join(envPath32, "Mozilla Firefox", "firefox.exe")],
+      [[null, "windows", "x86_64"], path.join(envPath64, "Mozilla Firefox", "firefox.exe")]
     ].map(function(fixture){
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual){
