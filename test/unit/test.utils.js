@@ -37,13 +37,13 @@ describe("lib/utils", function () {
     done();
   });
 
-  it("normalizeBinary() finds binary by accessing the registry on Windows", function(done){
+  it("normalizeBinary() finds binary by accessing the registry on Windows", function(done) {
     // see ./mock-winreg.js
     var expected = "fake\\binary\\path";
 
     var binary = sandbox.require("../../lib/utils", {
-      requires: {"winreg": function(){
-        this.get = function(_, fn){
+      requires: {"winreg": function() {
+        this.get = function(_, fn) {
           fn(null, {value: expected});
         };
       }}
@@ -52,16 +52,16 @@ describe("lib/utils", function () {
     var promises = [
       [null, "windows", "x86"],
       [null, "windows", "x86_64"]
-    ].map(function(args){
+    ].map(function(args) {
       var promise = binary.apply(binary, args);
-      return promise.then(function(actual){
+      return promise.then(function(actual) {
         expect(actual).to.be.equal(expected);
       });
     });
-    all(promises).then(function(){done();}, done);
+    all(promises).then(done.bind(null, null), done);
   });
 
-  it("normalizeBinary() uses env var when registry access fails on Windows", function(done){
+  it("normalizeBinary() uses env var when registry access fails on Windows", function(done) {
     var args = 0;
     var expected = 1;
 
@@ -69,8 +69,8 @@ describe("lib/utils", function () {
     var envPath32 = "path\\from\\env\\var\\32";
 
     var binary = sandbox.require("../../lib/utils", {
-      requires: {"winreg": function(){
-        this.get = function(_, fn){
+      requires: {"winreg": function() {
+        this.get = function(_, fn) {
           fn("Failed", null);
         };
       }},
@@ -80,13 +80,13 @@ describe("lib/utils", function () {
     var promises = [
       [[null, "windows", "x86"], path.join(envPath32, "Mozilla Firefox", "firefox.exe")],
       [[null, "windows", "x86_64"], path.join(envPath64, "Mozilla Firefox", "firefox.exe")]
-    ].map(function(fixture){
+    ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
-      return promise.then(function(actual){
+      return promise.then(function(actual) {
         expect(actual).to.be.equal(fixture[expected]);
       });
     });
-    all(promises).then(function(){done();}, done);
+    all(promises).then(done.bind(null, null), done);
   });
 
   it("normalizeBinary() default sets (non-windows)", function (done) {
@@ -99,42 +99,42 @@ describe("lib/utils", function () {
       [[null, "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
       [[null, "linux", "x86"], "/usr/lib/firefox"],
       [[null, "linux", "x86_64"], "/usr/lib64/firefox"]
-    ].map(function(fixture){
+    ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
-      return promise.then(function(actual){
+      return promise.then(function(actual) {
         expect(actual).to.be.equal(fixture[expected]);
       });
     });
-    all(promises).then(function(){done();}, done);
+    all(promises).then(done.bind(null, null), done);
   });
 
   it("normalizeBinary() returns binary path if passed", function (done) {
     var bPath = "/path/to/binary";
-    binary(bPath).then(function(actual){
+    binary(bPath).then(function(actual) {
       expect(actual).to.be.equal(bPath);
-    }).then(function(){done();}, done);
+    }).then(done.bind(null, null), done);
   });
 
   it("normalizeBinary() finds OSX's full path when given .app", function (done) {
     process.env.JPM_FIREFOX_BINARY = undefined;
-    binary("/Application/FirefoxNightly.app", "darwin").then(function(actual){
+    binary("/Application/FirefoxNightly.app", "darwin").then(function(actual) {
       expect(actual).to.be.equal(
         path.join("/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin"));
-    }).then(function(){done();}, done);
+    }).then(done.bind(null, null), done);
   });
 
   it("normalizeBinary() uses JPM_FIREFOX_BINARY if no path specified", function (done) {
     process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
-    binary().then(function(actual){
+    binary().then(function(actual) {
       expect(actual).to.be.equal("/my/custom/path");
-    }).then(function(){done();}, done);
+    }).then(done.bind(null, null), done);
   });
 
   it("normalizeBinary() uses path over JPM_FIREFOX_BINARY if specified", function (done) {
     process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
-    binary("/specific/path").then(function(actual){
+    binary("/specific/path").then(function(actual) {
       expect(actual).to.be.equal("/specific/path");
-    }).then(function(){done();}, done);
+    }).then(done.bind(null, null), done);
   });
 
   it("normalizeBinary() normalizes special names like: nightly, beta, etc... on Windows", function(done) {
@@ -142,15 +142,15 @@ describe("lib/utils", function () {
     var expected = 1;
 
     var binary = sandbox.require("../../lib/utils", {
-      requires: {"winreg": function(options){
+      requires: {"winreg": function(options) {
         var value = "Normal or beta";
-        if (options.key.toLowerCase().indexOf("nightly") != -1){
+        if (options.key.toLowerCase().indexOf("nightly") != -1) {
           value = "nightly";
         }
-        if (options.key.toLowerCase().indexOf("aurora") != -1){
+        if (options.key.toLowerCase().indexOf("aurora") != -1) {
           value = "aurora";
         }
-        this.get = function(_, fn){
+        this.get = function(_, fn) {
           fn(null, {value: value});
         };
       }},
@@ -162,13 +162,13 @@ describe("lib/utils", function () {
       [["nightly", "windows", "x86_64"], "nightly"],
       [["aurora", "windows", "x86"], "aurora"],
       [["aurora", "windows", "x86_64"], "aurora"]
-    ].map(function(fixture){
+    ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
-      return promise.then(function(actual){
+      return promise.then(function(actual) {
         expect(actual).to.be.equal(fixture[expected]);
       });
     });
-    all(promises).then(function(){done();}, done);
+    all(promises).then(done.bind(null, null), done);
   });
 
   it("normalizeBinary() normalizes special names like: firefox, nightly, etc...(non-Windows)", function(done) {
@@ -197,11 +197,11 @@ describe("lib/utils", function () {
       [["nightly", "linux", "x86_64"], "/usr/lib64/firefox-nightly"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
-      return promise.then(function(actual){
+      return promise.then(function(actual) {
         expect(actual).to.be.equal(fixture[expected]);
       });
     });
-    all(promises).then(function(){done();}, done);
+    all(promises).then(done.bind(null, null), done);
   });
 
   describe("hasAOMSupport", function () {
