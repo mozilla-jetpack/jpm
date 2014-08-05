@@ -3,6 +3,8 @@ var path = require("path");
 var chai = require("chai");
 var expect = chai.expect;
 var utils = require("../../lib/utils");
+var all = require("when").all;
+var sandbox = require('sandboxed-module');
 var binary = utils.normalizeBinary;
 var hasAOMSupport = utils.hasAOMSupport;
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
@@ -35,79 +37,171 @@ describe("lib/utils", function () {
     done();
   });
 
-  it("normalizeBinary() default sets", function () {
-    delete process.env.JPM_FIREFOX_BINARY;
-    expect(binary(null, "darwin", "x86")).to.be.equal(
-      "/Applications/Firefox.app/Contents/MacOS/firefox-bin");
-    expect(binary(null, "darwin", "x86_64")).to.be.equal(
-      "/Applications/Firefox.app/Contents/MacOS/firefox-bin");
-    expect(binary(null, "windows", "x86")).to.be.equal(
-      "C:\\Program Files\\Mozilla Firefox\\firefox.exe");
-    expect(binary(null, "windows", "x86_64")).to.be.equal(
-      "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe");
-    expect(binary(null, "linux", "x86")).to.be.equal(
-      "/usr/lib/firefox");
-    expect(binary(null, "linux", "x86_64")).to.be.equal(
-      "/usr/lib64/firefox");
+  it("normalizeBinary() finds binary by accessing the registry on Windows", function(done) {
+    // see ./mock-winreg.js
+    var expected = "fake\\binary\\path";
+
+    var binary = sandbox.require("../../lib/utils", {
+      requires: {"winreg": function() {
+        this.get = function(_, fn) {
+          fn(null, {value: expected});
+        };
+      }}
+    }).normalizeBinary;
+
+    var promises = [
+      [null, "windows", "x86"],
+      [null, "windows", "x86_64"]
+    ].map(function(args) {
+      var promise = binary.apply(binary, args);
+      return promise.then(function(actual) {
+        expect(actual).to.be.equal(expected);
+      });
+    });
+    all(promises).then(done.bind(null, null), done);
   });
 
-  it("normalizeBinary() returns binary path if passed", function () {
-    var bPath = "/path/to/binary";
-    expect(binary(bPath)).to.be.equal(bPath);
-  });
-
-  it("normalizeBinary() finds OSX's full path when given .app", function () {
-    process.env.JPM_FIREFOX_BINARY = undefined;
-    expect(binary("/Application/FirefoxNightly.app", "darwin")).to.be.equal(
-      path.join("/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin"));
-  });
-
-  it("normalizeBinary() uses JPM_FIREFOX_BINARY if no path specified", function () {
-    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
-    expect(binary()).to.be.equal("/my/custom/path");
-  });
-
-  it("normalizeBinary() uses path over JPM_FIREFOX_BINARY if specified", function () {
-    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
-    expect(binary("/specific/path")).to.be.equal("/specific/path");
-  });
-
-  it("normalizeBinary() normalizes special names like: firefox, nightly, etc...", function() {
+  it("normalizeBinary() uses env var when registry access fails on Windows", function(done) {
     var args = 0;
     var expected = 1;
 
-    [
+    var envPath64 = "path\\from\\env\\var\\64";
+    var envPath32 = "path\\from\\env\\var\\32";
+
+    var binary = sandbox.require("../../lib/utils", {
+      requires: {"winreg": function() {
+        this.get = function(_, fn) {
+          fn("Failed", null);
+        };
+      }},
+      locals: {process: {env: {"ProgramFiles": envPath32, "ProgramFiles(x86)": envPath64}}}
+    }).normalizeBinary;
+
+    var promises = [
+      [[null, "windows", "x86"], path.join(envPath32, "Mozilla Firefox", "firefox.exe")],
+      [[null, "windows", "x86_64"], path.join(envPath64, "Mozilla Firefox", "firefox.exe")]
+    ].map(function(fixture) {
+      var promise = binary.apply(binary, fixture[args]);
+      return promise.then(function(actual) {
+        expect(actual).to.be.equal(fixture[expected]);
+      });
+    });
+    all(promises).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() default sets (non-windows)", function (done) {
+    delete process.env.JPM_FIREFOX_BINARY;
+    var args = 0;
+    var expected = 1;
+
+    var promises = [
+      [[null, "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
+      [[null, "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
+      [[null, "linux", "x86"], "/usr/lib/firefox"],
+      [[null, "linux", "x86_64"], "/usr/lib64/firefox"]
+    ].map(function(fixture) {
+      var promise = binary.apply(binary, fixture[args]);
+      return promise.then(function(actual) {
+        expect(actual).to.be.equal(fixture[expected]);
+      });
+    });
+    all(promises).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() returns binary path if passed", function (done) {
+    var bPath = "/path/to/binary";
+    binary(bPath).then(function(actual) {
+      expect(actual).to.be.equal(bPath);
+    }).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() finds OSX's full path when given .app", function (done) {
+    process.env.JPM_FIREFOX_BINARY = undefined;
+    binary("/Application/FirefoxNightly.app", "darwin").then(function(actual) {
+      expect(actual).to.be.equal(
+        path.join("/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin"));
+    }).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() uses JPM_FIREFOX_BINARY if no path specified", function (done) {
+    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
+    binary().then(function(actual) {
+      expect(actual).to.be.equal("/my/custom/path");
+    }).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() uses path over JPM_FIREFOX_BINARY if specified", function (done) {
+    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
+    binary("/specific/path").then(function(actual) {
+      expect(actual).to.be.equal("/specific/path");
+    }).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() normalizes special names like: nightly, beta, etc... on Windows", function(done) {
+    var args = 0;
+    var expected = 1;
+
+    var binary = sandbox.require("../../lib/utils", {
+      requires: {"winreg": function(options) {
+        var value = "Normal or beta";
+        if (options.key.toLowerCase().indexOf("nightly") != -1) {
+          value = "nightly";
+        }
+        if (options.key.toLowerCase().indexOf("aurora") != -1) {
+          value = "aurora";
+        }
+        this.get = function(_, fn) {
+          fn(null, {value: value});
+        };
+      }},
+      locals: {process: {env: {"ProgramFiles": "envPath32", "ProgramFiles(x86)": "envPath64"}}}
+    }).normalizeBinary;
+
+    var promises = [
+      [["nightly", "windows", "x86"], "nightly"],
+      [["nightly", "windows", "x86_64"], "nightly"],
+      [["aurora", "windows", "x86"], "aurora"],
+      [["aurora", "windows", "x86_64"], "aurora"]
+    ].map(function(fixture) {
+      var promise = binary.apply(binary, fixture[args]);
+      return promise.then(function(actual) {
+        expect(actual).to.be.equal(fixture[expected]);
+      });
+    });
+    all(promises).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() normalizes special names like: firefox, nightly, etc...(non-Windows)", function(done) {
+    var args = 0;
+    var expected = 1;
+
+    var promises = [
       [["firefox", "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
       [["firefox", "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [["firefox", "windows", "x86"], "C:\\Program Files\\Mozilla Firefox\\firefox.exe"],
-      [["firefox", "windows", "x86_64"], "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"],
       [["firefox", "linux", "x86"], "/usr/lib/firefox"],
       [["firefox", "linux", "x86_64"], "/usr/lib64/firefox"],
 
       [["beta", "darwin", "x86"], "/Applications/FirefoxBeta.app/Contents/MacOS/firefox-bin"],
       [["beta", "darwin", "x86_64"], "/Applications/FirefoxBeta.app/Contents/MacOS/firefox-bin"],
-      [["beta", "windows", "x86"], "C:\\Program Files\\Firefox Beta\\firefox.exe"],
-      [["beta", "windows", "x86_64"], "C:\\Program Files (x86)\\Firefox Beta\\firefox.exe"],
       [["beta", "linux", "x86"], "/usr/lib/firefox-beta"],
       [["beta", "linux", "x86_64"], "/usr/lib64/firefox-beta"],
 
       [["aurora", "darwin", "x86"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
       [["aurora", "darwin", "x86_64"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
-      [["aurora", "windows", "x86"], "C:\\Program Files\\Aurora\\firefox.exe"],
-      [["aurora", "windows", "x86_64"], "C:\\Program Files (x86)\\Aurora\\firefox.exe"],
       [["aurora", "linux", "x86"], "/usr/lib/firefox-aurora"],
       [["aurora", "linux", "x86_64"], "/usr/lib64/firefox-aurora"],
 
       [["nightly", "darwin", "x86"], "/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin"],
       [["nightly", "darwin", "x86_64"], "/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin"],
-      [["nightly", "windows", "x86"], "C:\\Program Files\\Nightly\\firefox.exe"],
-      [["nightly", "windows", "x86_64"], "C:\\Program Files (x86)\\Nightly\\firefox.exe"],
       [["nightly", "linux", "x86"], "/usr/lib/firefox-nightly"],
       [["nightly", "linux", "x86_64"], "/usr/lib64/firefox-nightly"]
-    ].forEach(function(fixture) {
-      var actual = binary.apply(binary, fixture[args]);
-      expect(actual).to.be.equal(fixture[expected]);
+    ].map(function(fixture) {
+      var promise = binary.apply(binary, fixture[args]);
+      return promise.then(function(actual) {
+        expect(actual).to.be.equal(fixture[expected]);
+      });
     });
+    all(promises).then(done.bind(null, null), done);
   });
 
   describe("hasAOMSupport", function () {
