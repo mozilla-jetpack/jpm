@@ -8,6 +8,7 @@ var isWindows = /^win/.test(process.platform);
 
 var addonsPath = path.join(__dirname, "..", "addons");
 var simpleAddonPath = path.join(addonsPath, "simple-addon");
+var errorAddonPath = path.join(addonsPath, "error-addon");
 var paramDumpPath = path.join(addonsPath, "param-dump");
 var loaderOptionsPath = path.join(addonsPath, "loader-options");
 var overloadablePath = path.join(addonsPath, "overloadable");
@@ -109,6 +110,16 @@ describe("jpm run", function () {
       var proc = exec("run -v", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout.split("\n").length).to.be.gt(20);
+        done();
+      });
+    });
+  
+    it("logs errors without `verbose`", function (done) {
+      process.chdir(errorAddonPath);
+      var options = { cwd: errorAddonPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var proc = exec("run", options, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stderr).to.contain("ReferenceError");
         done();
       });
     });
