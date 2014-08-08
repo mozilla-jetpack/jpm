@@ -1,0 +1,7 @@
+{
+  "title": "Error Addon",
+  "name": "error-addon",
+  "engines": {
+    "Firefox": ">=24"
+  }
+}
