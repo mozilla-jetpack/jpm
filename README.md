@@ -46,7 +46,7 @@ npm link
 Run current addon with Firefox Nightly on OSX:
 
 ```
-jpm run -b /Applications/FirefixNightly.app
+jpm run -b /Applications/FirefoxNightly.app
 ```
 
 Turn current addon into a `.xpi` file for deployment and installation
