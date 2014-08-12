@@ -1,3 +1,4 @@
+var BLACKLIST = ["test.test.js"];
 var path = require("path");
 var dive = require("dive");
 var Mocha = require("mocha");
@@ -8,7 +9,6 @@ var mocha = new Mocha({
 });
 var type = process.argv[2];
 var directory = type ? path.join(__dirname, type) : __dirname;
-
 process.env.NODE_ENV = "test";
 
 dive(directory, function (err, filepath) {
@@ -19,7 +19,8 @@ dive(directory, function (err, filepath) {
 }, done);
 
 function testFilter (filepath) {
-  return /^test\..*\.js$/.test(path.basename(filepath));
+  return /^test\..*\.js$/.test(path.basename(filepath)) &&
+         !~BLACKLIST.indexOf(path.basename(filepath));
 }
 
 function done () {
