@@ -129,6 +129,52 @@ describe("lib/xpi", function () {
       });
     }).then(null, done);
   });
+
+  it("Only uses existing install.rdf", function (done) {
+    process.chdir(aomUnsupportedPath);
+    var manifest = require(path.join(aomUnsupportedPath, "package.json"));
+    var filePath = path.join(aomUnsupportedPath, "install.rdf");
+    fs.writeFile(filePath, "TEST").then(function () {
+      return xpi(manifest);
+    }).then(function (xpiPath) {
+      utils.unzipTo(xpiPath, tmpOutputDir, function () {
+        expect(utils.isFile(path.join(tmpOutputDir, "bootstrap.js"))).to.be.equal(true);
+        expect(utils.isFile(path.join(aomUnsupportedPath, "bootstrap.js"))).to.be.equal(false);
+        when.all([ aomUnsupportedPath, tmpOutputDir ]
+          .map(function (p) { return path.join(p, "install.rdf"); })
+          .map(function (p) { return fs.readFile(p, "utf-8"); }))
+          .then(function(results) {
+            results.forEach(function(content) {
+              expect(content).to.be.equal("TEST");
+            });
+            done();
+          });
+      });
+    }).then(null, done);
+  });
+
+  it("Only uses existing bootstrap.js", function (done) {
+    process.chdir(aomUnsupportedPath);
+    var manifest = require(path.join(aomUnsupportedPath, "package.json"));
+    var filePath = path.join(aomUnsupportedPath, "bootstrap.js");
+    fs.writeFile(filePath, "TEST").then(function () {
+      return xpi(manifest);
+    }).then(function (xpiPath) {
+      utils.unzipTo(xpiPath, tmpOutputDir, function () {
+        expect(utils.isFile(path.join(tmpOutputDir, "install.rdf"))).to.be.equal(true);
+        expect(utils.isFile(path.join(aomUnsupportedPath, "install.rdf"))).to.be.equal(false);
+        when.all([ aomUnsupportedPath, tmpOutputDir ]
+          .map(function (p) { return path.join(p, "bootstrap.js"); })
+          .map(function (p) { return fs.readFile(p, "utf-8"); }))
+          .then(function(results) {
+            results.forEach(function(content) {
+              expect(content).to.be.equal("TEST");
+            });
+            done();
+          });
+      });
+    }).then(null, done);
+  });
 });
 
 function cleanXPI (done) {
