@@ -61,7 +61,7 @@ describe("lib/xpi", function () {
       expect(error).to.be.ok;
     }).then(done, done);
   });
-  
+
   it("Does not zip up xpi files", function (done) {
     process.chdir(simpleAddonPath);
     var manifest = require(path.join(simpleAddonPath, "package.json"));
@@ -77,13 +77,13 @@ describe("lib/xpi", function () {
       });
     }).then(null, done);
   });
-  
+
   it("Does not zip up hidden files or test directory", function (done) {
     process.chdir(extraFilesPath);
     var manifest = require(path.join(extraFilesPath, "package.json"));
     var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
     // Copy in a XPI since we remove it between tests for cleanup
-    xpi(manifest).then(function (xpiPath) {  
+    xpi(manifest).then(function (xpiPath) {
       utils.unzipTo(xpiPath, tmpOutputDir, function () {
         when.all([".hidden", ".hidden-dir", "test"]
           .map(function (p) { return path.join(tmpOutputDir, p); })
@@ -94,6 +94,38 @@ describe("lib/xpi", function () {
             });
             done();
           });
+      });
+    }).then(null, done);
+  });
+
+  it("Does zip test directory for jpm test", function (done) {
+    process.chdir(extraFilesPath);
+    var manifest = require(path.join(extraFilesPath, "package.json"));
+    var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
+    // Copy in a XPI since we remove it between tests for cleanup
+    xpi(manifest, { command: "test" }).then(function (xpiPath) {
+      utils.unzipTo(xpiPath, tmpOutputDir, function () {
+        var testExists = when.all([ ".hidden", ".hidden-dir" ]
+          .map(function (p) { return path.join(tmpOutputDir, p); })
+          .map(function (p) { return fs.exists(p); }))
+          .then(function (results) {
+            results.forEach(function (exists) {
+              expect(exists).to.be.equal(false);
+            });
+          });
+
+        var testDoesNotExist = when.all([ "test" ]
+          .map(function (p) { return path.join(tmpOutputDir, p); })
+          .map(function (p) { return fs.exists(p); }))
+          .then(function (results) {
+            results.forEach(function (exists) {
+              expect(exists).to.be.equal(true);
+            });
+          });
+
+        when.all([ testExists, testDoesNotExist ]).then(function() {
+          done()
+        }, done);
       });
     }).then(null, done);
   });
