@@ -130,6 +130,18 @@ describe("jpm init", function () {
     });
   });
 
+  it("allows non-numeric version strings", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    var responses = ["", "", "v0.4.0-rc4", "", "", "", "", "", "yes"];
+
+    var proc = respond(exec("init"), responses.map(function (val) {
+      return val + '\n';
+    }));
+    proc.on("close", function () {
+      var manifest = JSON.parse(fs.readFileSync(path.join(utils.tmpOutputDir, "package.json"), "utf-8"));
+      expect(manifest.version).to.be.equal("0.4.0-rc4")
+    });
+  });
 });
 
 /**
