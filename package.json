@@ -33,7 +33,8 @@
     "mozilla-version-comparator": "1.0.2",
     "mozilla-toolkit-versioning": "0.0.1",
     "jetpack-validation": "0.0.3",
-    "winreg": "0.0.12"
+    "winreg": "0.0.12",
+    "xml-escape": "1.0.0"
   },
   "devDependencies": {
     "dive": "0.3.0",

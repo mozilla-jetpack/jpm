@@ -91,6 +91,23 @@ describe("lib/rdf", function () {
     });
   });
 
+  describe("author", function () {
+    it("handles `author` fields with 'name <email@address.com>'", function () {
+      var xml = setupRDF({ author: "Marie Curie <mc@espci.fr>" });
+      expect(getData(xml, "em:creator")).to.be.equal("Marie Curie <mc@espci.fr>");
+    });
+
+    it("handles `author` fields with only an email address", function () {
+      var xml = setupRDF({ author: "mc@espci.fr" });
+      expect(getData(xml, "em:creator")).to.be.equal("mc@espci.fr");
+    });
+
+    it("handles `author` field as an object with `name` field", function () {
+      var xml = setupRDF({ author: { name: "Marie Curie", email: "mc@espci.fr"} });
+      expect(getData(xml, "em:creator")).to.be.equal("Marie Curie");
+    });
+  });
+
   describe("engines", function () {
     it("adds engine min/max from engine string for firefox", function () {
       var xml = setupRDF({ engines: { firefox: ">=21.0a <32.0" }});
@@ -156,7 +173,7 @@ describe("lib/rdf", function () {
       expect(fennec.childNodes[5].tagName).to.be.equal("em:maxVersion");
       expect(fennec.childNodes[5].childNodes[0].data).to.be.equal("*");
     });
-    
+
     it("replaces undefined min versions with asterisks", function () {
       var xml = setupRDF({ engines: {
         fennec: "<30.0"
