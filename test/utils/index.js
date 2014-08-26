@@ -69,14 +69,14 @@ exports.unzipTo = unzipTo;
 
 
 function filterXPI (filename) {
-  return !/\.xpi$/.test(filename);
+  return !/^(?:[^\.]*\.xpi|install.rdf|bootstrap.js)$/.test(filename);
 }
 
 function compareDirs (dir1, dir2, done) {
   var files1 = fs.readdirSync(dir1).filter(filterXPI);
   var files2 = fs.readdirSync(dir2).filter(filterXPI);
 
-  expect(files1.length).to.be.equal(files2.length);
+  expect(files1.join(",")).to.be.equal(files2.join(","));
 
   files1.forEach(function (file) {
     var s1 = fs.readFileSync(path.join(dir1, file), "utf-8");

@@ -5,8 +5,5 @@
   "description": "",
   "main": "index.js",
   "author": "",
-  "license": "MIT",
-  "engines": {
-    "Firefox": ">=41.0"
-  }
+  "license": "MIT"
 }
