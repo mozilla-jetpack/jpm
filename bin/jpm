@@ -86,7 +86,8 @@ function prepare (mode, actionCallback) {
         console.warn("`overload` flag specified, but no `JETPACK_ROOT` environment variable set. Using built in Firefox SDK instead.");
       }
     });
-    console.log("Running " + mode + " on " + (manifest.title || manifest.name));
+
+    console.log("Starting jpm " + mode + " on " + (manifest.title || manifest.name));
 
     actionCallback.apply(null, args);
   }
