@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "jetpack-id": "0.0.4",
-    "firefox-profile": "0.2.9",
+    "firefox-profile": "0.3.4",
     "commander": "2.1.0",
     "jsontoxml": "0.0.11",
     "fs-promise": "0.0.2",
