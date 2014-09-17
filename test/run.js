@@ -1,4 +1,4 @@
-var BLACKLIST = ["test.test.js"];
+var BLACKLIST = [];
 var path = require("path");
 var dive = require("dive");
 var Mocha = require("mocha");
