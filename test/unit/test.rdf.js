@@ -174,7 +174,19 @@ describe("lib/rdf", function () {
       expect(fennec.childNodes[5].childNodes[0].data).to.be.equal("*");
     });
 
-    it("replaces undefined min versions with asterisks", function () {
+    it("handles wildcard versions with MIN_VERSION - *", function () {
+      var xml = setupRDF({ engines: {
+        firefox: "*"
+      }});
+      var apps = xml.getElementsByTagName("em:targetApplication");
+      var fennec = apps[0].childNodes[1]; // Description
+      expect(fennec.childNodes[3].tagName).to.be.equal("em:minVersion");
+      expect(fennec.childNodes[3].childNodes[0].data).to.be.equal(MIN_VERSION);
+      expect(fennec.childNodes[5].tagName).to.be.equal("em:maxVersion");
+      expect(fennec.childNodes[5].childNodes[0].data).to.be.equal("*");
+    });
+
+    it("replaces undefined min versions with MIN_VERSION", function () {
       var xml = setupRDF({ engines: {
         fennec: "<30.0"
       }});

@@ -31,7 +31,7 @@
     "read": "1.0.5",
     "semver": "2.2.1",
     "mozilla-version-comparator": "1.0.2",
-    "mozilla-toolkit-versioning": "0.0.1",
+    "mozilla-toolkit-versioning": "0.0.2",
     "jetpack-validation": "0.0.4",
     "winreg": "0.0.12",
     "xml-escape": "1.0.0"
