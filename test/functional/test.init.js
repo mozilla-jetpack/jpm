@@ -20,7 +20,7 @@ describe("jpm init", function () {
       var manifest = JSON.parse(fs.readFileSync(path.join(utils.tmpOutputDir, "package.json"), "utf-8"));
       expect(manifest.title).to.be.equal("My Jetpack Addon");
       expect(manifest.name).to.be.equal("tmp");
-      expect(manifest.version).to.be.equal("0.0.0");
+      expect(manifest.version).to.be.equal("0.0.1");
       expect(manifest.description).to.be.equal("");
       expect(manifest.main).to.be.equal("index.js");
       expect(manifest.author).to.be.equal("");
@@ -139,7 +139,8 @@ describe("jpm init", function () {
     }));
     proc.on("close", function () {
       var manifest = JSON.parse(fs.readFileSync(path.join(utils.tmpOutputDir, "package.json"), "utf-8"));
-      expect(manifest.version).to.be.equal("0.4.0-rc4")
+      expect(manifest.version).to.be.equal("0.4.0-rc4");
+      done();
     });
   });
 });
