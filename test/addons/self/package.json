@@ -1,0 +1,6 @@
+{
+  "id": "test-self@jetpack",
+  "title": "Test Self",
+  "version": "0.0.1",
+  "main": "./main.js"
+}
