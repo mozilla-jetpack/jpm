@@ -23,6 +23,7 @@
     "fs-promise": "0.0.2",
     "fs-extra": "0.8.1",
     "colors": "0.6.2",
+    "lodash": "2.4.1",
     "when": "2.8.0",
     "underscore": "1.6.0",
     "zip-dir": "0.2.1",
