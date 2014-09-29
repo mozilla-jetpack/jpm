@@ -21,6 +21,7 @@ program
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--filter <pattern>", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
                       "optionally match TESTNAME, both regexps")
+  .option("--prefs <path>", "Custom set user preferences (path to a json file)")
   .option("--stop-on-error", "Stop running tests after the first failure")
   .option("--tbpl", "Print test output in TBPL format")
   .option("--times <n>", "Number of times to run tests")
