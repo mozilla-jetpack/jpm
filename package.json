@@ -16,6 +16,7 @@
     "url": "http://github.com/mozilla/jpm"
   },
   "dependencies": {
+    "jpm-core": "0.0.2",
     "jetpack-id": "0.0.4",
     "firefox-profile": "0.2.9",
     "commander": "2.1.0",
