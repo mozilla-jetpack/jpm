@@ -5,6 +5,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var GUIDS = require("../../lib/settings").ids;
 var MIN_VERSION = require("../../lib/settings").MIN_VERSION;
+var getData = require("../../lib/xpi/utils").getData;
 
 describe("lib/rdf", function () {
   describe("defaults", function () {
@@ -219,11 +220,7 @@ describe("lib/rdf", function () {
 });
 
 function setupRDF (manifest) {
-  return new DOMParser().parseFromString(createRDF(manifest));
-}
-
-function getData (xml, tag) {
-  return xml.getElementsByTagName(tag)[0].childNodes[0].data;
+  return new DOMParser().parseFromString(createRDF(manifest), "application/rdf+xml");
 }
 
 function nodeExists (xml, tag) {

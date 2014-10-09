@@ -36,7 +36,8 @@
     "mozilla-toolkit-versioning": "0.0.2",
     "jetpack-validation": "0.0.4",
     "winreg": "0.0.12",
-    "xml-escape": "1.0.0"
+    "xml-escape": "1.0.0",
+    "xmldom": "0.1.19"
   },
   "devDependencies": {
     "dive": "0.3.0",
@@ -46,7 +47,6 @@
     "rimraf": "2.2.6",
     "glob": "3.2.8",
     "async": "0.2.10",
-    "xmldom": "0.1.19",
     "sandboxed-module": "1.0.1"
   },
   "author": "Jordan Santell",
