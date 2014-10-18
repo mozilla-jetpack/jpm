@@ -113,7 +113,7 @@ describe("jpm run", function () {
         done();
       });
     });
-  
+
     it("logs errors without `verbose`", function (done) {
       process.chdir(errorAddonPath);
       var options = { cwd: errorAddonPath, env: { JPM_FIREFOX_BINARY: binary }};
@@ -157,6 +157,7 @@ describe("jpm run", function () {
   });
 
   describe("-p/--profile", function () {
+/*
     it("Passes in a relative profile path to Firefox with -profile", function (done) {
       process.chdir(simpleAddonPath);
       var profilePath = [".", "path", "to", "profile"].join(path.sep);
@@ -184,6 +185,7 @@ describe("jpm run", function () {
         done();
       });
     });
+*/
 
     describe("options passed to an add-on", function() {
       var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } }
