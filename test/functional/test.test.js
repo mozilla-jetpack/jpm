@@ -3,6 +3,7 @@ var path = require("path");
 var exec = utils.exec;
 var chai = require("chai");
 var expect = chai.expect;
+var when = require("when");
 
 var addonsPath = path.join(__dirname, "..", "fixtures");
 
@@ -18,10 +19,12 @@ describe("jpm test", function () {
 
     var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
     var proc = exec("test", options, function (err, stdout, stderr) {
-      expect(err).to.not.be.ok;
       expect(stdout).to.contain("2 of 2 tests passed.");
       expect(stdout).to.contain("All tests passed!");
       done();
+    });
+    proc.once("exit", function(code) {
+      expect(code).to.equal(0);
     });
   });
 
@@ -31,10 +34,12 @@ describe("jpm test", function () {
 
     var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
     var proc = exec("test", options, function (err, stdout, stderr) {
-      expect(err).to.not.be.ok;
       expect(stdout).to.contain("1 of 2 tests passed.");
       expect(stdout).to.not.contain("All tests passed!");
       done();
+    });
+    proc.once("exit", function(code) {
+      expect(code).to.equal(1);
     });
   });
 });

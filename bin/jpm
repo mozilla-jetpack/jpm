@@ -46,7 +46,9 @@ program
   .command("test")
   .description("Run tests for current addon")
   .action(prepare("test", function () {
-    test(manifest, program).then(null, console.error);
+    test(manifest, program).then(function(results) {
+      process.exit(results.code);
+    }, console.error);
   }));
 
 program
