@@ -3,6 +3,9 @@ jpm
 
 [![Build Status](https://travis-ci.org/mozilla/jpm.png)](https://travis-ci.org/mozilla/jpm)
 
+[![NPM](https://nodei.co/npm/jpm.png?stars&downloads)](https://nodei.co/npm/jpm/)
+[![NPM](https://nodei.co/npm-dl/jpm.png)](https://nodei.co/npm/jpm)
+
 [Jetpack](https://wiki.mozilla.org/Jetpack) Manager for Node.js
 
 Replacing the previous python tool for developing Firefox Add-ons, [cfx](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx), jpm is a utility for developing, testing, and packaging add-ons.
