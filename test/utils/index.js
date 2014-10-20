@@ -1,4 +1,4 @@
-var _ = require("underscore");
+var _ = require("lodash");
 var path = require("path");
 var child_process = require("child_process");
 var execFile = child_process.execFile;
