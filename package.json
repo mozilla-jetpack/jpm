@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/mozilla/jpm"
+    "url": "http://github.com/mozilla/jpm.git"
   },
   "dependencies": {
     "colors": "1.0.3",
