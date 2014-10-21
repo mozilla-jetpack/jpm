@@ -3,10 +3,8 @@
   "name": "unpacked-addon",
   "unpack": true,
   "version": "1.0.2",
-  "description": "",
-  "main": "index.js",
-  "author": "",
-  "license": "MIT",
+  "main": "./main.js",
+  "license": "MPL 2.0",
   "engines": {
     "Firefox": ">=36.0"
   }
