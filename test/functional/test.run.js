@@ -2,6 +2,7 @@ var fs = require("fs-promise");
 var path = require("path");
 var utils = require("../utils");
 var chai = require("chai");
+var FirefoxProfile = require("firefox-profile");
 var expect = chai.expect;
 var exec = utils.exec;
 var isWindows = /^win/.test(process.platform);
@@ -113,7 +114,7 @@ describe("jpm run", function () {
         done();
       });
     });
-  
+
     it("logs errors without `verbose`", function (done) {
       process.chdir(errorAddonPath);
       var options = { cwd: errorAddonPath, env: { JPM_FIREFOX_BINARY: binary }};
@@ -157,21 +158,22 @@ describe("jpm run", function () {
   });
 
   describe("-p/--profile", function () {
-    it("Passes in a relative profile path to Firefox with -profile", function (done) {
+    it("Passes in a new temporary profile path to Firefox when -profile is not set", function (done) {
       process.chdir(simpleAddonPath);
-      var profilePath = [".", "path", "to", "profile"].join(path.sep);
-      var proc = exec("run -v -b " + fakeBinary + " -p " + profilePath, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -v -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-profile " + escape(profilePath));
+        expect(stdout).to.contain("-profile ");
         done();
       });
     });
 
-    it("Passes in a absolute profile path to Firefox with -profile", function (done) {
+    it("Passes in a temporary profile path instead of the original", function (done) {
       process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary + " -p /path/to/profile", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var tempProfile = new FirefoxProfile();
+      var proc = exec("run -v -b " + fakeBinary + " -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-profile " + escape("/path/to/profile"));
+        expect(stdout).to.contain("-profile ");
+        expect(stdout).to.not.contain("-profile " + tempProfile.profileDir);
         done();
       });
     });

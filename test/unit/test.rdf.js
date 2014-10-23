@@ -46,9 +46,17 @@ describe("lib/rdf", function () {
       var xml = setupRDF({ name: "my-name" });
       expect(getData(xml, "em:name")).to.be.equal("my-name");
     });
+    it("name is xml-escaped", function () {
+      var xml = createRDF({ name: "my-nam>e" });
+      expect(xml.indexOf("my-nam&gt;e")).to.be.not.equal(-1);
+    });
     it("homepageURL uses `homepage`", function () {
       var xml = setupRDF({ homepage: "http://mozilla.com" });
       expect(getData(xml, "em:homepageURL")).to.be.equal("http://mozilla.com");
+    });
+    it("homepageURL is xml-escaped", function () {
+      var xml = createRDF({ name: "<http://mozilla.com>" });
+      expect(xml.indexOf("&lt;http://mozilla.com&gt;")).to.be.not.equal(-1);
     });
     it("unpack uses `unpack`", function () {
       var xml = setupRDF({ unpack: true });
@@ -58,9 +66,17 @@ describe("lib/rdf", function () {
       var xml = setupRDF({ description: "my-desc" });
       expect(getData(xml, "em:description")).to.be.equal("my-desc");
     });
+    it("description is xml-escaped", function () {
+      var xml = createRDF({ name: "my-des>c" });
+      expect(xml.indexOf("my-des&gt;c")).to.be.not.equal(-1);
+    });
     it("creator uses `author`", function () {
       var xml = setupRDF({ author: "Marie Curie" });
       expect(getData(xml, "em:creator")).to.be.equal("Marie Curie");
+    });
+    it("author is xml-escaped", function () {
+      var xml = createRDF({ name: "Marie Curie <mc@espci.fr>" });
+      expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
     });
     it("iconURL uses `icon`", function () {
       var xml = setupRDF({ icon: "megaman.png" });

@@ -1,11 +1,14 @@
-jpm
+JPM [![Dependency Status](https://david-dm.org/mozilla/jpm.png)](https://david-dm.org/mozilla/jpm) [![Build Status](https://travis-ci.org/mozilla/jpm.png)](https://travis-ci.org/mozilla/jpm)
 ===
+
+[![NPM](https://nodei.co/npm/jpm.png?stars&downloads)](https://nodei.co/npm/jpm/)
+[![NPM](https://nodei.co/npm-dl/jpm.png)](https://nodei.co/npm/jpm)
 
 [Jetpack](https://wiki.mozilla.org/Jetpack) Manager for Node.js
 
 Replacing the previous python tool for developing Firefox Add-ons, [cfx](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx), jpm is a utility for developing, testing, and packaging add-ons.
 
-**Currently only works with Firefox 34 (requires build from August 10th or later)**. Check out the `--binary` flag for ensuring that you're using the correct release of Firefox with jpm.
+**Currently only works with Firefox Nightly**. Check out the `--binary` flag for ensuring that you're using the correct release of Firefox with jpm.
 
 ## Install
 

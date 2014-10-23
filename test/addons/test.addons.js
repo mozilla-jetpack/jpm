@@ -24,7 +24,10 @@ describe("jpm test addons", function () {
       process.chdir(addonPath);
 
       var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
-      var proc = exec("test", options, function (err, stdout, stderr) {
+      if (process.env.DISPLAY) {
+        options.env.DISPLAY = process.env.DISPLAY;
+      }
+      var proc = exec("test -v", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("All tests passed!");
         done();
