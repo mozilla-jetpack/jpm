@@ -4,7 +4,6 @@ var utils = require("../utils");
 var settings = require("../../lib/settings");
 var chai = require("chai");
 var expect = chai.expect;
-var assert = chai.assert;
 var exec = utils.exec;
 
 describe("jpm init", function () {
