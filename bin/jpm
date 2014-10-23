@@ -2,14 +2,12 @@
 
 var VERSION = require("../package.json").version;
 var program = require("commander");
-var utils = require("../lib/utils");
-var console = utils.console;
+var console = require("../lib/utils").console;
 var run = require("../lib/run");
 var test = require("../lib/test");
 var xpi = require("../lib/xpi");
 var init = require("../lib/init");
-var jetpackRoot = process.env["JETPACK_ROOT"];
-var DEBUG_VALUES = ["binary", "verbose", "binaryArgs", "overload", "profile"];
+var cmd = require("../lib/cmd");
 
 program
   .version(VERSION)
@@ -32,7 +30,7 @@ program
 program
   .command("xpi")
   .description("Bundle the addon into an .xpi file")
-  .action(prepare("xpi", function (manifest) {
+  .action(cmd.prepare("xpi", program, function (manifest) {
     xpi(manifest, program).then(function (xpiPath) {
       console.log("Successfully created xpi at " + xpiPath);
     }, function (reason) {
@@ -43,7 +41,7 @@ program
 program
   .command("test")
   .description("Run tests for current addon")
-  .action(prepare("test", function (manifest) {
+  .action(cmd.prepare("test", program, function (manifest) {
     test(manifest, program).then(function(results) {
       process.exit(results.code);
     }, console.error);
@@ -59,50 +57,14 @@ program
 program
   .command("run")
   .description("Install and run in Firefox the current addon")
-  .action(prepare("run", function (manifest) {
+  .action(cmd.prepare("run", program, function (manifest) {
     run(manifest, program).then(null, console.error);
   }));
 
 program.parse(process.argv);
 
 // If no command (run, xpi, init, etc.) specified, display basic help
-if (isEmptyCommand(program)) {
+if (cmd.isEmptyCommand(program)) {
   program.help();
 }
 
-function prepare (mode, actionCallback) {
-  return function () {
-    return utils.getManifest().then(function(manifest) {
-      var args = Array.prototype.slice.call(arguments, 0);
-      Object.keys(program).filter(function (option) {
-        return ~DEBUG_VALUES.indexOf(option);
-      }).forEach(function (option) {
-        if (program.verbose) {
-          console.log(typeof program[option] !== "boolean" ?
-            (option + " set to " + program[option]) :
-            (option + " set"));
-        }
-        if (option === "forceAOM") {
-          console.warn("`forceAOM` flag set; this feature is experimental.");
-        }
-        if (program.overload && (!process.env["JETPACK_ROOT"] && typeof program.overload === "boolean")) {
-          console.warn("`overload` flag specified, but no `JETPACK_ROOT` environment variable set. Using built in Firefox SDK instead.");
-        }
-      });
-
-      console.log("Starting jpm " + mode + " on " + (manifest.title || manifest.name));
-
-      return actionCallback(manifest);
-    })
-  }
-}
-
-function isEmptyCommand (program) {
-  if (!program.args.length) {
-    return true;
-  }
-  if (!program.args.filter(function (a) { return typeof a === "object" }).length) {
-    return true;
-  }
-  return false;
-}
