@@ -9,7 +9,6 @@ var test = require("../lib/test");
 var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var jetpackRoot = process.env["JETPACK_ROOT"];
-var manifest = utils.getManifest() || {};
 var DEBUG_VALUES = ["binary", "verbose", "binaryArgs", "overload", "profile"];
 
 program
@@ -33,8 +32,7 @@ program
 program
   .command("xpi")
   .description("Bundle the addon into an .xpi file")
-  .action(prepare("xpi", function () {
-    var manifest = utils.getManifest() || {};
+  .action(prepare("xpi", function (manifest) {
     xpi(manifest, program).then(function (xpiPath) {
       console.log("Successfully created xpi at " + xpiPath);
     }, function (reason) {
@@ -45,7 +43,7 @@ program
 program
   .command("test")
   .description("Run tests for current addon")
-  .action(prepare("test", function () {
+  .action(prepare("test", function (manifest) {
     test(manifest, program).then(function(results) {
       process.exit(results.code);
     }, console.error);
@@ -54,14 +52,14 @@ program
 program
   .command("init")
   .description("Series of prompts to create a package.json for a new addon")
-  .action(prepare("init", function () {
+  .action(function () {
     init().then(process.exit);
-  }));
+  });
 
 program
   .command("run")
   .description("Install and run in Firefox the current addon")
-  .action(prepare("run", function () {
+  .action(prepare("run", function (manifest) {
     run(manifest, program).then(null, console.error);
   }));
 
@@ -74,26 +72,28 @@ if (isEmptyCommand(program)) {
 
 function prepare (mode, actionCallback) {
   return function () {
-    var args = Array.prototype.slice.call(arguments, 0);
-    Object.keys(program).filter(function (option) {
-      return ~DEBUG_VALUES.indexOf(option);
-    }).forEach(function (option) {
-      if (program.verbose) {
-        console.log(typeof program[option] !== "boolean" ?
-          (option + " set to " + program[option]) :
-          (option + " set"));
-      }
-      if (option === "forceAOM") {
-        console.warn("`forceAOM` flag set; this feature is experimental.");
-      }
-      if (program.overload && (!process.env["JETPACK_ROOT"] && typeof program.overload === "boolean")) {
-        console.warn("`overload` flag specified, but no `JETPACK_ROOT` environment variable set. Using built in Firefox SDK instead.");
-      }
-    });
+    return utils.getManifest().then(function(manifest) {
+      var args = Array.prototype.slice.call(arguments, 0);
+      Object.keys(program).filter(function (option) {
+        return ~DEBUG_VALUES.indexOf(option);
+      }).forEach(function (option) {
+        if (program.verbose) {
+          console.log(typeof program[option] !== "boolean" ?
+            (option + " set to " + program[option]) :
+            (option + " set"));
+        }
+        if (option === "forceAOM") {
+          console.warn("`forceAOM` flag set; this feature is experimental.");
+        }
+        if (program.overload && (!process.env["JETPACK_ROOT"] && typeof program.overload === "boolean")) {
+          console.warn("`overload` flag specified, but no `JETPACK_ROOT` environment variable set. Using built in Firefox SDK instead.");
+        }
+      });
 
-    console.log("Starting jpm " + mode + " on " + (manifest.title || manifest.name));
+      console.log("Starting jpm " + mode + " on " + (manifest.title || manifest.name));
 
-    actionCallback.apply(null, args);
+      return actionCallback(manifest);
+    })
   }
 }
 

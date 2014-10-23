@@ -26,17 +26,19 @@ describe("lib/utils", function () {
 
   it("getManifest() returns manifest in cwd()", function (done) {
     process.chdir(simpleAddonPath);
-    var manifest = utils.getManifest();
-    expect(manifest.name).to.be.equal("simple-addon");
-    expect(manifest.title).to.be.equal("My Simple Addon");
-    done();
+    utils.getManifest().then(function(manifest) {
+      expect(manifest.name).to.be.equal("simple-addon");
+      expect(manifest.title).to.be.equal("My Simple Addon");
+      done();
+    });
   });
 
   it("getManifest() returns null when no package.json found", function (done) {
     process.chdir(path.join(__dirname, "..", "addons"));
-    var manifest = utils.getManifest();
-    expect(manifest).to.be.equal(null);
-    done();
+    utils.getManifest().then(function(manifest) {
+      expect(manifest).to.be.equal(null);
+      done();
+    });
   });
 
   it("normalizeBinary() finds binary by accessing the registry on Windows", function(done) {
