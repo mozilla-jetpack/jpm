@@ -33,6 +33,7 @@
     "mozilla-version-comparator": "1.0.2",
     "mozilla-toolkit-versioning": "0.0.2",
     "jetpack-validation": "0.0.4",
+    "xmldom": "0.1.19",
     "winreg": "0.0.12",
     "when": "3.5.0",
     "zip-dir": "0.2.1"
@@ -45,8 +46,7 @@
     "glob": "4.0.6",
     "rimraf": "2.2.8",
     "sandboxed-module": "1.0.2",
-    "unzip": "0.1.9",
-    "xmldom": "0.1.19"
+    "unzip": "0.1.9"
   },
   "author": "Jordan Santell",
   "license": "MPL v2.0"
