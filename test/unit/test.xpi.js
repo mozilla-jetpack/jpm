@@ -21,10 +21,11 @@ describe("lib/xpi", function () {
     xpi(manifest).then(function (xpiPath) {
       expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
                                             "@simple-addon.xpi"));
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
+      utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
         utils.compareDirs(simpleAddonPath, tmpOutputDir, done);
       });
-    }).then(null, done);
+    })
+    .catch(done);
   });
 
   it("Zips and creates install.rdf/bootstrap.js for AOM-unsupported addons", function (done) {
@@ -33,14 +34,14 @@ describe("lib/xpi", function () {
     xpi(manifest).then(function (xpiPath) {
       expect(xpiPath).to.be.equal(path.join(aomUnsupportedPath,
                                             "@aom-unsupported.xpi"));
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
+      return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
         var files = ["package.json", "index.js", "install.rdf", "bootstrap.js"];
         files.forEach(function (file) {
           expect(utils.isFile(path.join(tmpOutputDir, file))).to.be.equal(true);
         });
-        done();
       });
-    }).then(null, done);
+    })
+    .then(done, done);
   });
 
   it("Does not litter AOM-unsupported files", function (done) {
@@ -50,7 +51,8 @@ describe("lib/xpi", function () {
       var files = fs.readdirSync(aomUnsupportedPath);
       expect(files).to.not.contain("install.rdf");
       expect(files).to.not.contain("bootstrap.js");
-    }).then(done, done);
+    })
+    .then(done, done);
   });
 
   it("validates addon before zipping", function (done) {
@@ -59,7 +61,8 @@ describe("lib/xpi", function () {
     var manifest = require(path.join(dir, "package.json"));
     xpi(manifest).then(utils.invalidResolve, function (error) {
       expect(error).to.be.ok;
-    }).then(done, done);
+    })
+    .then(done, done);
   });
 
   it("Does not zip up xpi files", function (done) {
@@ -70,12 +73,14 @@ describe("lib/xpi", function () {
     // Copy in a XPI since we remove it between tests for cleanup
     fs.copy(xpiPath, newXpiPath).then(function () {
       return xpi(manifest);
-    }).then(function (xpiPath) {
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
-        expect(utils.isFile(path.join(tmpOutputDir, "@simple-addon.xpi"))).to.be.equal(false);
-        done();
-      });
-    }).then(null, done);
+    })
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function () {
+      expect(utils.isFile(path.join(tmpOutputDir, "@simple-addon.xpi"))).to.be.equal(false);
+    })
+    .then(done, done);
   });
 
   it("Does not zip up hidden files or test directory", function (done) {
@@ -83,19 +88,21 @@ describe("lib/xpi", function () {
     var manifest = require(path.join(extraFilesPath, "package.json"));
     var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
     // Copy in a XPI since we remove it between tests for cleanup
-    xpi(manifest).then(function (xpiPath) {
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
-        when.all([".hidden", ".hidden-dir", "test"]
-          .map(function (p) { return path.join(tmpOutputDir, p); })
-          .map(function (p) { return fs.exists(p); }))
-          .then(function (results) {
-            results.forEach(function (exists) {
-              expect(exists).to.be.equal(false);
-            });
-            done();
+    xpi(manifest)
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function () {
+      return when.all([".hidden", ".hidden-dir", "test"]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(false);
           });
-      });
-    }).then(null, done);
+        });
+    })
+    .then(done, done);
   });
 
   it("Does zip test directory for jpm test", function (done) {
@@ -103,54 +110,62 @@ describe("lib/xpi", function () {
     var manifest = require(path.join(extraFilesPath, "package.json"));
     var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
     // Copy in a XPI since we remove it between tests for cleanup
-    xpi(manifest, { command: "test" }).then(function (xpiPath) {
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
-        var testExists = when.all([ ".hidden", ".hidden-dir" ]
-          .map(function (p) { return path.join(tmpOutputDir, p); })
-          .map(function (p) { return fs.exists(p); }))
-          .then(function (results) {
-            results.forEach(function (exists) {
-              expect(exists).to.be.equal(false);
-            });
+    xpi(manifest, { command: "test" })
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function (xpiPath) {
+      var testExists = when.all([ ".hidden", ".hidden-dir" ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(false);
           });
+        });
 
-        var testDoesNotExist = when.all([ "test" ]
-          .map(function (p) { return path.join(tmpOutputDir, p); })
-          .map(function (p) { return fs.exists(p); }))
-          .then(function (results) {
-            results.forEach(function (exists) {
-              expect(exists).to.be.equal(true);
-            });
+      var testDoesNotExist = when.all([ "test" ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(true);
           });
+        });
 
-        when.all([ testExists, testDoesNotExist ]).then(function() {
-          done()
-        }, done);
-      });
-    }).then(null, done);
+      return when.all([ testExists, testDoesNotExist ]);
+    })
+    .then(function() {
+      done();
+    }, done);
   });
 
   it("Only uses existing install.rdf", function (done) {
     process.chdir(aomUnsupportedPath);
     var manifest = require(path.join(aomUnsupportedPath, "package.json"));
     var filePath = path.join(aomUnsupportedPath, "install.rdf");
-    fs.writeFile(filePath, "TEST").then(function () {
+    fs.writeFile(filePath, "TEST")
+    .then(function () {
       return xpi(manifest);
-    }).then(function (xpiPath) {
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
-        expect(utils.isFile(path.join(tmpOutputDir, "bootstrap.js"))).to.be.equal(true);
-        expect(utils.isFile(path.join(aomUnsupportedPath, "bootstrap.js"))).to.be.equal(false);
-        when.all([ aomUnsupportedPath, tmpOutputDir ]
-          .map(function (p) { return path.join(p, "install.rdf"); })
-          .map(function (p) { return fs.readFile(p, "utf-8"); }))
-          .then(function(results) {
-            results.forEach(function(content) {
-              expect(content).to.be.equal("TEST");
-            });
-            done();
+    })
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function () {
+      expect(utils.isFile(path.join(tmpOutputDir, "bootstrap.js"))).to.be.equal(true);
+      expect(utils.isFile(path.join(aomUnsupportedPath, "bootstrap.js"))).to.be.equal(false);
+
+      return when.all([ aomUnsupportedPath, tmpOutputDir ]
+        .map(function (p) { return path.join(p, "install.rdf"); })
+        .map(function (p) { return fs.readFile(p, "utf-8"); }))
+        .then(function(results) {
+          results.forEach(function(content) {
+            expect(content).to.be.equal("TEST");
           });
-      });
-    }).then(null, done);
+          done();
+        });
+    })
+    .catch(done);
   });
 
   it("Only uses existing bootstrap.js", function (done) {
@@ -159,21 +174,58 @@ describe("lib/xpi", function () {
     var filePath = path.join(aomUnsupportedPath, "bootstrap.js");
     fs.writeFile(filePath, "TEST").then(function () {
       return xpi(manifest);
-    }).then(function (xpiPath) {
-      utils.unzipTo(xpiPath, tmpOutputDir, function () {
-        expect(utils.isFile(path.join(tmpOutputDir, "install.rdf"))).to.be.equal(true);
-        expect(utils.isFile(path.join(aomUnsupportedPath, "install.rdf"))).to.be.equal(false);
-        when.all([ aomUnsupportedPath, tmpOutputDir ]
-          .map(function (p) { return path.join(p, "bootstrap.js"); })
-          .map(function (p) { return fs.readFile(p, "utf-8"); }))
-          .then(function(results) {
-            results.forEach(function(content) {
-              expect(content).to.be.equal("TEST");
-            });
-            done();
+    })
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function () {
+      expect(utils.isFile(path.join(tmpOutputDir, "install.rdf"))).to.be.equal(true);
+      expect(utils.isFile(path.join(aomUnsupportedPath, "install.rdf"))).to.be.equal(false);
+
+      return when.all([ aomUnsupportedPath, tmpOutputDir ]
+        .map(function (p) { return path.join(p, "bootstrap.js"); })
+        .map(function (p) { return fs.readFile(p, "utf-8"); }))
+        .then(function(results) {
+          results.forEach(function(content) {
+            expect(content).to.be.equal("TEST");
           });
-      });
-    }).then(null, done);
+          done();
+        });
+    })
+    .catch(done);
+  });
+
+  it("Only uses existing install.rdf and bootstrap.js", function (done) {
+    process.chdir(aomUnsupportedPath);
+    var manifest = require(path.join(aomUnsupportedPath, "package.json"));
+    var irPath = path.join(aomUnsupportedPath, "install.rdf");
+    var bsPath = path.join(aomUnsupportedPath, "bootstrap.js");
+
+    when.all([ fs.writeFile(irPath, "TEST"), fs.writeFile(bsPath, "TEST") ])
+    .then(function () {
+      return xpi(manifest);
+    })
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function () {
+      expect(utils.isFile(path.join(tmpOutputDir, "install.rdf"))).to.be.equal(true);
+      expect(utils.isFile(path.join(tmpOutputDir, "bootstrap.js"))).to.be.equal(true);
+
+      expect(utils.isFile(path.join(aomUnsupportedPath, "install.rdf"))).to.be.equal(true);
+      expect(utils.isFile(path.join(aomUnsupportedPath, "bootstrap.js"))).to.be.equal(true);
+
+      return when.all([ aomUnsupportedPath, tmpOutputDir ]
+        .map(function (p) { return path.join(p, "bootstrap.js"); })
+        .map(function (p) { return fs.readFile(p, "utf-8"); }))
+        .then(function(results) {
+          results.forEach(function(content) {
+            expect(content).to.be.equal("TEST");
+          });
+          done();
+        });
+    })
+    .catch(done);
   });
 });
 

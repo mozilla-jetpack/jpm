@@ -33,10 +33,10 @@ describe("lib/utils", function () {
     });
   });
 
-  it("getManifest() returns null when no package.json found", function (done) {
+  it("getManifest() returns {} when no package.json found", function (done) {
     process.chdir(path.join(__dirname, "..", "addons"));
     utils.getManifest().then(function(manifest) {
-      expect(manifest).to.be.equal(null);
+      expect(Object.keys(manifest).length).to.be.equal(0);
       done();
     });
   });

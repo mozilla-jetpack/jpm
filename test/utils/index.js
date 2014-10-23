@@ -8,6 +8,7 @@ var glob = require("glob");
 var unzip = require("unzip");
 var chai = require("chai");
 var async = require("async");
+var when = require("when");
 var expect = chai.expect;
 var assert = chai.assert;
 var prevCwd;
@@ -60,10 +61,12 @@ function exec (args, options, callback) {
 }
 exports.exec = exec;
 
-function unzipTo (xpiPath, outputDir, callback) {
-  fs.createReadStream(xpiPath)
-    .pipe(unzip.Extract({ path: outputDir }))
-    .on('close', callback);
+function unzipTo (xpiPath, outputDir) {
+  return when.promise(function(resolve, reject) {
+    fs.createReadStream(xpiPath)
+      .pipe(unzip.Extract({ path: outputDir }))
+      .on('close', resolve);
+  });
 }
 exports.unzipTo = unzipTo;
 
