@@ -67,7 +67,7 @@ jpm run -o /path/to/addon-sdk
 
 ## Transitioning From CFX
 
-Currently, any add-on with unspecified engines, or engines supporting versions of Firefox where AOM support for native jetpacks does not exist, jpm will add a `install.rdf` and `bootstrap.js` file for backwards compatability. This can be overridden with the `--force-aom` flag, which will not build with these additional files. This is mainly for testing AOM support while still in development.
+Currently, any add-on with unspecified engines, or engines supporting versions of Firefox where AOM support for native jetpacks does not exist, jpm will add a `install.rdf` and `bootstrap.js` file for backwards compatability.
 
 
 ## Testing

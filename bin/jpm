@@ -25,7 +25,7 @@ program
   .option("--debug", "Enable the add-on debugger when running the add-on")
   .option("--check-memory", "Enable leaked tracker that attempts to report compartments leaked")
   .option("--profile-memory", "Enable profiling of memory usage")
-  .option("--force-aom", "In development flag for transitioning to new style addons; forces the lack of install.rdf/bootstrap.js creation regardless of what engine versions are running");
+  .option("--retro", "In development flag for transitioning to new style addons; forces the lack of install.rdf/bootstrap.js creation regardless of what engine versions are running");
 
 program
   .command("xpi")
