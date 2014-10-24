@@ -75,7 +75,7 @@ function filterXPI (filename) {
   return !/^(?:[^\.]*\.xpi|install.rdf|bootstrap.js)$/.test(filename);
 }
 
-function compareDirs (dir1, dir2, done) {
+function compareDirs (dir1, dir2) {
   var files1 = fs.readdirSync(dir1).filter(filterXPI);
   var files2 = fs.readdirSync(dir2).filter(filterXPI);
 
@@ -86,7 +86,6 @@ function compareDirs (dir1, dir2, done) {
     var s2 = fs.readFileSync(path.join(dir2, file), "utf-8");
     expect(s1).to.be.equal(s2);
   });
-  done();
 }
 exports.compareDirs = compareDirs;
 
