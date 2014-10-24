@@ -176,8 +176,3 @@ describe("lib/xpi", function () {
     }).then(null, done);
   });
 });
-
-function cleanXPI (done) {
-  fs.unlinkSync(path.join(simpleAddonPath, "@simple-addon.xpi"));
-  done();
-}
