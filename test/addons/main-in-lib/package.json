@@ -1,0 +1,5 @@
+{
+  "title": "Main in the lib folder",
+  "name": "main-in-lib",
+  "main": "lib/index"
+}
