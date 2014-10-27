@@ -25,10 +25,7 @@ describe("lib/rdf", function () {
       expect(getData(xml, "em:unpack")).to.be.equal("false");
       expect(getData(xml, "em:type")).to.be.equal("2");
       expect(getData(xml, "em:name")).to.be.equal("Untitled");
-      expect(getData(xml, "em:iconURL")).to.be.equal("icon.png");
-      expect(getData(xml, "em:icon64URL")).to.be.equal("icon64.png");
-      expect(str.indexOf("homepageURL")).to.be.equal(-1);
-      ["description", "creator"].forEach(function (field) {
+      ["homepageURL", "description", "creator"].forEach(function (field) {
         expect(nodeEmpty(xml, "em:" + field)).to.be.equal(true);
       });
 
@@ -91,16 +88,6 @@ describe("lib/rdf", function () {
     it("author is xml-escaped", function () {
       var xml = createRDF({ name: "Marie Curie <mc@espci.fr>" });
       expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
-    });
-
-    it("iconURL uses `icon`", function () {
-      var xml = setupRDF({ icon: "megaman.png" });
-      expect(getData(xml, "em:iconURL")).to.be.equal("megaman.png");
-    });
-
-    it("icon64URL uses `icon64`", function () {
-      var xml = setupRDF({ icon64: "megaman.png" });
-      expect(getData(xml, "em:icon64URL")).to.be.equal("megaman.png");
     });
 
     it("updateURL uses `updateURL`", function () {
