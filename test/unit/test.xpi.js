@@ -13,6 +13,8 @@ var xpi = require("../../lib/xpi");
 
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var aomUnsupportedPath = path.join(__dirname, "..", "addons", "aom-unsupported");
+var customIconPath = path.join(__dirname, "..", "addons", "icon-custom");
+var rootIconPath = path.join(__dirname, "..", "addons", "icon-root");
 var extraFilesPath = path.join(__dirname, "..", "addons", "extra-files");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
 
@@ -233,4 +235,51 @@ describe("lib/xpi", function () {
     })
     .catch(done);
   });
+
+  it("Moves custom icon files to the xpi root", function (done) {
+    process.chdir(customIconPath);
+    var manifest = require(path.join(customIconPath, "package.json"));
+    xpi(manifest).then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function () {
+      var files = fs.readdirSync(tmpOutputDir);
+      expect(files).to.contain("icon.png");
+      expect(files).to.contain("icon64.png");
+      return when.all([
+        fs.readFile(path.join(customIconPath, "img/logo.png")),
+        fs.readFile(path.join(tmpOutputDir, "icon.png")),
+        fs.readFile(path.join(customIconPath, "img/logo64.png")),
+        fs.readFile(path.join(tmpOutputDir, "icon64.png"))
+      ]).then(function(icons){
+          expect(icons[0].toString()).to.be.equal(icons[1].toString());
+          expect(icons[2].toString()).to.be.equal(icons[3].toString());
+          done();
+      });
+    })
+    .catch(done);
+  });
+
+  it("Removes temporary icon files", function (done) {
+    process.chdir(customIconPath);
+    var manifest = require(path.join(customIconPath, "package.json"));
+    xpi(manifest).then(function (xpiPath) {
+      var files = fs.readdirSync(customIconPath);
+      expect(files).to.not.contain("icon.png");
+      expect(files).to.not.contain("icon64.png");
+    })
+    .then(done, done);
+  });
+
+  it("Does not remove non-temporary user icon files", function (done) {
+    process.chdir(rootIconPath);
+    var manifest = require(path.join(rootIconPath, "package.json"));
+    xpi(manifest).then(function (xpiPath) {
+      var files = fs.readdirSync(rootIconPath);
+      expect(files).to.contain("icon.png");
+      expect(files).to.contain("icon64.png");
+    })
+    .then(done, done);
+  });
+
 });
