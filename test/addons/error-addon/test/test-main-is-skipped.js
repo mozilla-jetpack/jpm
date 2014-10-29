@@ -3,10 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const { metadata } = require("@loader/options");
-
-exports["test metadata exists"] = function(assert) {
-  assert.ok(metadata, "metadata exists")
+exports["test main was skipped"] = function(assert) {
+  assert.pass("main was skipped!")
 };
 
 require("sdk/test").run(exports);

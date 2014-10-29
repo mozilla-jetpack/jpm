@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const { metadata } = require("@loader/options");
+var self = require("sdk/self");
 
-exports["test metadata exists"] = function(assert) {
-  assert.ok(metadata, "metadata exists")
+exports["test require helper"] = function(assert) {
+  assert.equal(self.id, "@simple-addon", "self.id works without an id")
 };
 
 require("sdk/test").run(exports);
