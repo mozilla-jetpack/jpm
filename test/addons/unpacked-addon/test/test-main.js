@@ -18,7 +18,7 @@ exports["test url.toFilename"] = function (assert) {
 
 exports["test Addon is unpacked"] = function*(assert) {
   let addon = yield getAddonByID(self.id);
-  assert.ok(addon.unpacked, "the addon is unpacked");
+  assert.equal(addon.getResourceURI("").scheme, "file", "the addon is unpacked");
 }
 
-require("sdk/test").run(module);
+require("sdk/test").run(exports);
