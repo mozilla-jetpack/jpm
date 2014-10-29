@@ -1,0 +1,4 @@
+{
+  "XPCOM_DEBUG_BREAK": "stack",
+  "NS_TRACE_MALLOC_DISABLE_STACKS": "1"
+}

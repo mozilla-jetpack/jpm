@@ -1,3 +1,8 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+"use strict";
+
 var createRDF = require("../../lib/rdf");
 var DOMParser = require("xmldom").DOMParser;
 var parse = require("mozilla-toolkit-versioning").parse;
@@ -5,6 +10,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var GUIDS = require("../../lib/settings").ids;
 var MIN_VERSION = require("../../lib/settings").MIN_VERSION;
+var getData = require("../../lib/xpi/utils").getData;
 
 describe("lib/rdf", function () {
   describe("defaults", function () {
@@ -235,11 +241,7 @@ describe("lib/rdf", function () {
 });
 
 function setupRDF (manifest) {
-  return new DOMParser().parseFromString(createRDF(manifest));
-}
-
-function getData (xml, tag) {
-  return xml.getElementsByTagName(tag)[0].childNodes[0].data;
+  return new DOMParser().parseFromString(createRDF(manifest), "application/rdf+xml");
 }
 
 function nodeExists (xml, tag) {

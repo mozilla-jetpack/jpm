@@ -8,6 +8,7 @@ var glob = require("glob");
 var unzip = require("unzip");
 var chai = require("chai");
 var async = require("async");
+var when = require("when");
 var expect = chai.expect;
 var assert = chai.assert;
 var prevCwd;
@@ -60,10 +61,12 @@ function exec (args, options, callback) {
 }
 exports.exec = exec;
 
-function unzipTo (xpiPath, outputDir, callback) {
-  fs.createReadStream(xpiPath)
-    .pipe(unzip.Extract({ path: outputDir }))
-    .on('close', callback);
+function unzipTo (xpiPath, outputDir) {
+  return when.promise(function(resolve, reject) {
+    fs.createReadStream(xpiPath)
+      .pipe(unzip.Extract({ path: outputDir }))
+      .on('close', resolve);
+  });
 }
 exports.unzipTo = unzipTo;
 
@@ -72,7 +75,7 @@ function filterXPI (filename) {
   return !/^(?:[^\.]*\.xpi|install.rdf|bootstrap.js)$/.test(filename);
 }
 
-function compareDirs (dir1, dir2, done) {
+function compareDirs (dir1, dir2) {
   var files1 = fs.readdirSync(dir1).filter(filterXPI);
   var files2 = fs.readdirSync(dir2).filter(filterXPI);
 
@@ -83,7 +86,6 @@ function compareDirs (dir1, dir2, done) {
     var s2 = fs.readFileSync(path.join(dir2, file), "utf-8");
     expect(s1).to.be.equal(s2);
   });
-  done();
 }
 exports.compareDirs = compareDirs;
 
