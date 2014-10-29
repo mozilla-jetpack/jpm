@@ -34,7 +34,8 @@ function tearDown (done) {
     var paths = [
       "../addons/**/*.xpi",
       "../addons/**/bootstrap.js",
-      "../addons/**/install.rdf"
+      "../addons/**/install.rdf",
+      "../**/**/jpm-test-options.json"
     ].map(function (p) { return path.join(__dirname, p); });
 
     async.map(paths, glob, function (err, files) {
@@ -76,8 +77,8 @@ function filterXPI (filename) {
 }
 
 function compareDirs (dir1, dir2) {
-  var files1 = fs.readdirSync(dir1).filter(filterXPI);
-  var files2 = fs.readdirSync(dir2).filter(filterXPI);
+  var files1 = fs.readdirSync(dir1).filter(filterXPI).filter(filterTests);
+  var files2 = fs.readdirSync(dir2).filter(filterXPI).filter(filterTests);
 
   expect(files1.join(",")).to.be.equal(files2.join(","));
 
@@ -88,6 +89,10 @@ function compareDirs (dir1, dir2) {
   });
 }
 exports.compareDirs = compareDirs;
+
+function filterTests(file) {
+  return !/^tests?/.test(file);
+}
 
 function isFile (filePath) {
   try {
