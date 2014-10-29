@@ -1,1 +1,1 @@
-console.log("Simple addon");
+console.log("Custom icon paths");

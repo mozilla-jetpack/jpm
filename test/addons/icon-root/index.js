@@ -1,1 +1,1 @@
-console.log("Simple addon");
+console.log("Icon root");

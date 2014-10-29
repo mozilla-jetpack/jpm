@@ -1,6 +1,6 @@
 {
-  "title": "My Simple Addon",
-  "name": "simple-addon",
+  "title": "Icons in root",
+  "name": "icon-root",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
