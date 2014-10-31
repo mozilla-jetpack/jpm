@@ -240,7 +240,7 @@ describe("jpm run", function () {
 
       it("run with options should receive options (--filter)", function(done) {
         process.chdir(paramDumpPath);
-        var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --tbpl"
+        var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --do-not-quit --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
           //expect(stderr).to.not.be.ok;
@@ -255,6 +255,7 @@ describe("jpm run", function () {
           expect(params.filter).to.equal("bar");
           expect(params.times).to.equal(3);
           expect(params.stopOnError).to.equal(true);
+          expect(params.noQuit).to.equal(true);
 
           expect(params.tbpl).to.equal(true);
           expect(params.verbose).to.equal(true);
@@ -267,7 +268,7 @@ describe("jpm run", function () {
 
       it("run with options should receive options (-f)", function(done) {
         process.chdir(paramDumpPath);
-        var cmd = "run -v --profile-memory --check-memory -f bar --times 3 --stop-on-error --tbpl"
+        var cmd = "run -v --profile-memory --check-memory -f bar --times 3 --stop-on-error --do-not-quit --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
           //expect(stderr).to.not.be.ok;
@@ -279,6 +280,7 @@ describe("jpm run", function () {
           expect(params.profileMemory).to.equal(true);
           expect(params.checkMemory).to.equal(true);
 
+          expect(params.noQuit).to.equal(true);
           expect(params.filter).to.equal("bar");
           expect(params.times).to.equal(3);
           expect(params.stopOnError).to.equal(true);
