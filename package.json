@@ -21,7 +21,7 @@
     "commander": "2.4.0",
     "fs-promise": "0.2.0",
     "fs-extra": "0.12.0",
-    "jpm-core": "0.0.3",
+    "jpm-core": "0.0.4",
     "jetpack-id": "0.0.4",
     "firefox-profile": "0.2.9",
     "jsontoxml": "0.0.11",
