@@ -108,3 +108,8 @@ function invalidResolve () {
   assert.fail(null, null, 'promise should not resolve');
 }
 exports.invalidResolve = invalidResolve;
+
+function isTravis() {
+  return (process.env.JPM_FIREFOX_BINARY == "travis");
+}
+exports.isTravis = isTravis;
