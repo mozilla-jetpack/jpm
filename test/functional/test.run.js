@@ -57,6 +57,10 @@ describe("jpm run", function () {
     // Issue #204 intermittent --overload test failure
     // See https://github.com/mozilla/jpm/issues/204
     if (utils.isTravis()) {
+      it("skip on travis", function() {
+        expect("").to.not.be.ok;
+      });
+
       // TODO: remove this, fix tests!
       return null;
     }
