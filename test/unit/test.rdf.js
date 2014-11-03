@@ -39,57 +39,82 @@ describe("lib/rdf", function () {
       var xml = setupRDF({ id: "myaddon@jetpack" });
       expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
     });
+
     it("passes in a version", function () {
       var xml = setupRDF({ version: "1.4.1" });
       expect(getData(xml, "em:version")).to.be.equal("1.4.1");
     });
+
     it("name uses `title` first", function () {
       var xml = setupRDF({ title: "my-title", name: "my-name" });
       expect(getData(xml, "em:name")).to.be.equal("my-title");
     });
+
     it("name uses `name` after `title`", function () {
       var xml = setupRDF({ name: "my-name" });
       expect(getData(xml, "em:name")).to.be.equal("my-name");
     });
+
     it("name is xml-escaped", function () {
       var xml = createRDF({ name: "my-nam>e" });
       expect(xml.indexOf("my-nam&gt;e")).to.be.not.equal(-1);
     });
+
     it("homepageURL uses `homepage`", function () {
       var xml = setupRDF({ homepage: "http://mozilla.com" });
       expect(getData(xml, "em:homepageURL")).to.be.equal("http://mozilla.com");
     });
+
     it("homepageURL is xml-escaped", function () {
       var xml = createRDF({ name: "<http://mozilla.com>" });
       expect(xml.indexOf("&lt;http://mozilla.com&gt;")).to.be.not.equal(-1);
     });
+
     it("unpack uses `unpack`", function () {
       var xml = setupRDF({ unpack: true });
       expect(getData(xml, "em:unpack")).to.be.equal("true");
     });
+
     it("description uses `description`", function () {
       var xml = setupRDF({ description: "my-desc" });
       expect(getData(xml, "em:description")).to.be.equal("my-desc");
     });
+
     it("description is xml-escaped", function () {
       var xml = createRDF({ name: "my-des>c" });
       expect(xml.indexOf("my-des&gt;c")).to.be.not.equal(-1);
     });
+
     it("creator uses `author`", function () {
       var xml = setupRDF({ author: "Marie Curie" });
       expect(getData(xml, "em:creator")).to.be.equal("Marie Curie");
     });
+
     it("author is xml-escaped", function () {
       var xml = createRDF({ name: "Marie Curie <mc@espci.fr>" });
       expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
     });
+
     it("iconURL uses `icon`", function () {
       var xml = setupRDF({ icon: "megaman.png" });
       expect(getData(xml, "em:iconURL")).to.be.equal("megaman.png");
     });
+
     it("icon64URL uses `icon64`", function () {
       var xml = setupRDF({ icon64: "megaman.png" });
       expect(getData(xml, "em:icon64URL")).to.be.equal("megaman.png");
+    });
+
+    it("updateURL uses `updateURL`", function () {
+      var url =  "https://mozilla.org/update.rdf";
+      var xml = setupRDF({ updateURL: url });
+      expect(getData(xml, "em:updateURL")).to.be.equal(url);
+    });
+
+    it("updateKey uses `updateKey`", function () {
+      var key =  "xyz";
+      var xml = setupRDF({ updateKey: key });
+      expect(getData(xml, "em:updateKey")).to.be.equal(key);
     });
 
     it("adds `translator` fields for each translator", function () {
@@ -144,6 +169,7 @@ describe("lib/rdf", function () {
       expect(app.childNodes[5].tagName).to.be.equal("em:maxVersion");
       expect(app.childNodes[5].childNodes[0].data).to.be.equal("32.0.-1");
     });
+
     it("adds engine min/max from engine string for fennec", function () {
       var xml = setupRDF({ engines: { fennec: ">=21.0a <32.0" }});
       var apps = xml.getElementsByTagName("em:targetApplication");
@@ -157,6 +183,7 @@ describe("lib/rdf", function () {
       expect(app.childNodes[5].tagName).to.be.equal("em:maxVersion");
       expect(app.childNodes[5].childNodes[0].data).to.be.equal("32.0.-1");
     });
+
     it("handles multiple engines specified", function () {
       var xml = setupRDF({ engines: {
         fennec: ">=25.0a <=32.0",
@@ -219,6 +246,7 @@ describe("lib/rdf", function () {
       expect(fennec.childNodes[5].tagName).to.be.equal("em:maxVersion");
       expect(fennec.childNodes[5].childNodes[0].data).to.be.equal("30.0.-1");
     });
+
     it("creates default Firefox targetApplication if no engines defined", function () {
       var xml = setupRDF({ engines: {}});
       var apps = xml.getElementsByTagName("em:targetApplication");
@@ -228,6 +256,7 @@ describe("lib/rdf", function () {
       expect(firefox.childNodes[5].tagName).to.be.equal("em:maxVersion");
       expect(firefox.childNodes[5].childNodes[0].data).to.be.equal("*");
     });
+
     it("creates default Firefox targetApplication if no engines field", function () {
       var xml = setupRDF({});
       var apps = xml.getElementsByTagName("em:targetApplication");
