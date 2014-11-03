@@ -18,7 +18,7 @@ before_script:
   - npm install mozilla-download -g
   - pwd
   - cd ..
-  - mozilla-download --branch fx-team -c tinderbox firefox --host releases.mozila.org
+  - mozilla-download --branch nightly -c prerelease firefox --host releases.mozilla.org
   - cd $TRAVIS_BUILD_DIR
   - pwd
 
