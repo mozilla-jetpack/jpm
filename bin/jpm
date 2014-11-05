@@ -33,7 +33,7 @@ program
   .command("docs")
   .description("Open the JPM documentation")
   .action(function() {
-    open("https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29")
+    open("https://developer.mozilla.org/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29")
   });
 
 program
