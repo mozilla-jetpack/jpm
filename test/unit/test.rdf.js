@@ -15,17 +15,20 @@ var getData = require("../../lib/xpi/utils").getData;
 describe("lib/rdf", function () {
   describe("defaults", function () {
     it("uses default values when none specified", function () {
-      var xml = setupRDF({ id: "myaddon@jetpack" });
+      var str = createRDF({ id: "myaddon@jetpack" })
+      console.log(str)
+      var xml = parseRDF(str);
       expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
       // This should throw elsewhere
-      expect(getData(xml, "em:version")).to.be.equal("undefined");
+      expect(getData(xml, "em:version")).to.be.equal("0.0.0");
       expect(getData(xml, "em:bootstrap")).to.be.equal("true");
       expect(getData(xml, "em:unpack")).to.be.equal("false");
       expect(getData(xml, "em:type")).to.be.equal("2");
       expect(getData(xml, "em:name")).to.be.equal("Untitled");
       expect(getData(xml, "em:iconURL")).to.be.equal("icon.png");
       expect(getData(xml, "em:icon64URL")).to.be.equal("icon64.png");
-      ["homepageURL", "description", "creator"].forEach(function (field) {
+      expect(str.indexOf("homepageURL")).to.be.equal(-1);
+      ["description", "creator"].forEach(function (field) {
         expect(nodeEmpty(xml, "em:" + field)).to.be.equal(true);
       });
 
@@ -60,14 +63,9 @@ describe("lib/rdf", function () {
       expect(xml.indexOf("my-nam&gt;e")).to.be.not.equal(-1);
     });
 
-    it("homepageURL uses `homepage`", function () {
-      var xml = setupRDF({ homepage: "http://mozilla.com" });
+    it("homepageURL uses `homepageURL`", function () {
+      var xml = setupRDF({ homepageURL: "http://mozilla.com" });
       expect(getData(xml, "em:homepageURL")).to.be.equal("http://mozilla.com");
-    });
-
-    it("homepageURL is xml-escaped", function () {
-      var xml = createRDF({ name: "<http://mozilla.com>" });
-      expect(xml.indexOf("&lt;http://mozilla.com&gt;")).to.be.not.equal(-1);
     });
 
     it("unpack uses `unpack`", function () {
@@ -111,10 +109,26 @@ describe("lib/rdf", function () {
       expect(getData(xml, "em:updateURL")).to.be.equal(url);
     });
 
+    it("updateURL DNE when it is undefined", function() {
+      var xml = createRDF({ id: "1" });
+      expect(xml.indexOf("updateURL")).to.be.equal(-1);
+
+      var xml = createRDF({ id: "1", updateURL: undefined });
+      expect(xml.indexOf("updateURL")).to.be.equal(-1);
+    });
+
     it("updateKey uses `updateKey`", function () {
       var key =  "xyz";
       var xml = setupRDF({ updateKey: key });
       expect(getData(xml, "em:updateKey")).to.be.equal(key);
+    });
+
+    it("updateKey DNE when it is undefined", function() {
+      var xml = createRDF({ id: "1" });
+      expect(xml.indexOf("updateKey")).to.be.equal(-1);
+
+      var xml = createRDF({ id: "1", updateKey: undefined });
+      expect(xml.indexOf("updateKey")).to.be.equal(-1);
     });
 
     it("adds `translator` fields for each translator", function () {
@@ -269,8 +283,12 @@ describe("lib/rdf", function () {
   });
 });
 
+function parseRDF(rdf) {
+  return new DOMParser().parseFromString(rdf, "application/rdf+xml");
+}
+
 function setupRDF (manifest) {
-  return new DOMParser().parseFromString(createRDF(manifest), "application/rdf+xml");
+  return parseRDF(createRDF(manifest));
 }
 
 function nodeExists (xml, tag) {

@@ -4,18 +4,9 @@
 "use strict";
 
 const self = require("sdk/self");
-const { Cu } = require("chrome");
-const { AddonManager } = Cu.import("resource://gre/modules/AddonManager.jsm", {});
-const { defer } = require("sdk/core/promise");
-
-function getAddonByID(id) {
-  let { promise, resolve } = defer();
-  AddonManager.getAddonByID(id, resolve);
-  return promise;
-}
+const { getAddonByID } = require("sdk/addon/manager");
 
 exports["test self.data.load"] = (assert) => {
-
   assert.equal(self.data.load("data.md").trim(),
                "# hello world",
                "paths work");
