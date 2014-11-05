@@ -8,6 +8,7 @@ var test = require("../lib/test");
 var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var cmd = require("../lib/cmd");
+var open = require("open");
 
 program
   .version(VERSION)
@@ -27,6 +28,13 @@ program
   .option("--check-memory", "Enable leaked tracker that attempts to report compartments leaked")
   .option("--profile-memory", "Enable profiling of memory usage")
   .option("--retro", "In development flag for transitioning to new style addons; forces the lack of install.rdf/bootstrap.js creation regardless of what engine versions are running");
+
+program
+  .command("docs")
+  .description("Open the JPM documentation")
+  .action(function() {
+    open("https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29")
+  });
 
 program
   .command("xpi")
