@@ -267,6 +267,7 @@ describe("jpm run", function () {
           expect(params.times).to.equal(3);
           expect(params.stopOnError).to.equal(true);
           expect(params.noQuit).to.equal(true);
+          expect(params.keepOpen).to.equal(true);
 
           expect(params.tbpl).to.equal(true);
           expect(params.verbose).to.equal(true);
