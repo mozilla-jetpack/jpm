@@ -12,9 +12,10 @@
     "functional": "node ./test/run.js functional",
     "unit": "node ./test/run.js unit"
   },
+  "homepage": "https://github.com/mozilla/jpm",
   "repository": {
     "type": "git",
-    "url": "http://github.com/mozilla/jpm.git"
+    "url": "git://github.com/mozilla/jpm.git"
   },
   "dependencies": {
     "colors": "1.0.3",
