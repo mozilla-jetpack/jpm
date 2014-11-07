@@ -63,8 +63,8 @@ describe("lib/rdf", function () {
       expect(xml.indexOf("my-nam&gt;e")).to.be.not.equal(-1);
     });
 
-    it("homepageURL uses `homepageURL`", function () {
-      var xml = setupRDF({ homepageURL: "http://mozilla.com" });
+    it("homepage uses `homepageURL`", function () {
+      var xml = setupRDF({ homepage: "http://mozilla.com" });
       expect(getData(xml, "em:homepageURL")).to.be.equal("http://mozilla.com");
     });
 
