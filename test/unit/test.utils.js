@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+"use strict";
 
 var os = require("os");
 var fs = require("fs");
@@ -9,6 +13,7 @@ var all = require("when").all;
 var sandbox = require('sandboxed-module');
 var binary = utils.normalizeBinary;
 var hasAOMSupport = utils.hasAOMSupport;
+
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var prevDir, prevBinary;
 
@@ -26,17 +31,19 @@ describe("lib/utils", function () {
 
   it("getManifest() returns manifest in cwd()", function (done) {
     process.chdir(simpleAddonPath);
-    var manifest = utils.getManifest();
-    expect(manifest.name).to.be.equal("simple-addon");
-    expect(manifest.title).to.be.equal("My Simple Addon");
-    done();
+    utils.getManifest().then(function(manifest) {
+      expect(manifest.name).to.be.equal("simple-addon");
+      expect(manifest.title).to.be.equal("My Simple Addon");
+      done();
+    });
   });
 
-  it("getManifest() returns null when no package.json found", function (done) {
+  it("getManifest() returns {} when no package.json found", function (done) {
     process.chdir(path.join(__dirname, "..", "addons"));
-    var manifest = utils.getManifest();
-    expect(manifest).to.be.equal(null);
-    done();
+    utils.getManifest().then(function(manifest) {
+      expect(Object.keys(manifest).length).to.be.equal(0);
+      done();
+    });
   });
 
   it("normalizeBinary() finds binary by accessing the registry on Windows", function(done) {

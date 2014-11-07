@@ -1,10 +1,14 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+"use strict";
+
 var fs = require("fs-extra");
 var path = require("path");
 var utils = require("../utils");
 var settings = require("../../lib/settings");
 var chai = require("chai");
 var expect = chai.expect;
-var assert = chai.assert;
 var exec = utils.exec;
 
 describe("jpm init", function () {
@@ -101,6 +105,30 @@ describe("jpm init", function () {
     proc.on("close", function () {
       var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "index.js"), "utf-8");
       expect(dirIndex).to.be.equal("hello");
+      done();
+    });
+  });
+
+  it("copies in default README.md if it DNE", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "README.md"), "utf-8");
+      var sourceIndex = fs.readFileSync(path.join("..", "..", "data", "README.md"), "utf-8");
+      expect(dirIndex).to.be.equal(sourceIndex);
+      done();
+    });
+  });
+
+  it("does not copy in default README.md if it exists", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    fs.writeFileSync(path.join(utils.tmpOutputDir, "README.md"), "readme!");
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "README.md"), "utf-8");
+      expect(dirIndex).to.be.equal("readme!");
       done();
     });
   });
