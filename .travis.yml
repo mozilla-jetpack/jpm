@@ -6,6 +6,9 @@ node_js:
 notifications:
   irc: "irc.mozilla.org#jpm"
 
+env:
+  - JPM_BUILD_TYPE=travis
+
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
@@ -15,7 +18,7 @@ before_script:
   - npm install mozilla-download -g
   - pwd
   - cd ..
-  - mozilla-download --branch fx-team -c tinderbox firefox
+  - mozilla-download --branch nightly -c prerelease --host ftp.mozilla.org firefox
   - cd $TRAVIS_BUILD_DIR
   - pwd
 

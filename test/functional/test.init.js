@@ -109,6 +109,30 @@ describe("jpm init", function () {
     });
   });
 
+  it("copies in default README.md if it DNE", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "README.md"), "utf-8");
+      var sourceIndex = fs.readFileSync(path.join("..", "..", "data", "README.md"), "utf-8");
+      expect(dirIndex).to.be.equal(sourceIndex);
+      done();
+    });
+  });
+
+  it("does not copy in default README.md if it exists", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    fs.writeFileSync(path.join(utils.tmpOutputDir, "README.md"), "readme!");
+    var responses = generateResponses();
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "README.md"), "utf-8");
+      expect(dirIndex).to.be.equal("readme!");
+      done();
+    });
+  });
+
   it("copies in default test-index.js if it DNE", function (done) {
     process.chdir(utils.tmpOutputDir);
     var responses = generateResponses();

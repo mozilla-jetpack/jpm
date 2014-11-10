@@ -12,9 +12,10 @@
     "functional": "node ./test/run.js functional",
     "unit": "node ./test/run.js unit"
   },
+  "homepage": "https://github.com/mozilla/jpm",
   "repository": {
     "type": "git",
-    "url": "http://github.com/mozilla/jpm.git"
+    "url": "git://github.com/mozilla/jpm.git"
   },
   "dependencies": {
     "colors": "1.0.3",
@@ -24,12 +25,13 @@
     "fs-extra": "0.12.0",
     "jetpack-id": "0.0.4",
     "jetpack-validation": "0.0.4",
-    "jpm-core": "0.0.3",
+    "jpm-core": "0.0.4",
     "jsontoxml": "0.0.11",
     "lodash": "2.4.1",
     "mocha": "2.0.1",
     "mozilla-version-comparator": "1.0.2",
     "mozilla-toolkit-versioning": "0.0.2",
+    "open": "0.0.5",
     "promzard": "0.2.2",
     "read": "1.0.5",
     "semver": "4.1.0",
