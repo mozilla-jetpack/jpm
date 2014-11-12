@@ -89,6 +89,22 @@ describe("lib/rdf", function () {
       var xml = createRDF({ name: "Marie Curie <mc@espci.fr>" });
       expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
     });
+    it("iconURL uses `icon` for non-local icons", function () {
+      var xml = setupRDF({ icon: "chrome://addon/style/main.css" });
+      expect(getData(xml, "em:iconURL")).to.be.equal("chrome://addon/style/main.css");
+    });
+    it("icon64URL uses `icon64` for non-local icons", function () {
+      var xml = setupRDF({ icon64: "chrome://addon/style/main.css" });
+      expect(getData(xml, "em:icon64URL")).to.be.equal("chrome://addon/style/main.css");
+    });
+    it("iconURL uses `icon` for urls", function () {
+      var xml = setupRDF({ icon: "https://example.com/icon.png" });
+      expect(getData(xml, "em:iconURL")).to.be.equal("https://example.com/icon.png");
+    });
+    it("icon64URL uses `icon64` for urls", function () {
+      var xml = setupRDF({ icon64: "https://example.com/icon.png" });
+      expect(getData(xml, "em:icon64URL")).to.be.equal("https://example.com/icon.png");
+    });
 
     it("updateURL uses `updateURL`", function () {
       var url =  "https://mozilla.org/update.rdf";

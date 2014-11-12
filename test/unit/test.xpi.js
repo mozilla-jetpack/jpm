@@ -251,11 +251,19 @@ describe("lib/xpi", function () {
         fs.readFile(path.join(tmpOutputDir, "icon.png")),
         fs.readFile(path.join(customIconPath, "img/logo64.png")),
         fs.readFile(path.join(tmpOutputDir, "icon64.png"))
-      ]).then(function(icons){
-          expect(icons[0].toString()).to.be.equal(icons[1].toString());
-          expect(icons[2].toString()).to.be.equal(icons[3].toString());
-          done();
-      });
+      ])
+    })
+    .then(function(icons){
+        expect(icons[0].toString()).to.be.equal(icons[1].toString());
+        expect(icons[2].toString()).to.be.equal(icons[3].toString());
+    })
+    .then(function(){
+      return fs.readFile(path.join(tmpOutputDir, "install.rdf"));
+    })
+    .then(function(data){
+      expect(data.toString().indexOf("logo.png")).to.equal(-1);
+      expect(data.toString().indexOf("logo64.png")).to.equal(-1);
+      done();
     })
     .catch(done);
   });
