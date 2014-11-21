@@ -71,24 +71,6 @@ describe("lib/xpi", function () {
     .then(done, done);
   });
 
-  it("Does not zip up xpi files", function (done) {
-    process.chdir(simpleAddonPath);
-    var manifest = require(path.join(simpleAddonPath, "package.json"));
-    var xpiPath = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
-    var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
-    // Copy in a XPI since we remove it between tests for cleanup
-    fs.copy(xpiPath, newXpiPath).then(function () {
-      return xpi(manifest);
-    })
-    .then(function (xpiPath) {
-      return utils.unzipTo(xpiPath, tmpOutputDir);
-    })
-    .then(function () {
-      expect(utils.isFile(path.join(tmpOutputDir, "@simple-addon.xpi"))).to.be.equal(false);
-    })
-    .then(done, done);
-  });
-
   it("Does not zip up hidden files or test directory", function (done) {
     process.chdir(extraFilesPath);
     var manifest = require(path.join(extraFilesPath, "package.json"));
