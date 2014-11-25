@@ -4,7 +4,6 @@ var VERSION = require("../package.json").version;
 var program = require("commander");
 var console = require("../lib/utils").console;
 var run = require("../lib/run");
-var test = require("../lib/test");
 var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var cmd = require("../lib/cmd");
@@ -51,9 +50,12 @@ program
   .command("test")
   .description("Run tests for current addon")
   .action(cmd.prepare("test", program, function (manifest) {
+    require("../lib/test-cmd").run(manifest, program);
+    /*
     test(manifest, program).then(function(results) {
       process.exit(results.code);
     }, console.error);
+  */
   }));
 
 program
