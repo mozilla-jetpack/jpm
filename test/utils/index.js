@@ -1,7 +1,10 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+"use strict";
+
 var _ = require("lodash");
 var path = require("path");
-var child_process = require("child_process");
-var execFile = child_process.execFile;
 var fs = require("fs-extra");
 var rimraf = require("rimraf");
 var glob = require("glob");
@@ -9,6 +12,7 @@ var unzip = require("unzip");
 var chai = require("chai");
 var async = require("async");
 var when = require("when");
+var exec = require("../../lib/exec").exec;
 var expect = chai.expect;
 var assert = chai.assert;
 var prevCwd;
@@ -46,20 +50,6 @@ function tearDown (done) {
 }
 exports.tearDown = tearDown;
 
-function exec (args, options, callback) {
-  options = options || {};
-  var env = _.extend({}, options.env, process.env);
-
-  return child_process.exec("node " + path.join(__dirname, "../../bin/jpm") + " " + args, {
-    cwd: options.cwd || tmpOutputDir,
-    env: env
-  }, function (err, stdout, stderr) {
-    if (callback)
-      callback.apply(null, arguments);
-    else if (err)
-      throw err;
-  });
-}
 exports.exec = exec;
 
 function unzipTo (xpiPath, outputDir) {
@@ -70,7 +60,6 @@ function unzipTo (xpiPath, outputDir) {
   });
 }
 exports.unzipTo = unzipTo;
-
 
 function filterXPI (filename) {
   return !/^(?:[^\.]*\.xpi|install.rdf|bootstrap.js)$/.test(filename);

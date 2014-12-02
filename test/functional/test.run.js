@@ -53,6 +53,7 @@ describe("jpm run", function () {
     }).then(null, done);
   });
 
+/*
   describe("-o/--overload", function () {
     // Issue #204 intermittent --overload test failure
     // See https://github.com/mozilla/jpm/issues/204
@@ -108,6 +109,7 @@ describe("jpm run", function () {
       });
     });
   });
+*/
 
   describe("-v/--verbose", function () {
     it("logs out only console messages from the addon without -v", function (done) {
