@@ -17,7 +17,6 @@ describe("lib/rdf", function () {
   describe("defaults", function () {
     it("uses default values when none specified", function () {
       var str = createRDF({ id: "myaddon@jetpack" })
-      console.log(str)
       var xml = parseRDF(str);
       expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
       // This should throw elsewhere
