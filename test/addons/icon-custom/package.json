@@ -1,0 +1,11 @@
+{
+  "title": "Custom icon path",
+  "name": "icon-custom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "icon": "img/logo.png",
+  "icon64": "img/logo64.png"
+}

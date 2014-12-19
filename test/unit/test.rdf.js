@@ -25,10 +25,7 @@ describe("lib/rdf", function () {
       expect(getData(xml, "em:unpack")).to.be.equal("false");
       expect(getData(xml, "em:type")).to.be.equal("2");
       expect(getData(xml, "em:name")).to.be.equal("Untitled");
-      expect(getData(xml, "em:iconURL")).to.be.equal("icon.png");
-      expect(getData(xml, "em:icon64URL")).to.be.equal("icon64.png");
-      expect(str.indexOf("homepageURL")).to.be.equal(-1);
-      ["description", "creator"].forEach(function (field) {
+      ["homepageURL", "description", "creator"].forEach(function (field) {
         expect(nodeEmpty(xml, "em:" + field)).to.be.equal(true);
       });
 
@@ -92,15 +89,21 @@ describe("lib/rdf", function () {
       var xml = createRDF({ name: "Marie Curie <mc@espci.fr>" });
       expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
     });
-
-    it("iconURL uses `icon`", function () {
-      var xml = setupRDF({ icon: "megaman.png" });
-      expect(getData(xml, "em:iconURL")).to.be.equal("megaman.png");
+    it("iconURL uses `icon` for non-local icons", function () {
+      var xml = setupRDF({ icon: "chrome://addon/style/main.css" });
+      expect(getData(xml, "em:iconURL")).to.be.equal("chrome://addon/style/main.css");
     });
-
-    it("icon64URL uses `icon64`", function () {
-      var xml = setupRDF({ icon64: "megaman.png" });
-      expect(getData(xml, "em:icon64URL")).to.be.equal("megaman.png");
+    it("icon64URL uses `icon64` for non-local icons", function () {
+      var xml = setupRDF({ icon64: "chrome://addon/style/main.css" });
+      expect(getData(xml, "em:icon64URL")).to.be.equal("chrome://addon/style/main.css");
+    });
+    it("iconURL uses `icon` for urls", function () {
+      var xml = setupRDF({ icon: "https://example.com/icon.png" });
+      expect(getData(xml, "em:iconURL")).to.be.equal("https://example.com/icon.png");
+    });
+    it("icon64URL uses `icon64` for urls", function () {
+      var xml = setupRDF({ icon64: "https://example.com/icon.png" });
+      expect(getData(xml, "em:icon64URL")).to.be.equal("https://example.com/icon.png");
     });
 
     it("updateURL uses `updateURL`", function () {
