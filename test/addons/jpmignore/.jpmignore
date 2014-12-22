@@ -1,0 +1,9 @@
+.jpmignore
+tests
+*.txt
+!\!important!.txt
+/*.c
+!negated/
+ignore/
+*.xpi
+a/**/b
