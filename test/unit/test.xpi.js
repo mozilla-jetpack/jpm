@@ -14,6 +14,7 @@ var xpi = require("../../lib/xpi");
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var aomUnsupportedPath = path.join(__dirname, "..", "addons", "aom-unsupported");
 var extraFilesPath = path.join(__dirname, "..", "addons", "extra-files");
+var jpmignorePath = path.join(__dirname, "..", "addons", "jpmignore");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
 
 describe("lib/xpi", function () {
@@ -214,5 +215,75 @@ describe("lib/xpi", function () {
         });
     })
     .catch(done);
+  });
+
+  it("Test .jpmignore", function (done) {
+    process.chdir(jpmignorePath);
+    var manifest = require(path.join(jpmignorePath, "package.json"));
+    var newXpiPath = path.join(jpmignorePath, "@test-jpmignore.xpi");
+    // Copy in a XPI since we remove it between tests for cleanup
+    xpi(manifest)
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function (xpiPath) {
+      var testExists = when.all([ "!important!.txt", "index.js", "package.json", "mozilla-sha1/sha1.c", "negated/jpmkeep", "test/test" ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(true);
+          });
+        });
+
+      var testDoesNotExist = when.all([ ".jpmignore", "cat-file.c", "some.txt", "a", "ignore", "tests", "test/tests" ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(false);
+          });
+        });
+
+      return when.all([ testExists, testDoesNotExist ]);
+    })
+    .then(function() {
+      done();
+    }, done);
+  });
+
+  it("Test .jpmignore for jpm test", function (done) {
+    process.chdir(jpmignorePath);
+    var manifest = require(path.join(jpmignorePath, "package.json"));
+    var newXpiPath = path.join(jpmignorePath, "@test-jpmignore.xpi");
+    // Copy in a XPI since we remove it between tests for cleanup
+    xpi(manifest, { command: "test" })
+    .then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    })
+    .then(function (xpiPath) {
+      var testExists = when.all([ "!important!.txt", "index.js", "package.json", "mozilla-sha1/sha1.c", "negated/jpmkeep", "test/test", "test/tests", "tests/test", "tests/test" ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(true);
+          });
+        });
+
+      var testDoesNotExist = when.all([ ".jpmignore", "cat-file.c", "some.txt", "a", "ignore" ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(false);
+          });
+        });
+
+      return when.all([ testExists, testDoesNotExist ]);
+    })
+    .then(function() {
+      done();
+    }, done);
   });
 });
