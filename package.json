@@ -27,6 +27,7 @@
     "firefox-profile": "0.2.9",
     "jsontoxml": "0.0.11",
     "lodash": "2.4.1",
+    "minimatch": "^2.0.1",
     "tmp": "0.0.24",
     "open": "0.0.5",
     "promzard": "0.2.2",
