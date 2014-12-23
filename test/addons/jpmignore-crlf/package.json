@@ -1,0 +1,11 @@
+{
+  "title": "test .jpmignore crlf",
+  "name": "test-jpmignore-crlf",
+  "description": "test .jpmignore crlf",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "Firefox": ">=34"
+  }
+}

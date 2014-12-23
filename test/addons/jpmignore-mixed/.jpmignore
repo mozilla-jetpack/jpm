@@ -1,0 +1,5 @@
+# ends with CRLF
+.*
+# ends with LF
+ignore
+# EOF
