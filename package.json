@@ -10,6 +10,7 @@
     "test": "node ./test/run.js",
     "addons": "node ./test/run.js addons",
     "functional": "node ./test/run.js functional",
+    "addon_runners": "node ./test/run.js addon_runners",
     "unit": "node ./test/run.js unit"
   },
   "homepage": "https://github.com/mozilla/jpm",

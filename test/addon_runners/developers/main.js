@@ -12,7 +12,7 @@ exports.testDevelopers = function*(assert) {
   let count = 0;
   addon.developers.forEach(({ name }) => {
     assert.equal(name, ++count == 1 ? 'A' : 'B', 'The developers keys is correct');
-    assert.equal(name, options.developers[count], 'The developers keys matches package.json');
+    assert.equal(name, options.developers[count - 1], 'The developers keys matches package.json');
   });
   assert.equal(count, 2, 'The key count is correct');
   assert.equal(addon.developers.length, 2, 'The key length is correct');
