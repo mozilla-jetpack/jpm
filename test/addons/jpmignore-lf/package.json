@@ -1,0 +1,11 @@
+{
+  "title": "test .jpmignore lf",
+  "name": "test-jpmignore-lf",
+  "description": "test .jpmignore lf",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "Firefox": ">=34"
+  }
+}
