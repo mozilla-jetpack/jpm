@@ -171,6 +171,22 @@ describe("jpm init", function () {
       done();
     });
   });
+
+  it("creates a .jpmignore file", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    var responses = ["", "", "v0.4.0-rc4", "", "", "", "", "", "yes"];
+
+    var proc = respond(exec("init"), responses.map(function (val) {
+      return val + '\n';
+    }));
+    proc.on("close", function () {
+      var ignorePath = path.join(utils.tmpOutputDir, ".jpmignore");
+      expect(fs.existsSync(ignorePath)).to.be.equal(true);
+      var ignore = fs.readFileSync(ignorePath, "utf-8");
+      expect(ignore).to.be.equal("@tmp.xpi");
+      done();
+    });
+  });
 });
 
 /**
