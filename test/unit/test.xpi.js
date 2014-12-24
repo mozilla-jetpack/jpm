@@ -78,7 +78,7 @@ describe("lib/xpi", function () {
   it("Does not zip up hidden files or test directory", function (done) {
     process.chdir(extraFilesPath);
     var manifest = require(path.join(extraFilesPath, "package.json"));
-    var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
+
     // Copy in a XPI since we remove it between tests for cleanup
     xpi(manifest)
     .then(function (xpiPath) {
@@ -100,7 +100,7 @@ describe("lib/xpi", function () {
   it("Does zip test directory for jpm test", function (done) {
     process.chdir(extraFilesPath);
     var manifest = require(path.join(extraFilesPath, "package.json"));
-    var newXpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
+
     // Copy in a XPI since we remove it between tests for cleanup
     xpi(manifest, { command: "test" })
     .then(function (xpiPath) {
@@ -220,10 +220,60 @@ describe("lib/xpi", function () {
     .catch(done);
   });
 
+  it("Test default .jpmignore rules", function (done) {
+    process.chdir(extraFilesPath);
+    var ID_XPI = "extra-files@jpm.xpi";
+    var manifest = require(path.join(extraFilesPath, "package.json"));
+
+    // Copy in a XPI since we remove it between tests for cleanup
+    xpi(manifest).
+    then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    }).
+    then(function () {
+      return when.all([ ".hidden", ".hidden-dir", "test", ID_XPI ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(false);
+          });
+        });
+    }).
+    then(function() {
+      return when.all([ ID_XPI ]
+        .map(function (p) { return path.join(extraFilesPath, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(true);
+          });
+        });
+    }).
+    // re-test with xpi now in place
+    then(function() {
+      return xpi(manifest);
+    }).
+    then(function (xpiPath) {
+      return utils.unzipTo(xpiPath, tmpOutputDir);
+    }).
+    then(function () {
+      return when.all([ ".hidden", ".hidden-dir", "test", ID_XPI ]
+        .map(function (p) { return path.join(tmpOutputDir, p); })
+        .map(function (p) { return fs.exists(p); }))
+        .then(function (results) {
+          results.forEach(function (exists) {
+            expect(exists).to.be.equal(false);
+          });
+        });
+    }).
+    then(done, done);
+  });
+
   it("Test .jpmignore", function (done) {
     process.chdir(jpmignorePath);
     var manifest = require(path.join(jpmignorePath, "package.json"));
-    var newXpiPath = path.join(jpmignorePath, "@test-jpmignore.xpi");
+
     // Copy in a XPI since we remove it between tests for cleanup
     xpi(manifest)
     .then(function (xpiPath) {
@@ -258,7 +308,7 @@ describe("lib/xpi", function () {
   it("Test .jpmignore for jpm test", function (done) {
     process.chdir(jpmignorePath);
     var manifest = require(path.join(jpmignorePath, "package.json"));
-    var newXpiPath = path.join(jpmignorePath, "@test-jpmignore.xpi");
+
     // Copy in a XPI since we remove it between tests for cleanup
     xpi(manifest, { command: "test" })
     .then(function (xpiPath) {
@@ -293,7 +343,7 @@ describe("lib/xpi", function () {
   it("Test .jpmignore with LF line-endings", function (done) {
     process.chdir(jpmignoreLFPath);
     var manifest = require(path.join(jpmignoreLFPath, "package.json"));
-    var newXpiPath = path.join(jpmignoreLFPath, "@test-jpmignore-lf.xpi");
+
     // Copy in a XPI since we remove it between tests for cleanup
     xpi(manifest)
     .then(function (xpiPath) {
@@ -328,7 +378,7 @@ describe("lib/xpi", function () {
   it("Test .jpmignore with CRLF line-endings", function (done) {
     process.chdir(jpmignoreCRLFPath);
     var manifest = require(path.join(jpmignoreCRLFPath, "package.json"));
-    var newXpiPath = path.join(jpmignoreCRLFPath, "@test-jpmignore-crlf.xpi");
+
     // Copy in a XPI since we remove it between tests for cleanup
     xpi(manifest)
     .then(function (xpiPath) {
@@ -363,7 +413,7 @@ describe("lib/xpi", function () {
   it("Test .jpmignore with mixed line-endings", function (done) {
     process.chdir(jpmignoreMixedPath);
     var manifest = require(path.join(jpmignoreMixedPath, "package.json"));
-    var newXpiPath = path.join(jpmignoreMixedPath, "@test-jpmignore-mixed.xpi");
+
     // Copy in a XPI since we remove it between tests for cleanup
     xpi(manifest)
     .then(function (xpiPath) {
