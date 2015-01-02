@@ -50,6 +50,7 @@ program
   .command("test")
   .description("Run tests for current addon")
   .action(cmd.prepare("test", program, function (manifest) {
+    process.env.NODE_ENV = "test";
     require("../lib/test-cmd").run(manifest, program);
     /*
     test(manifest, program).then(function(results) {

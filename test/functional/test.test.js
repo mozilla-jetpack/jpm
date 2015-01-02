@@ -13,7 +13,7 @@ var when = require("when");
 var addonsPath = path.join(__dirname, "..", "fixtures");
 
 var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
-
+/*
 describe("jpm test", function () {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
@@ -50,3 +50,4 @@ describe("jpm test", function () {
     });
   });
 });
+*/

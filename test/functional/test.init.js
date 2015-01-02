@@ -184,20 +184,17 @@ describe("jpm init", function () {
  * @param {Function} fn
  * @return {Object}
  */
-
-function respond (proc, responses, fn) {
+function respond (proc, responses) {
   var count = 0;
-  proc.stdout.on("data", sendResponse);
-  function sendResponse (data) {
-    if (fn)
-      fn(data);
+  proc.stdout.on("data", function sendResponse (data) {
     proc.stdin.write(responses[count++], "utf-8");
 
     if (count > responses.length) {
       proc.stdout.off("data", sendResponse);
       proc.stdin.end();
     }
-  }
+  })
+
   return proc;
 }
 

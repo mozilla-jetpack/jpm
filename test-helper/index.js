@@ -4,11 +4,14 @@
 "use strict";
 
 var self = require('sdk/self');
-const AddonInstaller = require("sdk/addon/installer");
+const { install } = require("sdk/addon/installer");
 
-//const { AddonManager } = require("resource://gre/modules/AddonManager.jsm");
+console.log("init!")
+
 
 // Install test add-on
-AddonInstaller.install(self.data.url("test-addon.xpi")).then(() => {
+install(self.data.url("test-addon.xpi")).then(() => {
   // disable/uninstall itself?
-});
+  console.log("install!!")
+}).catch(console.exception);
+

@@ -1,4 +1,5 @@
 {
+  "id": "jpm-test-helper@jpm",
   "title": "JPM Test Helper",
   "name": "jpm-test-helper",
   "version": "0.0.1",
@@ -9,5 +10,6 @@
     "firefox": ">=33.0a1",
     "fennec": ">=33.0a1"
   },
-  "license": "MPL v2.0"
+  "license": "MPL v2.0",
+  "unpack": true
 }
