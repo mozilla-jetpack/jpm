@@ -57,10 +57,10 @@ program
   }));
 
 program
-  .command("init")
+  .command("init [name]")
   .description("Series of prompts to create a package.json for a new addon")
-  .action(function () {
-    init().then(process.exit);
+  .action(function (name) {
+    init({ name: name }).then(process.exit);
   });
 
 program
