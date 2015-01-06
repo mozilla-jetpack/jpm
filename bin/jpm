@@ -8,6 +8,7 @@ var test = require("../lib/test");
 var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var cmd = require("../lib/cmd");
+var open = require("open");
 
 program
   .version(VERSION)
@@ -20,12 +21,20 @@ program
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--prefs <path>", "Custom set user preferences (path to a json file)")
   .option("--stop-on-error", "Stop running tests after the first failure")
+  .option("--do-not-quit", "Do not close Firefox on a test failure")
   .option("--tbpl", "Print test output in TBPL format")
   .option("--times <n>", "Number of times to run tests")
   .option("--debug", "Enable the add-on debugger when running the add-on")
   .option("--check-memory", "Enable leaked tracker that attempts to report compartments leaked")
   .option("--profile-memory", "Enable profiling of memory usage")
   .option("--retro", "In development flag for transitioning to new style addons; forces the lack of install.rdf/bootstrap.js creation regardless of what engine versions are running");
+
+program
+  .command("docs")
+  .description("Open the JPM documentation")
+  .action(function() {
+    open("https://developer.mozilla.org/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29")
+  });
 
 program
   .command("xpi")

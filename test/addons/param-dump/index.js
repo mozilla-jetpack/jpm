@@ -33,6 +33,8 @@ const params = {
 
   filter: read("extensions.@param-dump.sdk.test.filter"),
   stopOnError: read("extensions.@param-dump.sdk.test.stop") === 1,
+  noQuit: read("extensions.@param-dump.sdk.test.no-quit"),
+  keepOpen: read("extensions.@param-dump.sdk.test.keepOpen"),
   times: read("extensions.@param-dump.sdk.test.iterations"),
 
   tbpl: read("extensions.@param-dump.sdk.output.format") === "tbpl",

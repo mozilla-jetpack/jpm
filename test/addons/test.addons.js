@@ -32,6 +32,8 @@ describe("jpm test addons", function () {
       var proc = exec("test", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("All tests passed!");
+        expect(stdout).to.not.contain("There were test failures.");
+        expect(stdout).to.not.contain("No tests were run");
         done();
       });
     });
