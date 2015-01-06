@@ -32,6 +32,7 @@ function tearDown (done) {
   process.chdir(prevCwd);
   rimraf(tmpOutputDir, function () {
     var paths = [
+      "../fixtures/**/*.xpi",
       "../addons/**/*.xpi",
       "../addons/**/bootstrap.js",
       "../addons/**/install.rdf"

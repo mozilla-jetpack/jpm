@@ -11,7 +11,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var xpi = require("../../lib/xpi");
 
-var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
+var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
 var aomUnsupportedPath = path.join(__dirname, "..", "addons", "aom-unsupported");
 var extraFilesPath = path.join(__dirname, "..", "addons", "extra-files");
 var jpmignorePath = path.join(__dirname, "..", "addons", "jpmignore");
@@ -27,13 +27,18 @@ describe("lib/xpi", function () {
   it("Zips up cwd's addon", function (done) {
     process.chdir(simpleAddonPath);
     var manifest = require(path.join(simpleAddonPath, "package.json"));
-    xpi(manifest).then(function (xpiPath) {
+    var xpiPath;
+    return xpi(manifest).then(function (filePath) {
+      xpiPath = filePath;
       expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
                                             "@simple-addon.xpi"));
-      utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
+      return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
         utils.compareDirs(simpleAddonPath, tmpOutputDir);
-        done();
       });
+    })
+    .then(function() {
+      fs.unlink(xpiPath);
+      done();
     })
     .catch(done);
   });
