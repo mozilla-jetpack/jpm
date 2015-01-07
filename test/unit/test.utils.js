@@ -111,8 +111,8 @@ describe("lib/utils", function () {
     var promises = [
       [[null, "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
       [[null, "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [[null, "linux", "x86"], "/usr/lib/firefox"],
-      [[null, "linux", "x86_64"], "/usr/lib64/firefox"]
+      [[null, "linux", "x86"], "/usr/lib/firefox/firefox"],
+      [[null, "linux", "x86_64"], "/usr/lib64/firefox/firefox"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -192,23 +192,23 @@ describe("lib/utils", function () {
     var promises = [
       [["firefox", "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
       [["firefox", "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [["firefox", "linux", "x86"], "/usr/lib/firefox"],
-      [["firefox", "linux", "x86_64"], "/usr/lib64/firefox"],
+      [["firefox", "linux", "x86"], "/usr/lib/firefox/firefox"],
+      [["firefox", "linux", "x86_64"], "/usr/lib64/firefox/firefox"],
 
       [["beta", "darwin", "x86"], "/Applications/FirefoxBeta.app/Contents/MacOS/firefox-bin"],
       [["beta", "darwin", "x86_64"], "/Applications/FirefoxBeta.app/Contents/MacOS/firefox-bin"],
-      [["beta", "linux", "x86"], "/usr/lib/firefox-beta"],
-      [["beta", "linux", "x86_64"], "/usr/lib64/firefox-beta"],
+      [["beta", "linux", "x86"], "/usr/lib/firefox-beta/firefox-beta"],
+      [["beta", "linux", "x86_64"], "/usr/lib64/firefox-beta/firefox-beta"],
 
       [["aurora", "darwin", "x86"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
       [["aurora", "darwin", "x86_64"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
-      [["aurora", "linux", "x86"], "/usr/lib/firefox-aurora"],
-      [["aurora", "linux", "x86_64"], "/usr/lib64/firefox-aurora"],
+      [["aurora", "linux", "x86"], "/usr/lib/firefox-aurora/firefox-aurora"],
+      [["aurora", "linux", "x86_64"], "/usr/lib64/firefox-aurora/firefox-aurora"],
 
       [["nightly", "darwin", "x86"], "/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin"],
       [["nightly", "darwin", "x86_64"], "/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin"],
-      [["nightly", "linux", "x86"], "/usr/lib/firefox-nightly"],
-      [["nightly", "linux", "x86_64"], "/usr/lib64/firefox-nightly"]
+      [["nightly", "linux", "x86"], "/usr/lib/firefox-nightly/firefox-nightly"],
+      [["nightly", "linux", "x86_64"], "/usr/lib64/firefox-nightly/firefox-nightly"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
