@@ -9,7 +9,7 @@ var fs = require("fs");
 var chai = require("chai");
 var expect = chai.expect;
 var assert = chai.assert;
-var exec = utils.exec;
+var jpm = utils.run;
 
 var addonsPath = path.join(__dirname, "..", "addons");
 var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
@@ -29,13 +29,8 @@ describe("jpm test addons", function () {
       if (process.env.DISPLAY) {
         options.env.DISPLAY = process.env.DISPLAY;
       }
-      var proc = exec("test", options, function (err, stdout, stderr) {
-        expect(err).to.not.be.ok;
-        expect(stdout).to.contain("All tests passed!");
-        expect(stdout).to.not.contain("There were test failures.");
-        expect(stdout).to.not.contain("No tests were run");
-        done();
-      });
+
+      jpm("test", options).then(done);
     });
   });
 });

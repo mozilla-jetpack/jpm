@@ -16,7 +16,7 @@ var addonsPath = path.join(__dirname, "..", "addons");
 var fixturesPath = path.join(__dirname, "..", "fixtures");
 
 var simpleAddonPath = path.join(addonsPath, "simple-addon");
-var errorAddonPath = path.join(addonsPath, "error-addon");
+var errorAddonPath = path.join(fixturesPath, "error-addon");
 var paramDumpPath = path.join(fixturesPath, "param-dump");
 var loaderOptionsPath = path.join(addonsPath, "loader-options");
 var overloadablePath = path.join(fixturesPath, "overloadable");

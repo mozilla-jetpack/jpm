@@ -12,7 +12,7 @@ var expect = chai.expect;
 var xpi = require("../../lib/xpi");
 
 var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
-var aomUnsupportedPath = path.join(__dirname, "..", "addons", "aom-unsupported");
+var aomUnsupportedPath = path.join(__dirname, "..", "fixtures", "aom-unsupported");
 var extraFilesPath = path.join(__dirname, "..", "addons", "extra-files");
 var jpmignorePath = path.join(__dirname, "..", "addons", "jpmignore");
 var jpmignoreLFPath = path.join(__dirname, "..", "addons", "jpmignore-lf");
