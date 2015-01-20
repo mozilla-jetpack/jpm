@@ -37,6 +37,18 @@ describe("jpm init", function () {
     });
   });
 
+  it("creates an addon with a custom name in a new directory", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    var responses = generateResponses();
+
+    var proc = respond(exec("init my-custom-name"), responses);
+    proc.on("close", function () {
+      var manifest = JSON.parse(fs.readFileSync(path.join(utils.tmpOutputDir, "my-custom-name", "package.json"), "utf-8"));
+      expect(manifest.name).to.be.equal("my-custom-name");
+      done();
+    });
+  });
+
   it("creates package.json with custom entries", function (done) {
     process.chdir(utils.tmpOutputDir);
     var responses = [
