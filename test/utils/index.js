@@ -21,6 +21,8 @@ var execFile = child_process.execFile;
 
 var tmpOutputDir = exports.tmpOutputDir = path.join(__dirname, "../", "tmp");
 
+var jpm = path.join(__dirname, "../../bin/jpm");
+
 // Before each test, make the temp directory and save cwd, and store JETPACK_ROOT env
 function setup (done) {
   prevJetpackRoot = process.env.JETPACK_ROOT;
@@ -37,6 +39,9 @@ function tearDown (done) {
   process.chdir(prevCwd);
   rimraf(tmpOutputDir, function () {
     var paths = [
+      "../fixtures/**/*.xpi",
+      "../fixtures/**/bootstrap.js",
+      "../fixtures/**/install.rdf",
       "../addons/**/*.xpi",
       "../addons/**/bootstrap.js",
       "../addons/**/install.rdf",
@@ -56,7 +61,7 @@ function exec (args, options, callback) {
   options = options || {};
   var env = _.extend({}, options.env, process.env);
 
-  return child_process.exec("node " + path.join(__dirname, "../../bin/jpm") + " " + args, {
+  return child_process.exec("node " + jpm + " " + args, {
     cwd: options.cwd || tmpOutputDir,
     env: env
   }, function (err, stdout, stderr) {
@@ -67,6 +72,49 @@ function exec (args, options, callback) {
   });
 }
 exports.exec = exec;
+
+function spawn (cmd, options) {
+  options = options || {};
+  var env = _.extend({}, options.env, process.env);
+
+  return child_process.spawn("node", [
+    jpm, cmd, "-v", "-f", options.filter || ""
+  ],
+  {
+    cwd: options.cwd || tmpOutputDir,
+    env: env
+  });
+}
+exports.spawn = spawn;
+
+function run (cmd, options, p) {
+  return when.promise(function(resolve) {
+    var output = [];
+    var proc = spawn(cmd, options);
+    proc.stderr.pipe(process.stderr);
+    proc.stdout.on("data", function (data) {
+      output.push(data);
+    });
+    if (p) {
+      proc.stdout.pipe(p.stdout);
+    }
+    proc.on("close", function(code) {
+      var out = output.join("");
+      var noTests = /No tests were run/.test(out);
+      var hasSuccess = /All tests passed!/.test(out);
+      var hasFailure = /There were test failures\.\.\./.test(out);
+      if (noTests || hasFailure || !hasSuccess || code != 0) {
+        process.stdout.write(out);
+      }
+      expect(code).to.equal(hasFailure ? 1 : 0);
+      expect(hasFailure).to.equal(false);
+      expect(hasSuccess).to.equal(true);
+      expect(noTests).to.equal(false);
+      resolve();
+    });
+  });
+}
+exports.run = run;
 
 function unzipTo (xpiPath, outputDir) {
   return when.promise(function(resolve, reject) {
