@@ -12,7 +12,7 @@ var utils = require("../utils");
 var validate = require("../../lib/validate");
 
 var simpleAddonPath = join(__dirname, "..", "addons", "simple-addon");
-var aomUnsupportedPath = join(__dirname, "..", "addons", "aom-unsupported");
+var aomUnsupportedPath = join(__dirname, "..", "fixtures", "aom-unsupported");
 var fixtures = join(__dirname, "fixtures", "validate");
 
 describe("lib/validate", function () {

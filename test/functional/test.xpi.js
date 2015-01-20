@@ -10,7 +10,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var exec = utils.exec;
 
-var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
+var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
 
 describe("jpm xpi", function () {
   beforeEach(utils.setup);
@@ -23,6 +23,7 @@ describe("jpm xpi", function () {
       var xpiPath = path.join(simpleAddonPath, "@simple-addon.xpi");
       utils.unzipTo(xpiPath, utils.tmpOutputDir).then(function () {
         utils.compareDirs(simpleAddonPath, utils.tmpOutputDir);
+        fs.unlink(xpiPath);
         done();
       });
     });

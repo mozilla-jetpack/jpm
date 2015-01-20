@@ -8,12 +8,42 @@ const sp = require('sdk/simple-prefs');
 const app = require('sdk/system/xul-app');
 const self = require('sdk/self');
 const { preferencesBranch } = self;
-const { open } = require('sdk/preferences/utils');
-const { getTabForId } = require('sdk/tabs/utils');
+const { getTabForId, openTab, getBrowserForTab, getTabId } = require('sdk/tabs/utils');
 const { Tab } = require('sdk/tabs/tab');
+const { on, off } = require("sdk/system/events");
+const { getMostRecentBrowserWindow } = require('sdk/window/utils');
 require('sdk/tabs');
 
 const { AddonManager } = Cu.import('resource://gre/modules/AddonManager.jsm', {});
+
+// Opens about:addons in a new tab, then displays the inline
+// preferences of the provided add-on
+const open = ({ id }) => new Promise((resolve, reject) => {
+  // opening the about:addons page in a new tab
+  let tab = openTab(getMostRecentBrowserWindow(), "about:addons");
+  let browser = getBrowserForTab(tab);
+
+  // waiting for the about:addons page to load
+  browser.addEventListener("load", function onPageLoad() {
+    browser.removeEventListener("load", onPageLoad, true);
+    let window = browser.contentWindow;
+
+    // wait for the add-on's "addon-options-displayed"
+    on("addon-options-displayed", function onPrefDisplayed({ subject: doc, data }) {
+      if (data === id) {
+        off("addon-options-displayed", onPrefDisplayed);
+        resolve({
+          id: id,
+          tabId: getTabId(tab),
+          "document": doc
+        });
+      }
+    }, true);
+
+    // display the add-on inline preferences page
+    window.gViewController.commands.cmd_showItemDetails.doCommand({ id: id }, true);
+  }, true);
+});
 
 exports.testDefaultValues = function (assert) {
   assert.equal(sp.prefs.myHiddenInt, 5, 'myHiddenInt default is 5');
