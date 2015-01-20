@@ -39,6 +39,7 @@
     "jetpack-validation": "0.0.4",
     "winreg": "0.0.12",
     "when": "3.6.4",
+    "which": "^1.0.8",
     "zip-dir": "0.2.1"
   },
   "devDependencies": {
