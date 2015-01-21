@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+var when = require("when");
 var fs = require("fs-promise");
 var path = require("path");
 var utils = require("../utils");
@@ -11,6 +12,9 @@ var FirefoxProfile = require("firefox-profile");
 var expect = chai.expect;
 var exec = utils.exec;
 var isWindows = /^win/.test(process.platform);
+var normalizeBinary = require("../../lib/utils").normalizeBinary;
+var FirefoxProfileFinder = require('firefox-profile/lib/profile_finder');
+var cp = require("child_process");
 
 var addonsPath = path.join(__dirname, "..", "addons");
 var fixturesPath = path.join(__dirname, "..", "fixtures");
@@ -199,13 +203,41 @@ describe("jpm run", function () {
       });
     });
 
-    it("Passes in a profile name to Firefox with -P", function (done) {
+    it("Passes in a profile name results in -p <path>", function (done) {
       process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary + " -p MY_PROFILE", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
-        expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-P MY_PROFILE");
-        done();
-      });
+
+      // find firefox nightly
+      normalizeBinary("nightly").then(function(path) {
+        var cmd = path + " -CreateProfile \"jpm-test\"";
+
+        // Create a profile
+        cp.exec(cmd, null, function(err, stdout, stderr) {
+          var finder = new FirefoxProfileFinder();
+          when.promise(function(resolve, reject) {
+            finder.getPath("jpm-test", function(err, path) {
+              if (err) {
+                reject(err);
+              }
+              else {
+                resolve(path);
+              }
+
+              return null;
+            });
+          }).
+          then(function(profilePath) {
+            var cmd = "run -v -b " + fakeBinary + " -p jpm-test";
+            // jpm run -b fakeBinary -p jpm-test
+            var proc = exec(cmd, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+              expect(err).to.not.be.ok;
+              expect(stdout).to.not.contain("-P jpm-test");
+              expect(stdout).to.not.contain("-profile " + profilePath);
+              expect(/-profile .+copy/.test(stdout)).to.be.ok;
+              done();
+            });
+          });
+        })
+      })
     });
 
     describe("options passed to an add-on", function() {
