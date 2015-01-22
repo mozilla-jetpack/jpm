@@ -205,14 +205,19 @@ describe("jpm run", function () {
 
     it("Passes in a profile name results in -p <path>", function (done) {
       process.chdir(simpleAddonPath);
+      var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
 
       // find firefox nightly
-      normalizeBinary("nightly").then(function(path) {
+      normalizeBinary(binary).then(function(path) {
         var cmd = path + " -CreateProfile \"jpm-test\"";
+        process.stdout.write(cmd);
 
         // Create a profile
         cp.exec(cmd, null, function(err, stdout, stderr) {
-          console.log(stdout);
+          process.stdout.write(stdout);
+          process.stdout.write(stderr);
+          process.stdout.write(err);
+
           var finder = new FirefoxProfileFinder();
           when.promise(function(resolve, reject) {
             finder.getPath("jpm-test", function(err, path) {
