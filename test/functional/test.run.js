@@ -216,7 +216,6 @@ describe("jpm run", function () {
         cp.exec(cmd, null, function(err, stdout, stderr) {
           process.stdout.write(stdout);
           process.stdout.write(stderr);
-          process.stdout.write(err);
 
           var finder = new FirefoxProfileFinder();
           when.promise(function(resolve, reject) {
