@@ -12,7 +12,7 @@ var FirefoxProfile = require("firefox-profile");
 var expect = chai.expect;
 var exec = utils.exec;
 var isWindows = /^win/.test(process.platform);
-var normalizeBinary = require("../../lib/utils").normalizeBinary;
+var normalizeBinary = require("fx-runner/lib/utils").normalizeBinary;
 var FirefoxProfileFinder = require('firefox-profile/lib/profile_finder');
 var cp = require("child_process");
 
@@ -154,9 +154,9 @@ describe("jpm run", function () {
   describe("-b/--binary <BINARY>", function () {
     it("Uses specified binary instead of default Firefox", function (done) {
       process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-profile");
+        expect(stdout).to.be.equal("");
         done();
       });
     });
