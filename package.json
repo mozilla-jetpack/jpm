@@ -22,7 +22,7 @@
     "colors": "1.0.3",
     "commander": "2.6.0",
     "fs-promise": "0.3.1",
-    "fs-extra": "0.14.0",
+    "fs-extra": "0.15.0",
     "fx-runner": "0.0.6",
     "jpm-core": "0.0.4",
     "jetpack-id": "0.0.4",
