@@ -212,6 +212,7 @@ describe("jpm run", function () {
 
         // Create a profile
         cp.exec(cmd, null, function(err, stdout, stderr) {
+          console.log(stdout);
           var finder = new FirefoxProfileFinder();
           when.promise(function(resolve, reject) {
             finder.getPath("jpm-test", function(err, path) {
