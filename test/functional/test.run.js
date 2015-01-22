@@ -188,6 +188,7 @@ describe("jpm run", function () {
       var proc = exec("run -v -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile ");
+        expect(stdout).to.not.contain("-no-copy");
         done();
       });
     });
@@ -199,6 +200,30 @@ describe("jpm run", function () {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile ");
         expect(stdout).to.not.contain("-profile " + tempProfile.profileDir);
+        expect(stdout).to.not.contain("-no-copy");
+        done();
+      });
+    });
+
+    it("Does not pass in a temporary profile path instead of the original with --no-copy", function (done) {
+      process.chdir(simpleAddonPath);
+      var tempProfile = new FirefoxProfile();
+      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-profile ");
+        expect(stdout).to.contain("-profile " + tempProfile.profileDir);
+        expect(stdout).to.not.contain("-no-copy");
+        done();
+      });
+    });
+
+    it("--no-copy alone passes in a temporary profile path instead of the original", function (done) {
+      process.chdir(simpleAddonPath);
+      var tempProfile = new FirefoxProfile();
+      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-profile " + tempProfile.profileDir);
+        expect(stdout).to.not.contain("-no-copy");
         done();
       });
     });

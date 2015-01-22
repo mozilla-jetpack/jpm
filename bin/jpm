@@ -14,6 +14,7 @@ program
   .version(VERSION)
   .option("-b, --binary <path>", "Path of Firefox binary to use.")
   .option("-p, --profile <path>", "Path or name of Firefox profile to use.")
+  .option("--no-copy", "Do not copy the profile.  Use with caution!")
   .option("-v, --verbose", "More verbose logging to stdout.")
   .option("-o, --overload [path]", "Overloads the built-in Firefox SDK modules with a local copy located at environment variable `JETPACK_ROOT` or `path` if supplied. Used for development on the SDK itself.")
   .option("-f, --filter <pattern>", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
