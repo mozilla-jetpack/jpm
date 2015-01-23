@@ -9,6 +9,7 @@ var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var cmd = require("../lib/cmd");
 var open = require("open");
+var postXPI = require("../lib/post");
 
 program
   .version(VERSION)
@@ -21,6 +22,7 @@ program
                       "optionally match TESTNAME, both regexps")
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--prefs <path>", "Custom set user preferences (path to a json file)")
+  .option("--post-url <url>", "A url to post a xpi of your extension")
   .option("--stop-on-error", "Stop running tests after the first failure")
   .option("--do-not-quit", "Do not close Firefox on a test failure")
   .option("--tbpl", "Print test output in TBPL format")
@@ -46,6 +48,13 @@ program
     }, function (reason) {
       console.error("xpi creation failed: " + reason);
     });
+  }));
+
+program
+  .command("post")
+  .description("Bundle the addon into an .xpi file and post it to a url")
+  .action(cmd.prepare("post", program, function (manifest) {
+    postXPI(manifest, program);
   }));
 
 program
