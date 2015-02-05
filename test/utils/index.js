@@ -120,7 +120,7 @@ exports.unzipTo = unzipTo;
 
 
 function filterXPI (filename) {
-  return !/^(?:[^\.]*\.xpi|install.rdf|bootstrap.js)$/.test(filename);
+  return !/^(?:.*\.xpi|install.rdf|bootstrap.js)$/.test(filename);
 }
 
 function compareDirs (dir1, dir2) {
