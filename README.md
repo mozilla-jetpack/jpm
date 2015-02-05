@@ -46,6 +46,11 @@ npm link
 * `jpm test` Tests the current addon.
 * `jpm xpi` Zips up the current addon into a `.xpi` file.
 
+### Documentation
+
+* [Getting Started Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
+* [Command Line Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
+
 ### Examples
 
 Run current addon with Firefox Nightly on OSX:
