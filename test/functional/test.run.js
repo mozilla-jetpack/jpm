@@ -135,7 +135,9 @@ describe("jpm run", function () {
       var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run -v", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout.split("\n").length).to.be.gt(20);
+        expect(stdout.split("\n").length).to.be.gt(2);
+        expect(stdout).to.contain("PARAMS DUMP START");
+        expect(stdout).to.contain("PARAMS DUMP END");
         done();
       });
     });
@@ -156,7 +158,7 @@ describe("jpm run", function () {
       process.chdir(simpleAddonPath);
       var proc = exec("run -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.be.equal("");
+        expect(stdout).to.contain("-foreground -no-remote -profile");
         done();
       });
     });

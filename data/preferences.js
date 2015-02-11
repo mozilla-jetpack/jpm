@@ -30,6 +30,8 @@ exports.DEFAULT_COMMON_PREFS = {
     // Allow installing extensions dropped into the profile folder
     "extensions.autoDisableScopes" : 10,
 
+    "extensions.logging.enabled": false,
+
     // Disable app update
     "app.update.enabled" : false,
 
