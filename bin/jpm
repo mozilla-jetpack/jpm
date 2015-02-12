@@ -9,6 +9,12 @@ var xpi = require("../lib/xpi");
 var init = require("../lib/init");
 var cmd = require("../lib/cmd");
 var open = require("open");
+var postXPI = require("../lib/post");
+var watch = require("node-watch");
+var cp = require('child_process');
+
+// TODO: use .jpmignore file here instead
+var IGNORE_FILES_REGEX = /(?:bootstrap\.js|install\.rdf|\.xpi)$/i;
 
 program
   .version(VERSION)
@@ -21,6 +27,7 @@ program
                       "optionally match TESTNAME, both regexps")
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--prefs <path>", "Custom set user preferences (path to a json file)")
+  .option("--post-url <url>", "A url to post a xpi of your extension")
   .option("--stop-on-error", "Stop running tests after the first failure")
   .option("--do-not-quit", "Do not close Firefox on a test failure")
   .option("--tbpl", "Print test output in TBPL format")
@@ -46,6 +53,39 @@ program
     }, function (reason) {
       console.error("xpi creation failed: " + reason);
     });
+  }));
+
+program
+  .command("post")
+  .description("*EXPERIMENTAL* Bundle the addon into an .xpi file and post it to a url")
+  .action(cmd.prepare("post", program, function (manifest) {
+    postXPI(manifest, program);
+  }));
+
+program
+  .command("watchpost")
+  .description("*EXPERIMENTAL* Bundle the addon into an .xpi file and post it to a url, whenever your add-on changes")
+  .action(cmd.prepare("watchpost", program, function (manifest) {
+    postXPI(manifest, program);
+    watch(process.cwd(), function(filename) {
+      // ignore install.rdf, boostrap.js, xpi files to avoid infinite loops
+      if (IGNORE_FILES_REGEX.test(filename)) {
+        return null;
+      }
+
+      var subProcess = cp.spawn("node", [
+        __filename,
+        "post",
+        "--post-url",
+        program.postUrl
+      ]);
+      subProcess.stdout.pipe(process.stdout);
+      subProcess.stderr.pipe(process.stderr);
+
+      return null;
+    });
+
+    return null;
   }));
 
 program

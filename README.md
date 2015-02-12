@@ -38,6 +38,7 @@ npm link
 * `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or otherwise assumed to be a profile name.
 * `--prefs [path]` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
 * `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
+* `--post-url <URL>` **experimental** Used to post a xpi to a URL.
 
 ### Commands
 
@@ -45,6 +46,10 @@ npm link
 * `jpm run` Runs the current addon.
 * `jpm test` Tests the current addon.
 * `jpm xpi` Zips up the current addon into a `.xpi` file.
+* `jpm post` **experimental** Zips up the current addon into a `.xpi` file and post that to the `--post-url`.
+* `jpm watchpost` **experimental** Zips up the current addon into a `.xpi` file and post that to the `--post-url`,
+  everytime a file in the current working directory changes.
+
 
 ### Documentation
 
@@ -55,21 +60,15 @@ npm link
 
 Run current addon with Firefox Nightly on OSX:
 
-```
-jpm run -b /Applications/FirefoxNightly.app
-```
+    jpm run -b /Applications/FirefoxNightly.app
 
 Turn current addon into a `.xpi` file for deployment and installation
 
-```
-jpm xpi
-```
+    jpm xpi
 
 Use local checkout of SDK modules for working on the SDK itself.
 
-```
-jpm run -o /path/to/addon-sdk
-```
+    jpm run -o /path/to/addon-sdk
 
 ## Transitioning From CFX
 
@@ -80,15 +79,35 @@ Currently, any add-on with unspecified engines, or engines supporting versions o
 
 To run the jpm test suite
 
-```
-npm test
-```
+    npm test
 
 To run just a specific type of test (functional, unit), run the associated script:
 
-```
-npm run unit
-```
+    npm run unit
+
+## Using Post and Watchpost
+
+**Note: this is experimental**
+
+### Setup
+
+**First**, you must have the [Extension Auto-Installer](https://addons.mozilla.org/en-US/firefox/addon/autoinstaller/)
+installed on Firefox.
+
+**Second**, you must have `wget` installed for now, for OSX use `brew install wget`.
+
+### Usage
+
+Once this is done, setup a watchpost:
+
+    jpm watchpost --post-url http://localhost:8888/
+
+This will post a new xpi to your installed Extension Auto-Installer
+which will then install the new xpi.  CTRL + Z will terminate the process.
+
+For a simple xpi and post, use:
+
+    jpm post --post-url http://localhost:8888/
 
 ## License
 
