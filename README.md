@@ -36,6 +36,7 @@ npm link
 * `--binary-args <CMDARGS>` Passes the additional arguments into Firefox. Multiple arguments must be enclosed in quotes.
 * `--debug` Enable the add-on debugger when running the add-on.
 * `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or otherwise assumed to be a profile name.
+* `--prefs [path]` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
 * `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
 
 ### Commands
@@ -44,6 +45,11 @@ npm link
 * `jpm run` Runs the current addon.
 * `jpm test` Tests the current addon.
 * `jpm xpi` Zips up the current addon into a `.xpi` file.
+
+### Documentation
+
+* [Getting Started Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
+* [Command Line Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
 
 ### Examples
 

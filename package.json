@@ -1,6 +1,6 @@
 {
   "name": "jpm",
-  "version": "0.0.23",
+  "version": "0.0.25",
   "description": "Jetpack Mechanic utilities for creating, testing, running and packaging Mozilla Jetpack Addons",
   "main": "index.js",
   "bin": {
@@ -24,7 +24,7 @@
     "fs-promise": "0.3.1",
     "fs-extra": "0.15.0",
     "fx-runner": "0.0.7",
-    "jpm-core": "0.0.6",
+    "jpm-core": "0.0.8",
     "jetpack-id": "0.0.4",
     "jetpack-validation": "0.0.4",
     "firefox-profile": "0.3.6",
