@@ -53,5 +53,10 @@
     "xmldom": "0.1.19"
   },
   "author": "Jordan Santell",
-  "license": "MPL v2.0"
+  "license": "MPL v2.0",
+  "locales": {
+    "es": {
+      "description": "Utilidades Mecánico Jetpack para crear, probar, ejecutar y empacar Mozilla Jetpack Addons"
+    }
+  }
 }
