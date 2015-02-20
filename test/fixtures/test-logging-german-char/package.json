@@ -1,0 +1,8 @@
+{
+  "name": "test-logging-german-char",
+  "title": "Test Logging German Char",
+  "id": "test-logging-german-char@jetpack",
+  "main": "index.js",
+  "license": "MPL 2.0",
+  "version": "0.0.1"
+}
