@@ -93,14 +93,32 @@ describe("lib/rdf", function () {
       expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
     });
 
-    it("iconURL uses `icon`", function () {
-      var xml = setupRDF({ icon: "megaman.png" });
-      expect(getData(xml, "em:iconURL")).to.be.equal("megaman.png");
+    it("iconURL transforms `icon` to a resource url", function () {
+      var xml = setupRDF({ id: "icon@jetpack", icon: "megaman.png" });
+      expect(getData(xml, "em:iconURL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
     });
 
-    it("icon64URL uses `icon64`", function () {
-      var xml = setupRDF({ icon64: "megaman.png" });
-      expect(getData(xml, "em:icon64URL")).to.be.equal("megaman.png");
+    it("icon64URL transforms `icon64` to a resource url", function () {
+      var xml = setupRDF({ id: "icon@jetpack", icon64: "megaman.png" });
+      expect(getData(xml, "em:icon64URL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
+    });
+
+    it("iconURL uses a url without modifying it", function () {
+      var xml1 = setupRDF({ id: "icon@jetpack", icon: "http://mozilla.org/icon.png" });
+      expect(getData(xml1, "em:iconURL")).to.be.equal("http://mozilla.org/icon.png");
+      var xml2 = setupRDF({ id: "icon@jetpack", icon: "chrome://icon-at-jetpack/icon.png" });
+      expect(getData(xml2, "em:iconURL")).to.be.equal("chrome://icon-at-jetpack/icon.png");
+      var xml3 = setupRDF({ id: "icon@jetpack", icon: "resource://icon-at-jetpack/megaman.png" });
+      expect(getData(xml3, "em:iconURL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
+    });
+
+    it("icon64URL uses a url without modifying it", function () {
+      var xml1 = setupRDF({ id: "icon@jetpack", icon64: "http://mozilla.org/icon.png" });
+      expect(getData(xml1, "em:icon64URL")).to.be.equal("http://mozilla.org/icon.png");
+      var xml2 = setupRDF({ id: "icon@jetpack", icon64: "chrome://icon-at-jetpack/icon.png" });
+      expect(getData(xml2, "em:icon64URL")).to.be.equal("chrome://icon-at-jetpack/icon.png");
+      var xml3 = setupRDF({ id: "icon@jetpack", icon64: "resource://icon-at-jetpack/megaman.png" });
+      expect(getData(xml3, "em:icon64URL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
     });
 
     it("updateURL uses `updateURL`", function () {
