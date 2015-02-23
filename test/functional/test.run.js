@@ -236,7 +236,7 @@ describe("jpm run", function () {
 
       // find firefox nightly
       normalizeBinary(binary).then(function(path) {
-        var cmd = path + " -CreateProfile \"jpm-test\"";
+        var cmd = path + " --no-remote -CreateProfile \"jpm-test\"";
 
         // Create a profile
         cp.exec(cmd, null, function(err, stdout, stderr) {
