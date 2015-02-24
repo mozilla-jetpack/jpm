@@ -22,4 +22,4 @@ when you are ready.
 
 ## License
 
-[MPL 2.0](http://mozilla.org/MPL/2.0/)
+[MPL 2.0](https://mozilla.org/MPL/2.0/)
