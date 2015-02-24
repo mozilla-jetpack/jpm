@@ -29,18 +29,14 @@ describe("lib/utils", function () {
   });
 
   describe("getManifest", function() {
-    it("returns manifest in cwd()", function () {
-      process.chdir(simpleAddonPath);
-      return utils.getManifest().then(function(manifest) {
+    it("returns manifest in simple-addon directory", function () {
+      return utils.getManifest({addonDir: simpleAddonPath}).then(function(manifest) {
         expect(manifest.name).to.be.equal("simple-addon");
         expect(manifest.title).to.be.equal("My Simple Addon");
       });
     });
 
     it("returns manifest from custom XPI file", function () {
-      // Change into a non-package path.
-      process.chdir(path.join(__dirname, "..", "addons"));
-
       return utils.getManifest({xpiPath: simpleAddonXPI})
         .then(function(manifest) {
           expect(manifest.name).to.be.equal("simple-addon");
@@ -70,8 +66,8 @@ describe("lib/utils", function () {
     });
 
     it("returns {} when no package.json found", function () {
-      process.chdir(path.join(__dirname, "..", "addons"));
-      return utils.getManifest().then(function(manifest) {
+      var noAddonDir = path.join(__dirname, "..", "addons");
+      return utils.getManifest({addonDir: noAddonDir}).then(function(manifest) {
         expect(Object.keys(manifest).length).to.be.equal(0);
       });
     });

@@ -36,9 +36,8 @@ describe("jpm test", function () {
 
   it("test-success", function (done) {
     var addonPath = path.join(addonsPath, "test-success");
-    process.chdir(addonPath);
 
-    var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
+    var options = { addonDir: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
     var proc = exec("test", options, function (err, stdout, stderr) {
       expect(allTestPasses(stdout)).to.equal(true);
       expect(stdout).to.contain("All tests passed!");
@@ -51,9 +50,8 @@ describe("jpm test", function () {
 
   it("test-success with verbose", function (done) {
     var addonPath = path.join(addonsPath, "test-success");
-    process.chdir(addonPath);
 
-    var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
+    var options = { addonDir: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
     var proc = exec("test -v", options, function (err, stdout, stderr) {
       expect(allTestPasses(stdout)).to.equal(true);
       expect(stdout).to.contain("All tests passed!");
@@ -66,9 +64,8 @@ describe("jpm test", function () {
 
   it("test-failure", function (done) {
     var addonPath = path.join(addonsPath, "test-failure");
-    process.chdir(addonPath);
 
-    var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
+    var options = { addonDir: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
     var proc = exec("test", options, function (err, stdout, stderr) {
       expect(oneTestFails(stdout)).to.equal(true);
       expect(stdout).to.not.contain("All tests passed!");
@@ -83,9 +80,8 @@ describe("jpm test", function () {
 
   it("test-failure with verbose", function (done) {
     var addonPath = path.join(addonsPath, "test-failure");
-    process.chdir(addonPath);
 
-    var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
+    var options = { addonDir: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
     var proc = exec("test -v", options, function (err, stdout, stderr) {
       expect(oneTestFails(stdout)).to.equal(true);
       expect(stdout).to.not.contain("All tests passed!");
@@ -101,9 +97,8 @@ describe("jpm test", function () {
 
   it("test-logging-german-char", function (done) {
     var addonPath = path.join(addonsPath, "test-logging-german-char");
-    process.chdir(addonPath);
 
-    var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
+    var options = { addonDir: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
     var proc = exec("test -v", options, function (err, stdout, stderr) {
       expect(allTestPasses(stdout)).to.equal(true);
       expect(stdout).to.contain("All tests passed!");
