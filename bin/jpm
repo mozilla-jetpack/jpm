@@ -25,6 +25,7 @@ program
   .option("-o, --overload [path]", "Overloads the built-in Firefox SDK modules with a local copy located at environment variable `JETPACK_ROOT` or `path` if supplied. Used for development on the SDK itself.")
   .option("-f, --filter <pattern>", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
                       "optionally match TESTNAME, both regexps")
+  .option("--addon-dir <path>", "Path of Firefox addon to build.", process.cwd())
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--prefs <path>", "Custom set user preferences (path to a json file)")
   .option("--post-url <url>", "A url to post a xpi of your extension")
@@ -117,4 +118,3 @@ program.parse(process.argv);
 if (cmd.isEmptyCommand(program)) {
   program.help();
 }
-
