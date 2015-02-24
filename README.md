@@ -55,6 +55,7 @@ npm link
 
 * [Getting Started Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
 * [Command Line Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
+* [Transitioning From CFX](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx_to_jpm)
 
 ### Examples
 
@@ -69,13 +70,6 @@ Turn current add-on into a `.xpi` file for deployment and installation
 Use local checkout of SDK modules for working on the SDK itself.
 
     jpm run -o /path/to/addon-sdk
-
-## Transitioning From CFX
-
-Currently, any add-on with unspecified engines, or engines supporting versions of Firefox where
-[addons.mozilla.org](https://addons.mozilla.org)
-support for native jetpacks does not exist, jpm will add a `install.rdf` and `bootstrap.js` file for
-backwards compatibility.
 
 
 ## Testing
