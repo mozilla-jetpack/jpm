@@ -1,0 +1,17 @@
+github
+addon-sdk
+cfx
+xpi
+jpm
+npm
+nodejs
+wget
+osx
+post-url
+binary-args
+watchpost
+prefs
+ctrl
+jsantell
+erikvold
+gozala

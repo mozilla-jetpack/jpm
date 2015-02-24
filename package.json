@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node ./test/run.js",
     "addons": "node ./test/run.js addons",
+    "documentation": "node ./test/run.js documentation",
     "functional": "node ./test/run.js functional",
     "addon_runners": "node ./test/run.js addon_runners",
     "unit": "node ./test/run.js unit"
@@ -48,6 +49,7 @@
     "dive": "0.3.1",
     "mocha": "2.1.0",
     "glob": "4.3.5",
+    "teacher": "0.0.1",
     "rimraf": "2.2.8",
     "unzip": "0.1.11",
     "xmldom": "0.1.19"

@@ -31,24 +31,24 @@ npm link
 
 `jpm` has several commands: `run`, `xpi`, `init`, `test`, with details below. Some options are:
 
-* `-b, --binary <path>` Use the specified Firefox binary to run the addon. Used in `run` and `test`.
+* `-b, --binary <path>` Use the specified Firefox binary to run the add-on. Used in `run` and `test`.
 * `-v, --verbose` Prints additional debugging information.
-* `--binary-args <CMDARGS>` Passes the additional arguments into Firefox. Multiple arguments must be enclosed in quotes.
+* `--binary-args <CMDARGS>` Passes other arguments into Firefox. Enclose multiple arguments in quotes.
 * `--debug` Enable the add-on debugger when running the add-on.
-* `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or otherwise assumed to be a profile name.
+* `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or be considered a profile name.
 * `--prefs [path]` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
 * `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
 * `--post-url <URL>` **experimental** Used to post a xpi to a URL.
 
 ### Commands
 
-* `jpm init` Provides a series of prompts to create a `package.json` for an addon.
-* `jpm run` Runs the current addon.
-* `jpm test` Tests the current addon.
-* `jpm xpi` Zips up the current addon into a `.xpi` file.
-* `jpm post` **experimental** Zips up the current addon into a `.xpi` file and post that to the `--post-url`.
-* `jpm watchpost` **experimental** Zips up the current addon into a `.xpi` file and post that to the `--post-url`,
-  everytime a file in the current working directory changes.
+* `jpm init` Provides a series of prompts to create a `package.json` for an add-on.
+* `jpm run` Runs the current add-on.
+* `jpm test` Tests the current add-on.
+* `jpm xpi` Zips up the current add-on into a `.xpi` file.
+* `jpm post` **experimental** Zips up the current add-on into a `.xpi` file and post that to the `--post-url`.
+* `jpm watchpost` **experimental** Zips up the current add-on into a `.xpi` file and post that to the `--post-url`,
+  every time a file in the current working directory changes.
 
 
 ### Documentation
@@ -58,11 +58,11 @@ npm link
 
 ### Examples
 
-Run current addon with Firefox Nightly on OSX:
+Run current add-on with Firefox Nightly on OSX:
 
-    jpm run -b /Applications/FirefoxNightly.app
+    jpm run -b nightly
 
-Turn current addon into a `.xpi` file for deployment and installation
+Turn current add-on into a `.xpi` file for deployment and installation
 
     jpm xpi
 
@@ -72,7 +72,10 @@ Use local checkout of SDK modules for working on the SDK itself.
 
 ## Transitioning From CFX
 
-Currently, any add-on with unspecified engines, or engines supporting versions of Firefox where AOM support for native jetpacks does not exist, jpm will add a `install.rdf` and `bootstrap.js` file for backwards compatability.
+Currently, any add-on with unspecified engines, or engines supporting versions of Firefox where
+[addons.mozilla.org](https://addons.mozilla.org)
+support for native jetpacks does not exist, jpm will add a `install.rdf` and `bootstrap.js` file for
+backwards compatibility.
 
 
 ## Testing
@@ -98,12 +101,12 @@ installed on Firefox.
 
 ### Usage
 
-Once this is done, setup a watchpost:
+Once this has completed, setup a watchpost:
 
     jpm watchpost --post-url http://localhost:8888/
 
 This will watch for changes to the current working directory and post a new xpi to your installed
-Extension Auto-Installer which will then install the new xpi.  CTRL + Z will terminate the process.
+Extension Auto-Installer which will then install the new xpi.  To end the process, use the hokey, `CTRL + Z`.
 
 For a simple xpi and post, use:
 
