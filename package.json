@@ -19,6 +19,12 @@
     "type": "git",
     "url": "git://github.com/mozilla/jpm.git"
   },
+  "keywords": [
+    "firefox",
+    "mozilla",
+    "jetpack",
+    "jpm"
+  ],
   "dependencies": {
     "commander": "2.6.0",
     "fs-promise": "0.3.1",
