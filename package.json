@@ -19,6 +19,9 @@
     "type": "git",
     "url": "git://github.com/mozilla/jpm.git"
   },
+  "bugs": {
+    "url": "http://github.com/mozilla/jpm/issues"
+  },
   "keywords": [
     "firefox",
     "mozilla",
