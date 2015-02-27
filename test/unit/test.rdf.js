@@ -25,13 +25,19 @@ describe("lib/rdf", function () {
       expect(getData(xml, "em:unpack")).to.be.equal("false");
       expect(getData(xml, "em:type")).to.be.equal("2");
       expect(getData(xml, "em:name")).to.be.equal("Untitled");
-      expect(getData(xml, "em:iconURL")).to.be.equal("icon.png");
-      expect(getData(xml, "em:icon64URL")).to.be.equal("icon64.png");
+      expect(getData(xml, "em:description")).to.be.equal(undefined);
+      expect(getData(xml, "em:iconURL")).to.be.equal(undefined);
+      expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
+      expect(getData(xml, "em:translator")).to.be.equal(undefined);
+      expect(getData(xml, "em:contributor")).to.be.equal(undefined);
       expect(str.indexOf("homepageURL")).to.be.equal(-1);
       ["description", "creator"].forEach(function (field) {
         expect(nodeEmpty(xml, "em:" + field)).to.be.equal(true);
       });
 
+      expect(nodeExists(xml, "em:description")).to.be.equal(false);
+      expect(nodeExists(xml, "em:iconURL")).to.be.equal(false);
+      expect(nodeExists(xml, "em:icon64URL")).to.be.equal(false);
       expect(nodeExists(xml, "em:translator")).to.be.equal(false);
       expect(nodeExists(xml, "em:contributor")).to.be.equal(false);
     });
@@ -93,14 +99,46 @@ describe("lib/rdf", function () {
       expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
     });
 
-    it("iconURL uses `icon`", function () {
+    it("iconURL uses `icon` with string", function () {
       var xml = setupRDF({ icon: "megaman.png" });
       expect(getData(xml, "em:iconURL")).to.be.equal("megaman.png");
     });
 
+    it("iconURL uses `icon` with object no 48", function () {
+      var xml = setupRDF({ icon: { "32": "foo32.png" } });
+      expect(getData(xml, "em:iconURL")).to.be.equal("foo32.png");
+    });
+
+    // Use 48 because as of Fx 4 48 can be used in place of 32
+    it("iconURL uses `icon` with object and 48", function () {
+      var xml = setupRDF({ icon: {
+        "32": "foo32.png",
+        "48": "foo48.png"
+      } });
+      expect(getData(xml, "em:iconURL")).to.be.equal("foo48.png");
+    });
+
+    // Use 48 because as of Fx 4 48 can be used in place of 32
+    it("iconURL uses `icon` with object with no 32", function () {
+      var xml = setupRDF({ icon: { "48": "foo48.png" } });
+      expect(getData(xml, "em:iconURL")).to.be.equal("foo48.png");
+    });
+
+    it("iconURL ignores default `icon.png`", function () {
+      var xml = setupRDF({ icon: "icon.png" });
+      expect(getData(xml, "em:iconURL")).to.be.equal(undefined);
+      expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
+    });
+
     it("icon64URL uses `icon64`", function () {
-      var xml = setupRDF({ icon64: "megaman.png" });
+      var xml = setupRDF({ icon: { "64": "megaman.png" } });
       expect(getData(xml, "em:icon64URL")).to.be.equal("megaman.png");
+    });
+
+    it("icon64URL ignores default `icon64.png`", function () {
+      var xml = setupRDF({ icon: { "64": "icon64.png" } });
+      expect(getData(xml, "em:iconURL")).to.be.equal(undefined);
+      expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
     });
 
     it("updateURL uses `updateURL`", function () {

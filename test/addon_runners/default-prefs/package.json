@@ -1,0 +1,5 @@
+{
+  "id": "test-default-prefs@jetpack",
+  "main": "./index.js",
+  "version": "0.0.1"
+}
