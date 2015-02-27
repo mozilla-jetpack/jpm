@@ -88,10 +88,8 @@ To run just a specific type of test (functional, unit), run the associated scrip
 
 ### Setup
 
-**First**, you must have the [Extension Auto-Installer](https://addons.mozilla.org/en-US/firefox/addon/autoinstaller/)
+You must have the [Extension Auto-Installer](https://addons.mozilla.org/en-US/firefox/addon/autoinstaller/)
 installed on Firefox.
-
-**Second**, you must have `wget` installed for now, for OSX use `brew install wget`.
 
 ### Usage
 
