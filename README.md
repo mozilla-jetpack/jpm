@@ -8,7 +8,7 @@ JPM [![Dependency Status](https://david-dm.org/mozilla/jpm.png)](https://david-d
 
 Replacing the previous python tool for developing Firefox Add-ons, [cfx](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx), jpm is a utility for developing, testing, and packaging add-ons.
 
-**Currently only works with Firefox Nightly**. Check out the `--binary` flag for ensuring that you're using the correct release of Firefox with jpm.
+**Currently only works with Firefox 38+**. Check out the `--binary` flag for ensuring that you're using the correct release of Firefox with jpm.
 
 ## Install
 
