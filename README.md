@@ -53,9 +53,9 @@ npm link
 
 ### Documentation
 
-* [Getting Started Guide](https://developer.mozilla.org/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
-* [Command Line Guide](https://developer.mozilla.org/Add-ons/SDK/Tools/jpm)
-* [Transitioning From CFX](https://developer.mozilla.org/Add-ons/SDK/Tools/cfx_to_jpm)
+* [Getting Started Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
+* [Command Line Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
+* [Transitioning From CFX](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx_to_jpm)
 
 ### Examples
 
