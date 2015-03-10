@@ -5,6 +5,7 @@
 
 var fs = require("fs-extra");
 var path = require("path");
+var os = require("os");
 var utils = require("../utils");
 var settings = require("../../lib/settings");
 var chai = require("chai");
@@ -115,8 +116,8 @@ describe("jpm init", function () {
     var proc = respond(exec("init"), responses);
     proc.on("close", function () {
       var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "README.md"), "utf-8");
-      var sourceIndex = fs.readFileSync(path.join("..", "..", "data", "README.md"), "utf-8");
-      expect(dirIndex).to.be.equal(sourceIndex);
+      var defaultContents = "#My Jetpack Addon" + os.EOL + "A basic add-on";
+      expect(dirIndex).to.be.equal(defaultContents);
       done();
     });
   });
