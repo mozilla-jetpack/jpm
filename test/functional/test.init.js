@@ -25,7 +25,7 @@ describe("jpm init", function () {
       expect(manifest.title).to.be.equal("My Jetpack Addon");
       expect(manifest.name).to.be.equal("tmp");
       expect(manifest.version).to.be.equal("0.0.1");
-      expect(manifest.description).to.be.equal("");
+      expect(manifest.description).to.be.equal("A basic add-on");
       expect(manifest.main).to.be.equal("index.js");
       expect(manifest.author).to.be.equal("");
       expect(manifest.engines.firefox).to.be.equal(
