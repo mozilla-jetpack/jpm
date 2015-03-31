@@ -12,6 +12,8 @@ var chai = require("chai");
 var expect = chai.expect;
 var exec = utils.exec;
 
+var capitalAddonPath = path.join(__dirname, "..", "fixtures", "Capital-name");
+
 describe("jpm init", function () {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
@@ -34,6 +36,25 @@ describe("jpm init", function () {
       expect(manifest.engines.fennec).to.be.equal(
         ">=" + settings.MIN_VERSION);
       expect(manifest.license).to.be.equal("MIT");
+      done();
+    });
+  });
+
+  it("creating package.json with folder name containing a capital letter", function (done) {
+    var capitalAddonPath = path.join(utils.tmpOutputDir, "Capital-name");
+    fs.mkdirSync(capitalAddonPath);
+
+    process.chdir(capitalAddonPath);
+    var responses = generateResponses();
+
+    var proc = respond(exec("init", { cwd: capitalAddonPath }), responses);
+    proc.on("close", function () {
+      var manifest = JSON.parse(fs.readFileSync(path.join(capitalAddonPath, "package.json"), "utf-8"));
+      expect(manifest.title).to.be.equal("My Jetpack Addon");
+      expect(manifest.name).to.be.equal("capital-name");
+      expect(manifest.version).to.be.equal("0.0.1");
+      expect(manifest.description).to.be.equal("A basic add-on");
+      expect(manifest.main).to.be.equal("index.js");
       done();
     });
   });
@@ -75,7 +96,7 @@ describe("jpm init", function () {
   it("sanitizes entries", function (done) {
     process.chdir(utils.tmpOutputDir);
     var responses = generateResponses();
-    responses[1] = "  an invalid $ _ name 123\n";
+    responses[1] = "  An invalid $ _ NAMe 123\n";
     responses[2] = "invalid version\n";
     var proc = respond(exec("init"), responses);
     proc.on("close", function () {
