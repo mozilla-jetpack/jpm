@@ -98,7 +98,7 @@ Once this has completed, setup a watchpost:
     jpm watchpost --post-url http://localhost:8888/
 
 This will watch for changes to the current working directory and post a new xpi to your installed
-Extension Auto-Installer which will then install the new xpi.  To end the process, use the hokey, `CTRL + Z`.
+Extension Auto-Installer which will then install the new xpi.  To end the process, use the hokey, `CTRL + C`.
 
 For a simple xpi and post, use:
 
