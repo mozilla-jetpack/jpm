@@ -1,6 +1,6 @@
 {
   "name": "jpm",
-  "version": "0.0.29",
+  "version": "1.0.0",
   "description": "Jetpack Mechanic utilities for creating, testing, running and packaging Mozilla Jetpack Addons",
   "main": "index.js",
   "bin": {
