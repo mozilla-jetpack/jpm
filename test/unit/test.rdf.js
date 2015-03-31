@@ -169,6 +169,20 @@ describe("lib/rdf", function () {
       expect(xml.indexOf("updateKey")).to.be.equal(-1);
     });
 
+    it("multiprocess permission", function() {
+      var xml = parseRDF(createRDF({ id: "1" }));
+      expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
+      expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
+
+      var xml = parseRDF(createRDF({ id: "1", permissions: { multiprocess: true } }));
+      expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(true);
+      expect(getData(xml, "em:multiprocessCompatible")).to.be.equal("true");
+
+      var xml = parseRDF(createRDF({ id: "1", permissions: { multiprocess: false } }));
+      expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
+      expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
+    });
+
     it("adds `translator` fields for each translator", function () {
       var xml = setupRDF({ translators: [
         "Bebop", "Rocksteady"
