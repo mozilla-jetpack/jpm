@@ -67,9 +67,15 @@ program
   .description("*EXPERIMENTAL* Bundle the addon into an .xpi file and post it to a url, whenever your add-on changes")
   .action(cmd.prepare("watchpost", program, function (manifest) {
     postXPI(manifest, program);
+    var lastSubProcess = null;
+
     watch(process.cwd(), function(filename) {
       // ignore install.rdf, boostrap.js, xpi files to avoid infinite loops
       if (IGNORE_FILES_REGEX.test(filename)) {
+        return null;
+      }
+
+      if (lastSubProcess) {
         return null;
       }
 
@@ -79,8 +85,12 @@ program
         "--post-url",
         program.postUrl
       ]);
+      lastSubProcess = subProcess;
       subProcess.stdout.pipe(process.stdout);
       subProcess.stderr.pipe(process.stderr);
+      subProcess.on("exit", function() {
+        lastSubProcess = null;
+      });
 
       return null;
     });
