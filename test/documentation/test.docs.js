@@ -20,12 +20,12 @@ describe("Spell Checking", function () {
    var readme = path.join(rootURI, "README.md");
 
     fs.readFile(readme, function (err, data) {
-      if (err) {
-        throw err;
-      }
+      expect(err).to.be.equal(null);
       var text = data.toString();
 
       teacher.check(text, function(err, data) {
+        expect(err).to.be.equal(null);
+
         var results = data || [];
         results = results.filter(function(result) {
           if (NEW_WORDS.indexOf(result.string.toLowerCase()) != -1) {
@@ -60,12 +60,12 @@ describe("Spell Checking", function () {
    var readme = path.join(rootURI, "CONTRIBUTING.md");
 
     fs.readFile(readme, function (err, data) {
-      if (err) {
-        throw err;
-      }
+      expect(err).to.be.equal(null);
       var text = data.toString();
 
       teacher.check(text, function(err, data) {
+        expect(err).to.be.equal(null);
+
         var results = data || [];
         results = results.filter(function(result) {
           if (NEW_WORDS.indexOf(result.string.toLowerCase()) != -1) {
