@@ -1,6 +1,6 @@
 {
   "name": "jpm",
-  "version": "0.0.22",
+  "version": "1.0.0",
   "description": "Jetpack Mechanic utilities for creating, testing, running and packaging Mozilla Jetpack Addons",
   "main": "index.js",
   "bin": {
@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node ./test/run.js",
     "addons": "node ./test/run.js addons",
+    "documentation": "node ./test/run.js documentation",
     "functional": "node ./test/run.js functional",
     "addon_runners": "node ./test/run.js addon_runners",
     "unit": "node ./test/run.js unit"
@@ -18,40 +19,55 @@
     "type": "git",
     "url": "git://github.com/mozilla/jpm.git"
   },
+  "bugs": {
+    "url": "http://github.com/mozilla/jpm/issues"
+  },
+  "keywords": [
+    "firefox",
+    "mozilla",
+    "jetpack",
+    "jpm"
+  ],
   "dependencies": {
-    "colors": "1.0.3",
     "commander": "2.6.0",
     "fs-promise": "0.3.1",
-    "fs-extra": "0.14.0",
-    "jpm-core": "0.0.4",
+    "fs-extra": "0.16.4",
+    "fx-runner": "0.0.7",
+    "jpm-core": "0.0.9",
     "jetpack-id": "0.0.4",
-    "firefox-profile": "0.3.6",
+    "jetpack-validation": "0.0.4",
+    "firefox-profile": "0.3.9",
     "jsontoxml": "0.0.11",
-    "lodash": "2.4.1",
-    "minimatch": "^2.0.1",
-    "tmp": "0.0.24",
+    "lodash": "3.3.1",
+    "minimatch": "2.0.4",
+    "node-watch": "0.3.4",
+    "tmp": "0.0.25",
     "open": "0.0.5",
-    "promzard": "0.2.2",
+    "promzard": "0.3.0",
     "read": "1.0.5",
-    "semver": "4.2.0",
+    "semver": "4.3.3",
     "mozilla-version-comparator": "1.0.2",
     "mozilla-toolkit-versioning": "0.0.2",
-    "jetpack-validation": "0.0.4",
-    "winreg": "0.0.12",
-    "when": "3.6.4",
+    "when": "3.7.2",
     "zip-dir": "1.0.0"
   },
   "devDependencies": {
     "async": "0.9.0",
-    "chai": "1.10.0",
-    "dive": "0.3.1",
-    "mocha": "2.1.0",
-    "glob": "4.3.5",
-    "rimraf": "2.2.8",
-    "sandboxed-module": "2.0.0",
+    "chai": "2.2.0",
+    "dive": "0.4.0",
+    "mocha": "2.2.1",
+    "glob": "5.0.3",
+    "teacher": "0.0.1",
+    "rimraf": "2.3.2",
     "unzip": "0.1.11",
     "xmldom": "0.1.19"
   },
   "author": "Jordan Santell",
-  "license": "MPL v2.0"
+  "license": "MPL v2.0",
+  "locales": {
+    "es": {
+      "description": "Utilidades Mecánico Jetpack para crear, probar, ejecutar y empacar Mozilla Jetpack Addons"
+    }
+  }
 }
+

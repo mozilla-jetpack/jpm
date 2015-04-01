@@ -30,7 +30,7 @@ describe("jpm test addons", function () {
         options.env.DISPLAY = process.env.DISPLAY;
       }
 
-      jpm("test", options).then(done);
+      jpm("test", options).catch(console.error).then(done);
     });
   });
 });

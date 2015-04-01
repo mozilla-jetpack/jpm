@@ -5,11 +5,14 @@
 
 var fs = require("fs-extra");
 var path = require("path");
+var os = require("os");
 var utils = require("../utils");
 var settings = require("../../lib/settings");
 var chai = require("chai");
 var expect = chai.expect;
 var exec = utils.exec;
+
+var capitalAddonPath = path.join(__dirname, "..", "fixtures", "Capital-name");
 
 describe("jpm init", function () {
   beforeEach(utils.setup);
@@ -25,7 +28,7 @@ describe("jpm init", function () {
       expect(manifest.title).to.be.equal("My Jetpack Addon");
       expect(manifest.name).to.be.equal("tmp");
       expect(manifest.version).to.be.equal("0.0.1");
-      expect(manifest.description).to.be.equal("");
+      expect(manifest.description).to.be.equal("A basic add-on");
       expect(manifest.main).to.be.equal("index.js");
       expect(manifest.author).to.be.equal("");
       expect(manifest.engines.firefox).to.be.equal(
@@ -33,6 +36,25 @@ describe("jpm init", function () {
       expect(manifest.engines.fennec).to.be.equal(
         ">=" + settings.MIN_VERSION);
       expect(manifest.license).to.be.equal("MIT");
+      done();
+    });
+  });
+
+  it("creating package.json with folder name containing a capital letter", function (done) {
+    var capitalAddonPath = path.join(utils.tmpOutputDir, "Capital-name");
+    fs.mkdirSync(capitalAddonPath);
+
+    process.chdir(capitalAddonPath);
+    var responses = generateResponses();
+
+    var proc = respond(exec("init", { cwd: capitalAddonPath }), responses);
+    proc.on("close", function () {
+      var manifest = JSON.parse(fs.readFileSync(path.join(capitalAddonPath, "package.json"), "utf-8"));
+      expect(manifest.title).to.be.equal("My Jetpack Addon");
+      expect(manifest.name).to.be.equal("capital-name");
+      expect(manifest.version).to.be.equal("0.0.1");
+      expect(manifest.description).to.be.equal("A basic add-on");
+      expect(manifest.main).to.be.equal("index.js");
       done();
     });
   });
@@ -74,7 +96,7 @@ describe("jpm init", function () {
   it("sanitizes entries", function (done) {
     process.chdir(utils.tmpOutputDir);
     var responses = generateResponses();
-    responses[1] = "  an invalid $ _ name 123\n";
+    responses[1] = "  An invalid $ _ NAMe 123\n";
     responses[2] = "invalid version\n";
     var proc = respond(exec("init"), responses);
     proc.on("close", function () {
@@ -115,8 +137,8 @@ describe("jpm init", function () {
     var proc = respond(exec("init"), responses);
     proc.on("close", function () {
       var dirIndex = fs.readFileSync(path.join(utils.tmpOutputDir, "README.md"), "utf-8");
-      var sourceIndex = fs.readFileSync(path.join("..", "..", "data", "README.md"), "utf-8");
-      expect(dirIndex).to.be.equal(sourceIndex);
+      var defaultContents = "#My Jetpack Addon" + os.EOL + "A basic add-on";
+      expect(dirIndex).to.be.equal(defaultContents);
       done();
     });
   });

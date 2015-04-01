@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+var when = require("when");
 var fs = require("fs-promise");
 var path = require("path");
 var utils = require("../utils");
@@ -11,6 +12,9 @@ var FirefoxProfile = require("firefox-profile");
 var expect = chai.expect;
 var exec = utils.exec;
 var isWindows = /^win/.test(process.platform);
+var normalizeBinary = require("fx-runner/lib/utils").normalizeBinary;
+var FirefoxProfileFinder = require('firefox-profile/lib/profile_finder');
+var cp = require("child_process");
 
 var addonsPath = path.join(__dirname, "..", "addons");
 var fixturesPath = path.join(__dirname, "..", "fixtures");
@@ -131,7 +135,9 @@ describe("jpm run", function () {
       var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run -v", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout.split("\n").length).to.be.gt(20);
+        expect(stdout.split("\n").length).to.be.gt(2);
+        expect(stdout).to.contain("PARAMS DUMP START");
+        expect(stdout).to.contain("PARAMS DUMP END");
         done();
       });
     });
@@ -150,9 +156,9 @@ describe("jpm run", function () {
   describe("-b/--binary <BINARY>", function () {
     it("Uses specified binary instead of default Firefox", function (done) {
       process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-profile");
+        expect(stdout).to.contain("-foreground -no-remote -profile");
         done();
       });
     });
@@ -184,6 +190,7 @@ describe("jpm run", function () {
       var proc = exec("run -v -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile ");
+        expect(stdout).to.not.contain("-no-copy");
         done();
       });
     });
@@ -195,17 +202,70 @@ describe("jpm run", function () {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile ");
         expect(stdout).to.not.contain("-profile " + tempProfile.profileDir);
+        expect(stdout).to.not.contain("-no-copy");
         done();
       });
     });
 
-    it("Passes in a profile name to Firefox with -P", function (done) {
+    it("Does not pass in a temporary profile path instead of the original with --no-copy", function (done) {
       process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary + " -p MY_PROFILE", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var tempProfile = new FirefoxProfile();
+      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("-P MY_PROFILE");
+        expect(stdout).to.contain("-profile ");
+        expect(stdout).to.contain("-profile " + tempProfile.profileDir);
+        expect(stdout).to.not.contain("-no-copy");
         done();
       });
+    });
+
+    it("--no-copy alone passes in a temporary profile path instead of the original", function (done) {
+      process.chdir(simpleAddonPath);
+      var tempProfile = new FirefoxProfile();
+      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+        expect(err).to.not.be.ok;
+        expect(stdout).to.contain("-profile " + tempProfile.profileDir);
+        expect(stdout).to.not.contain("-no-copy");
+        done();
+      });
+    });
+
+    it("Passes in a profile name results in -p <path>", function (done) {
+      process.chdir(simpleAddonPath);
+      var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
+
+      // find firefox nightly
+      normalizeBinary(binary).then(function(path) {
+        var cmd = path + " --no-remote -CreateProfile \"jpm-test\"";
+
+        // Create a profile
+        cp.exec(cmd, null, function(err, stdout, stderr) {
+          var finder = new FirefoxProfileFinder();
+          when.promise(function(resolve, reject) {
+            finder.getPath("jpm-test", function(err, path) {
+              if (err) {
+                reject(err);
+              }
+              else {
+                resolve(path);
+              }
+
+              return null;
+            });
+          }).
+          then(function(profilePath) {
+            var cmd = "run -v -b " + fakeBinary + " -p jpm-test";
+            // jpm run -b fakeBinary -p jpm-test
+            var proc = exec(cmd, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+              expect(err).to.not.be.ok;
+              expect(stdout).to.not.contain("-P jpm-test");
+              expect(stdout).to.not.contain("-profile " + profilePath);
+              expect(/-profile .+copy/.test(stdout)).to.be.ok;
+              done();
+            });
+          });
+        })
+      })
     });
 
     describe("options passed to an add-on", function() {
