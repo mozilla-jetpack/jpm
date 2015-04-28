@@ -193,6 +193,19 @@ describe("jpm init", function () {
       done();
     });
   });
+
+  it("does not create files if not confirmed", function (done) {
+    process.chdir(utils.tmpOutputDir);
+    fs.mkdirpSync(path.join(utils.tmpOutputDir, "test"));
+    var responses = generateResponses();
+    responses[responses.length - 1] = "no\n";
+    var proc = respond(exec("init"), responses);
+    proc.on("close", function () {
+      var files = fs.readdirSync(path.join(utils.tmpOutputDir, "test"));
+      expect(files.length).to.be.equal(0);
+      done();
+    });
+  });
 });
 
 /**
