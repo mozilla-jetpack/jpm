@@ -3,10 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const { metadata } = require("@loader/options");
+exports.testMain = true;
 
-exports["test metadata exists"] = function(assert) {
-  assert.ok(metadata, "metadata exists")
-};
-
-require("sdk/test").run(exports);
+console.log("Unpacked addon");

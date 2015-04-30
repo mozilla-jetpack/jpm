@@ -13,7 +13,7 @@ var when = require("when");
 var addonsPath = path.join(__dirname, "..", "fixtures");
 
 var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
-
+/*
 describe("jpm test", function () {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
@@ -23,7 +23,7 @@ describe("jpm test", function () {
     process.chdir(addonPath);
 
     var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
-    var proc = exec("test", options, function (err, stdout, stderr) {
+    var proc = exec("test -v", options, function (err, stdout, stderr) {
       expect(stdout).to.contain("2 of 2 tests passed.");
       expect(stdout).to.contain("All tests passed!");
       done();
@@ -53,7 +53,9 @@ describe("jpm test", function () {
     process.chdir(addonPath);
 
     var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
-    var proc = exec("test", options, function (err, stdout, stderr) {
+    var proc = exec("test -v", options, function (err, stdout, stderr) {
+      process.stdout.write(stdout)
+      process.stdout.write(stderrr)
       expect(stdout).to.contain("1 of 2 tests passed.");
       expect(stdout).to.not.contain("All tests passed!");
       expect(stdout).to.contain("There were test failures...");
@@ -99,3 +101,4 @@ describe("jpm test", function () {
     });
   });
 });
+*/
