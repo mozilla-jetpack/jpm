@@ -4,7 +4,7 @@
   "unpack": true,
   "version": "1.0.2",
   "main": "./main.js",
-  "license": "MPL 2.0",
+  "license": "MPL-2.0",
   "engines": {
     "Firefox": ">=36.0"
   }
