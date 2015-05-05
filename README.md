@@ -106,4 +106,4 @@ For a simple xpi and post, use:
 
 ## License
 
-[MPL 2.0](https://mozilla.org/MPL/2.0/)
+[MPL-2.0](https://mozilla.org/MPL/2.0/)
