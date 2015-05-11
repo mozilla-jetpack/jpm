@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-var createRDF = require("../../lib/rdf");
+var RDF = require("../../lib/rdf");
 var DOMParser = require("xmldom").DOMParser;
 var parse = require("mozilla-toolkit-versioning").parse;
 var chai = require("chai");
@@ -16,7 +16,7 @@ var getData = require("../../lib/xpi/utils").getData;
 describe("lib/rdf", function () {
   describe("defaults", function () {
     it("uses default values when none specified", function () {
-      var str = createRDF({ id: "myaddon@jetpack" })
+      var str = RDF.createRDF({ id: "myaddon@jetpack" })
       var xml = parseRDF(str);
       expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
       // This should throw elsewhere
@@ -65,7 +65,7 @@ describe("lib/rdf", function () {
     });
 
     it("name is xml-escaped", function () {
-      var xml = createRDF({ name: "my-nam>e" });
+      var xml = RDF.createRDF({ name: "my-nam>e" });
       expect(xml.indexOf("my-nam&gt;e")).to.be.not.equal(-1);
     });
 
@@ -85,7 +85,7 @@ describe("lib/rdf", function () {
     });
 
     it("description is xml-escaped", function () {
-      var xml = createRDF({ name: "my-des>c" });
+      var xml = RDF.createRDF({ name: "my-des>c" });
       expect(xml.indexOf("my-des&gt;c")).to.be.not.equal(-1);
     });
 
@@ -95,7 +95,7 @@ describe("lib/rdf", function () {
     });
 
     it("author is xml-escaped", function () {
-      var xml = createRDF({ name: "Marie Curie <mc@espci.fr>" });
+      var xml = RDF.createRDF({ name: "Marie Curie <mc@espci.fr>" });
       expect(xml.indexOf("Marie Curie &lt;mc@espci.fr&gt;")).to.be.not.equal(-1);
     });
 
@@ -148,10 +148,10 @@ describe("lib/rdf", function () {
     });
 
     it("updateURL DNE when it is undefined", function() {
-      var xml = createRDF({ id: "1" });
+      var xml = RDF.createRDF({ id: "1" });
       expect(xml.indexOf("updateURL")).to.be.equal(-1);
 
-      var xml = createRDF({ id: "1", updateURL: undefined });
+      var xml = RDF.createRDF({ id: "1", updateURL: undefined });
       expect(xml.indexOf("updateURL")).to.be.equal(-1);
     });
 
@@ -162,23 +162,23 @@ describe("lib/rdf", function () {
     });
 
     it("updateKey DNE when it is undefined", function() {
-      var xml = createRDF({ id: "1" });
+      var xml = RDF.createRDF({ id: "1" });
       expect(xml.indexOf("updateKey")).to.be.equal(-1);
 
-      var xml = createRDF({ id: "1", updateKey: undefined });
+      var xml = RDF.createRDF({ id: "1", updateKey: undefined });
       expect(xml.indexOf("updateKey")).to.be.equal(-1);
     });
 
     it("multiprocess permission", function() {
-      var xml = parseRDF(createRDF({ id: "1" }));
+      var xml = parseRDF(RDF.createRDF({ id: "1" }));
       expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
       expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
 
-      var xml = parseRDF(createRDF({ id: "1", permissions: { multiprocess: true } }));
+      var xml = parseRDF(RDF.createRDF({ id: "1", permissions: { multiprocess: true } }));
       expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(true);
       expect(getData(xml, "em:multiprocessCompatible")).to.be.equal("true");
 
-      var xml = parseRDF(createRDF({ id: "1", permissions: { multiprocess: false } }));
+      var xml = parseRDF(RDF.createRDF({ id: "1", permissions: { multiprocess: false } }));
       expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
       expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
     });
@@ -333,6 +333,41 @@ describe("lib/rdf", function () {
       expect(firefox.childNodes[5].childNodes[0].data).to.be.equal(MAX_VERSION);
     });
   });
+
+  describe("defaults", function () {
+    it("uses default values when none specified", function () {
+      var str = RDF.createRDF({ id: "myaddon@jetpack" })
+
+
+     var xml = parseRDF(str);
+
+    expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
+    // This should throw elsewhere
+    expect(getData(xml, "em:version")).to.be.equal("0.0.0");
+    expect(getData(xml, "em:bootstrap")).to.be.equal("true");
+    expect(getData(xml, "em:unpack")).to.be.equal("false");
+    expect(getData(xml, "em:type")).to.be.equal("2");
+
+    expect(getData(xml, "em:name")).to.be.equal("Untitled");
+    expect(getData(xml, "em:description")).to.be.equal(undefined);
+    expect(getData(xml, "em:iconURL")).to.be.equal(undefined);
+    expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
+
+    expect(getData(xml, "em:translator")).to.be.equal(undefined);
+
+    expect(getData(xml, "em:contributor")).to.be.equal(undefined);
+    expect(str.indexOf("homepageURL")).to.be.equal(-1);
+    ["description", "creator"].forEach(function (field) {
+    expect(nodeEmpty(xml, "em:" + field)).to.be.equal(true);
+    });
+
+    expect(nodeExists(xml, "em:description")).to.be.equal(false);
+    expect(nodeExists(xml, "em:iconURL")).to.be.equal(false);
+    expect(nodeExists(xml, "em:icon64URL")).to.be.equal(false);
+    expect(nodeExists(xml, "em:translator")).to.be.equal(false);
+    expect(nodeExists(xml, "em:contributor")).to.be.equal(false);
+    });
+  });
 });
 
 function parseRDF(rdf) {
@@ -340,7 +375,7 @@ function parseRDF(rdf) {
 }
 
 function setupRDF (manifest) {
-  return parseRDF(createRDF(manifest));
+  return parseRDF(RDF.createRDF(manifest));
 }
 
 function nodeExists (xml, tag) {
