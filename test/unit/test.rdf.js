@@ -333,41 +333,6 @@ describe("lib/rdf", function () {
       expect(firefox.childNodes[5].childNodes[0].data).to.be.equal(MAX_VERSION);
     });
   });
-
-  describe("defaults", function () {
-    it("uses default values when none specified", function () {
-      var str = RDF.createRDF({ id: "myaddon@jetpack" })
-
-
-     var xml = parseRDF(str);
-
-    expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
-    // This should throw elsewhere
-    expect(getData(xml, "em:version")).to.be.equal("0.0.0");
-    expect(getData(xml, "em:bootstrap")).to.be.equal("true");
-    expect(getData(xml, "em:unpack")).to.be.equal("false");
-    expect(getData(xml, "em:type")).to.be.equal("2");
-
-    expect(getData(xml, "em:name")).to.be.equal("Untitled");
-    expect(getData(xml, "em:description")).to.be.equal(undefined);
-    expect(getData(xml, "em:iconURL")).to.be.equal(undefined);
-    expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
-
-    expect(getData(xml, "em:translator")).to.be.equal(undefined);
-
-    expect(getData(xml, "em:contributor")).to.be.equal(undefined);
-    expect(str.indexOf("homepageURL")).to.be.equal(-1);
-    ["description", "creator"].forEach(function (field) {
-    expect(nodeEmpty(xml, "em:" + field)).to.be.equal(true);
-    });
-
-    expect(nodeExists(xml, "em:description")).to.be.equal(false);
-    expect(nodeExists(xml, "em:iconURL")).to.be.equal(false);
-    expect(nodeExists(xml, "em:icon64URL")).to.be.equal(false);
-    expect(nodeExists(xml, "em:translator")).to.be.equal(false);
-    expect(nodeExists(xml, "em:contributor")).to.be.equal(false);
-    });
-  });
 });
 
 function parseRDF(rdf) {
