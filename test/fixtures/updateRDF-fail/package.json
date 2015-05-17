@@ -1,0 +1,10 @@
+{
+  "title": "My Simple Addon",
+  "name": "simple-addon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "updateLink" : "http://mozilla.org/myaddon.xpi"
+}
