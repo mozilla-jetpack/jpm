@@ -19,6 +19,8 @@ var jpmignoreLFPath = path.join(__dirname, "..", "addons", "jpmignore-lf");
 var jpmignoreCRLFPath = path.join(__dirname, "..", "addons", "jpmignore-crlf");
 var jpmignoreMixedPath = path.join(__dirname, "..", "addons", "jpmignore-mixed");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
+var updateRDFPath = path.join(__dirname, "..", "fixtures", "updateRDF");
+var updateRDFFailPath = path.join(__dirname, "..", "fixtures", "updateRDF-fail");
 
 describe("lib/xpi", function () {
   beforeEach(utils.setup);
@@ -448,5 +450,43 @@ describe("lib/xpi", function () {
     .then(function() {
       done();
     }, done);
+  });
+
+  it("create an updateRDF file", function (done) {
+    process.chdir(updateRDFPath);
+    var manifest = require(path.join(updateRDFPath, "package.json"));
+    var xpiPath;
+    return xpi(manifest).then(function (filePath) {
+      xpiPath = filePath;
+      expect(xpiPath).to.be.equal(path.join(updateRDFPath,
+                                            "simple-addon-1.0.0.update.rdf"));
+      return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
+        utils.compareDirs(updateRDFPath, tmpOutputDir);
+      });
+    })
+    .then(function() {
+      fs.unlink(xpiPath);
+      done();
+    })
+    .catch(done);
+  });
+
+  it("faillure in creation an updateRDF file", function (done) {
+    process.chdir(updateRDFPath);
+    var manifest = require(path.join(updateRDFPath, "package.json"));
+    var xpiPath;
+    return xpi(manifest).then(function (filePath) {
+      xpiPath = filePath;
+      expect(xpiPath).to.be.equal(path.join(updateRDFPath,
+                                            "simple-addon-1.0.0.update.rdf"));
+      return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
+        utils.compareDirs(updateRDFPath, tmpOutputDir);
+      });
+    })
+    .then(function() {
+      fs.unlink(xpiPath);
+      done();
+    })
+    .catch(done);
   });
 });
