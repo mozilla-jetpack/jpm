@@ -340,7 +340,7 @@ describe("lib/rdf", function () {
         { 
           id : "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi",
-          version: 1.4.1,
+          version: "1.4.1",
           engines: { fennec: ">=21.0a <32.0" }
         }
       )
@@ -359,6 +359,44 @@ describe("lib/rdf", function () {
       expect(app.childNodes[5].childNodes[0].data).to.be.equal("32.0.-1");
       expect(app.childNodes[7].tagName).to.be.equal("em:updateLink");
       expect(app.childNodes[7].childNodes[0].data).to.be.equal("https://mozilla.org/myaddon.xpi");
+    });
+
+    it("create the update.rdf file with multiple engine", function () {
+      var str = RDF.createUpdateRDF(
+        { 
+          id : "myaddon@jetpack",
+          updateLink: "https://mozilla.org/myaddon.xpi",
+          version: "1.4.1",
+          engines: { fennec: ">=21.0a <32.0", firefox: ">=21.0a <=33.0"}
+        }
+      )
+      var xml = parseRDF(str)
+
+      expect(getData(xml, "em:version")).to.be.equal("1.4.1");
+      var apps = xml.getElementsByTagName("em:targetApplication");
+      var fennec = apps[0].childNodes[1]; // Description
+      var firefox = apps[1].childNodes[1];
+      expect(apps.length).to.be.equal(2);
+
+      expect(fennec.tagName).to.be.equal("Description");
+      expect(fennec.childNodes[1].tagName).to.be.equal("em:id");
+      expect(fennec.childNodes[1].childNodes[0].data).to.be.equal(GUIDS.FENNEC);
+      expect(fennec.childNodes[3].tagName).to.be.equal("em:minVersion");
+      expect(fennec.childNodes[3].childNodes[0].data).to.be.equal("21.0a");
+      expect(fennec.childNodes[5].tagName).to.be.equal("em:maxVersion");
+      expect(fennec.childNodes[5].childNodes[0].data).to.be.equal("32.0.-1");
+      expect(fennec.childNodes[7].tagName).to.be.equal("em:updateLink");
+      expect(fennec.childNodes[7].childNodes[0].data).to.be.equal("https://mozilla.org/myaddon.xpi");
+
+      expect(firefox.tagName).to.be.equal("Description");
+      expect(firefox.childNodes[1].tagName).to.be.equal("em:id");
+      expect(firefox.childNodes[1].childNodes[0].data).to.be.equal(GUIDS.FIREFOX);
+      expect(firefox.childNodes[3].tagName).to.be.equal("em:minVersion");
+      expect(firefox.childNodes[3].childNodes[0].data).to.be.equal("21.0a");
+      expect(firefox.childNodes[5].tagName).to.be.equal("em:maxVersion");
+      expect(firefox.childNodes[5].childNodes[0].data).to.be.equal("33.0");
+      expect(firefox.childNodes[7].tagName).to.be.equal("em:updateLink");
+      expect(firefox.childNodes[7].childNodes[0].data).to.be.equal("https://mozilla.org/myaddon.xpi");
     });
 
     it("create the update.rdf file with default value", function () {
