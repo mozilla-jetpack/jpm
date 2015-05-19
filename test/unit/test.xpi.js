@@ -458,33 +458,33 @@ describe("lib/xpi", function () {
     var xpiPath;
     return xpi(manifest).then(function (filePath) {
       xpiPath = filePath;
-      expect(xpiPath).to.be.equal(path.join(updateRDFPath,
-                                            "simple-addon-1.0.0.update.rdf"));
+      expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"))).to.equal(true);
+      expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.xpi"))).to.equal(true);
       return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
         utils.compareDirs(updateRDFPath, tmpOutputDir);
       });
     })
     .then(function() {
       fs.unlink(xpiPath);
+      fs.unlink(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"));
       done();
     })
     .catch(done);
   });
 
-  it("faillure in creation an updateRDF file", function (done) {
-    process.chdir(updateRDFPath);
-    var manifest = require(path.join(updateRDFPath, "package.json"));
-    var xpiPath;
-    return xpi(manifest).then(function (filePath) {
-      xpiPath = filePath;
-      expect(xpiPath).to.be.equal(path.join(updateRDFPath,
-                                            "simple-addon-1.0.0.update.rdf"));
-      return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
-        utils.compareDirs(updateRDFPath, tmpOutputDir);
-      });
-    })
+  it("failure in creation an updateRDF file", function (done) {
+    process.chdir(updateRDFFailPath);
+    var manifest = require(path.join(updateRDFFailPath, "package.json"));
+    return xpi(manifest).then(
+      function (filePath) {},
+      function (err) {
+        expect(fs.existsSync(path.join(updateRDFFailPath, "@simple-addon-1.0.0.update.rdf"))).to.equal(false);
+        expect(fs.existsSync(path.join(updateRDFFailPath, "@simple-addon-1.0.0.xpi"))).to.equal(true);
+        return;
+      }
+    )
     .then(function() {
-      fs.unlink(xpiPath);
+      fs.unlink(path.join(updateRDFFailPath, "@simple-addon-1.0.0.xpi"));
       done();
     })
     .catch(done);
