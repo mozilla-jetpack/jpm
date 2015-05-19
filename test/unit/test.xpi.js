@@ -460,13 +460,14 @@ describe("lib/xpi", function () {
       xpiPath = filePath;
       expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"))).to.equal(true);
       expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.xpi"))).to.equal(true);
+      //Removing the update.RDF file to make utils.compareDirs works
+      fs.unlink(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"));
       return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
         utils.compareDirs(updateRDFPath, tmpOutputDir);
       });
     })
     .then(function() {
       fs.unlink(xpiPath);
-      fs.unlink(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"));
       done();
     })
     .catch(done);
