@@ -4,6 +4,7 @@ node_js:
   - "iojs"
   - "0.10"
   - "0.11"
+  - "0.12"
 
 notifications:
   irc: "irc.mozilla.org#jpm"
