@@ -12,6 +12,9 @@ var chai = require("chai");
 var expect = chai.expect;
 var exec = utils.exec;
 
+var respond = utils.respond;
+var generateResponses = utils.generateResponses;
+
 var capitalAddonPath = path.join(__dirname, "..", "fixtures", "Capital-name");
 
 describe("jpm init", function () {
@@ -208,37 +211,3 @@ describe("jpm init", function () {
   });
 });
 
-/**
- * Takes a process and array of strings. Everytime stdout emits its
- * data event, the helper writes to stdin in order of the strings array.
- * Also takes an optional function to respond to every stdout `data`
- * event before writing to stdin.
- *
- * @param {Object} proc
- * @param {Array} responses
- * @param {Function} fn
- * @return {Object}
- */
-
-function respond (proc, responses, fn) {
-  var count = 0;
-  proc.stdout.on("data", sendResponse);
-  function sendResponse (data) {
-    if (fn)
-      fn(data);
-    proc.stdin.write(responses[count++], "utf-8");
-
-    if (count > responses.length) {
-      proc.stdout.off("data", sendResponse);
-      proc.stdin.end();
-    }
-  }
-  return proc;
-}
-
-// Create 8 empty responses and a "yes"
-function generateResponses () {
-  var responses = Array(9).join("\n").split("");
-  responses.push("yes\n");
-  return responses;
-}
