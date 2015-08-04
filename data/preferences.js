@@ -39,9 +39,7 @@ exports.DEFAULT_COMMON_PREFS = {
     "extensions.update.url" : "http://localhost/extensions-dummy/updateURL",
     "extensions.blocklist.url" : "http://localhost/extensions-dummy/blocklistURL",
     // Make sure opening about:addons won"t hit the network.
-    "extensions.webservice.discoverURL" : "http://localhost/extensions-dummy/discoveryURL",
-    //Allow unsigned add-ons
-    "xpinstall.signatures.required" : false
+    "extensions.webservice.discoverURL" : "http://localhost/extensions-dummy/discoveryURL"
 };
 
 exports.DEFAULT_FENNEC_PREFS = {
