@@ -104,6 +104,21 @@ For a simple xpi and post, use:
 
     jpm post --post-url http://localhost:8888/
 
+## Releasing new jpm versions
+
+For releasing a new version, ensure you have `release-it` via npm, which creates an incremental version commit, pushes to GH, and npm, and adds a tag. If you want to do a minor or major release as opposed to the default patch release, [check out release-it's documentation](https://github.com/webpro/release-it#usage-examples) on how to do it (it's easy).
+
+```
+$ cd PATH_TO_JPM_REPO
+$ release-it
+```
+
+This will push to GitHub as well -- which should be your fork. To also push the tags upstream, where upstream is most likely `mozilla/jpm`:
+
+```
+$ git push upstream TAG_NAME
+```
+
 ## License
 
 [MPL-2.0](https://mozilla.org/MPL/2.0/)
