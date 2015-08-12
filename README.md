@@ -39,6 +39,7 @@ npm link
 * `--prefs [path]` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
 * `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
 * `--post-url <URL>` **experimental** Used to post a xpi to a URL.
+* `--out <filename>` Override default xpi file name. Work with `jpm xpi` 
 
 ### Commands
 
@@ -50,6 +51,22 @@ npm link
 * `jpm watchpost` **experimental** Zips up the current add-on into a `.xpi` file and post that to the `--post-url`,
   every time a file in the current working directory changes.
 
+### Fork features
+Extend addon manifest properties:
+* `localized_description` property to localize addon `title` and `description`,
+* `optionsURL` URL of option page, that must be inner page of plugin. Preferences from manifest are available (also their default values), but not visible at extension page.
+
+```js
+  "title": "Dr.Web Anti-Virus Link Checker",
+  "description": "Check links with Dr. Web unix-httpd. Check link by click at context menu. Check page before navigation. Filtering search engine results page from non recommended results.",
+  "localized_description": {
+     "ru": {
+        "title": "Dr.Web Антивирус Link Checker",
+        "description": "Проверяет ссылки с помощью Dr. Web unix-httpd. Проверяет ссылки из контекстного меню. Проверяет страницы перед переходом. Фильтрует результаты поисковой выдачи от подозрительных сайтов."
+     }
+  },
+ "optionsURL": "data/page/option_page.html",
+```
 
 ### Documentation
 
