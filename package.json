@@ -14,13 +14,13 @@
     "addon_runners": "node ./test/run.js addon_runners",
     "unit": "node ./test/run.js unit"
   },
-  "homepage": "https://github.com/mozilla/jpm",
+  "homepage": "https://github.com/mozilla-jetpack/jpm",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mozilla/jpm.git"
+    "url": "git://github.com/mozilla-jetpack/jpm.git"
   },
   "bugs": {
-    "url": "http://github.com/mozilla/jpm/issues"
+    "url": "http://github.com/mozilla-jetpack/jpm/issues"
   },
   "keywords": [
     "firefox",

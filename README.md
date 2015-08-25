@@ -1,4 +1,4 @@
-JPM [![Dependency Status](https://david-dm.org/mozilla/jpm.png)](https://david-dm.org/mozilla/jpm) [![Build Status](https://travis-ci.org/mozilla/jpm.png)](https://travis-ci.org/mozilla/jpm)
+JPM [![Dependency Status](https://david-dm.org/mozilla-jetpack/jpm.png)](https://david-dm.org/mozilla-jetpack/jpm) [![Build Status](https://travis-ci.org/mozilla-jetpack/jpm.png)](https://travis-ci.org/mozilla-jetpack/jpm)
 ===
 
 [![NPM](https://nodei.co/npm/jpm.png?stars&downloads)](https://nodei.co/npm/jpm/)
@@ -21,7 +21,7 @@ npm install jpm -g
 Installing from GitHub to get latest features or working on jpm itself, use [npm link](https://www.npmjs.org/doc/cli/npm-link.html) to add the `jpm` global to your path:
 
 ```
-git clone https://github.com/mozilla/jpm.git
+git clone https://github.com/mozilla-jetpack/jpm.git
 cd jpm
 npm install
 npm link
@@ -113,7 +113,7 @@ $ cd PATH_TO_JPM_REPO
 $ release-it
 ```
 
-This will push to GitHub as well -- which should be your fork. To also push the tags upstream, where upstream is most likely `mozilla/jpm`:
+This will push to GitHub as well -- which should be your fork. To also push the tags upstream, where upstream is most likely `mozilla-jetpack/jpm`:
 
 ```
 $ git push upstream TAG_NAME

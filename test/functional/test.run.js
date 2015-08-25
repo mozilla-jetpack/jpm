@@ -62,7 +62,7 @@ describe("jpm run", function () {
   // TODO: fix this
   describe("-o/--overload", function () {
     // Issue #204 intermittent --overload test failure
-    // See https://github.com/mozilla/jpm/issues/204
+    // See https://github.com/mozilla-jetpack/jpm/issues/204
     /*
     if (utils.isTravis()) {
       it("skip on travis", function() {
