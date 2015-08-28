@@ -17,8 +17,7 @@ describe("jpm xpi", function () {
   afterEach(utils.tearDown);
 
   it("creates a xpi of the cwd", function (done) {
-    process.chdir(simpleAddonPath);
-    var proc = exec("xpi", { cwd: simpleAddonPath });
+    var proc = exec("xpi", { addonDir: simpleAddonPath });
     proc.on("close", function () {
       var xpiPath = path.join(simpleAddonPath, "@simple-addon-1.0.0.xpi");
 

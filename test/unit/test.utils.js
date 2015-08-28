@@ -19,17 +19,14 @@ describe("lib/utils", function () {
   beforeEach(function () {
     if (process.env.JPM_FIREFOX_BINARY)
       prevBinary = process.env.JPM_FIREFOX_BINARY;
-    prevDir = process.cwd();
   });
   afterEach(function () {
     if (prevBinary)
       process.env.JPM_FIREFOX_BINARY = prevBinary;
-    process.chdir(prevDir);
   });
 
   it("getManifest() returns manifest in cwd()", function (done) {
-    process.chdir(simpleAddonPath);
-    utils.getManifest().then(function(manifest) {
+    utils.getManifest(simpleAddonPath).then(function(manifest) {
       expect(manifest.name).to.be.equal("simple-addon");
       expect(manifest.title).to.be.equal("My Simple Addon");
       done();
@@ -37,8 +34,8 @@ describe("lib/utils", function () {
   });
 
   it("getManifest() returns {} when no package.json found", function (done) {
-    process.chdir(path.join(__dirname, "..", "addons"));
-    utils.getManifest().then(function(manifest) {
+    var noAddonDir = path.join(__dirname, "..", "addons");
+    utils.getManifest(noAddonDir).then(function(manifest) {
       expect(Object.keys(manifest).length).to.be.equal(0);
       done();
     });

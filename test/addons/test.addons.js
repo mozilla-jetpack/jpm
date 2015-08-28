@@ -23,9 +23,8 @@ describe("jpm test addons", function () {
   .forEach(function (file) {
     it(file, function (done) {
       var addonPath = path.join(addonsPath, file);
-      process.chdir(addonPath);
 
-      var options = { cwd: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: addonPath, env: { JPM_FIREFOX_BINARY: binary }};
       if (process.env.DISPLAY) {
         options.env.DISPLAY = process.env.DISPLAY;
       }
