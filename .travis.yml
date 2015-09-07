@@ -3,26 +3,29 @@ language: node_js
 node_js:
   - "iojs"
   - "0.10"
-  - "0.11"
+  - "0.12"
+env:
+  - FIREFOX_VERSION=nightly
+#  - FIREFOX_VERSION=aurora
+#  - FIREFOX_VERSION=beta
+#  - FIREFOX_VERSION=release
 
 notifications:
   irc: "irc.mozilla.org#jpm"
-
-env:
-  - JPM_BUILD_TYPE=travis
 
 before_install:
   - "export DISPLAY=:99.0"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR"
 
 before_script:
-  - npm install fx-download -g
+  - npm install firefox-get -g
   - pwd
   - cd ..
-  - fx-download --branch nightly -c prerelease --host ftp.mozilla.org firefox
+  - wget `firefox-get -v $FIREFOX_VERSION` -O firefox.tar.bz2 && tar xvf firefox.tar.bz2
   - cd $TRAVIS_BUILD_DIR
   - pwd
 
 script:
   - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox
+  - export JPM_BUILD_TYPE=travis
   - npm test

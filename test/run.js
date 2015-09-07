@@ -1,4 +1,9 @@
-var BLACKLIST = [];
+var BLACKLIST = [
+  // skip test documentation during continuous testing builds
+  // NOTE: you can still run it manually using "npm run documentation"
+  "test.docs.js"
+];
+
 var path = require("path");
 var dive = require("dive");
 var Mocha = require("mocha");

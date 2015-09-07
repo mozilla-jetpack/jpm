@@ -15,6 +15,11 @@ var rootURI = path.join(__dirname, "..", "..");
 // get a list of words that fail spell check but are still acceptable
 var NEW_WORDS = fs.readFileSync(path.join(__dirname, "words.txt")).toString().trim().split("\n");
 
+var IGNORED_TEACHER_DESCRIPTIONS = [
+  "Complex Expression",
+  "Passive voice"
+];
+
 describe("Spell Checking", function () {
   it("Spellcheck README.md", function (done) {
    var readme = path.join(rootURI, "README.md");
@@ -47,8 +52,15 @@ describe("Spell Checking", function () {
         })
 
         if (results.length > 0) {
-          console.log(results);
+          // prints all the teacher results (even the ignored suggestions)
+          console.log(JSON.stringify(results, null, 2));
         }
+
+        // filter out results with descriptions which we do not want to consider as errors
+        results = results.filter(function (result) {
+          return IGNORED_TEACHER_DESCRIPTIONS.indexOf(result.description) == -1;
+        });
+
         expect(results.length).to.be.equal(0);
 
         done();

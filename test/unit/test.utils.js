@@ -46,7 +46,7 @@ describe("lib/utils", function () {
 
   describe("hasAOMSupport", function () {
     it("hasAOMSupport true for valid ranges", function () {
-      [">=41 <=44", ">=41.0a <=42", ">=40", ">=41.0a"].forEach(function (range) {
+      [">=51 <=54", ">=50.0a <=52", ">=50", ">=51.0a"].forEach(function (range) {
         expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(true);
       });
     });

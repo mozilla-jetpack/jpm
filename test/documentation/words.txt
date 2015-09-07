@@ -15,3 +15,6 @@ ctrl
 jsantell
 erikvold
 gozala
+mozilla-jetpack
+release-it
+release-it's
