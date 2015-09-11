@@ -7,12 +7,13 @@
     "jpm": "./bin/jpm"
   },
   "scripts": {
-    "test": "node ./test/run.js",
     "addons": "node ./test/run.js addons",
     "functional": "node ./test/run.js functional",
     "addon_runners": "node ./test/run.js addon_runners",
     "unit": "node ./test/run.js unit",
-    "documentation": "mocha -t 5000 test/documentation"
+    "documentation": "mocha -t 5000 test/documentation",
+    "test": "node ./test/run.js",
+    "prepush": "npm run documentation"
   },
   "homepage": "https://github.com/mozilla-jetpack/jpm",
   "repository": {
@@ -55,10 +56,11 @@
     "async": "0.9.0",
     "chai": "2.2.0",
     "dive": "0.4.0",
-    "mocha": "2.2.1",
     "glob": "5.0.3",
-    "teacher": "0.0.1",
+    "husky": "^0.10.1",
+    "mocha": "2.2.1",
     "rimraf": "2.3.2",
+    "teacher": "0.0.1",
     "unzip": "0.1.11",
     "xmldom": "0.1.19"
   },
