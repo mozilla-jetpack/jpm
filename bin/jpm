@@ -104,7 +104,10 @@ program
   .action(cmd.prepare("test", program, function (manifest) {
     test(manifest, program).then(function(results) {
       process.exit(results.code);
-    }, console.error);
+    }, function(err) {
+      console.error(err);
+      process.exit(1);
+    });
   }));
 
 program
