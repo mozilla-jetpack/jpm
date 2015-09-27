@@ -39,6 +39,7 @@ npm link
 * `--prefs [path]` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
 * `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
 * `--post-url <URL>` **experimental** Used to post a xpi to a URL.
+* `--xpi-filename <filename>` Specify the filename of the `.xpi` file.
 
 ### Commands
 
