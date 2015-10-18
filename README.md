@@ -53,7 +53,8 @@ npm link
 
 ### Documentation
 
-* [Getting Started Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
+* [Getting Started with jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
+*[package.json keys that jpm uses](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/package_json#Key_reference)
 * [Command Line Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
 * [Transitioning From CFX](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx_to_jpm)
 
