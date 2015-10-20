@@ -12,7 +12,7 @@ var open = require("open");
 var postXPI = require("../lib/post");
 var watch = require("node-watch");
 var cp = require('child_process');
-var publish = require("../lib/publish");
+var sign = require("../lib/sign");
 
 var AMO_API_PREFIX = "https://addons.mozilla.org/api/v3";
 // TODO: use .jpmignore file here instead
@@ -65,13 +65,13 @@ program
   }));
 
 program
-  .command("publish")
-  .description("*EXPERIMENTAL* Publish to addons.mozilla.org")
+  .command("sign")
+  .description("*EXPERIMENTAL* Upload XPI to addons.mozilla.org and retrieve an unlisted signed XPI")
   .option("--api-key <key>", "addons.mozilla.org API key string")
   .option("--api-secret <secret>", "addons.mozilla.org API secret string")
   .option("--api-url-prefix [urlPrefix]", "addons.mozilla.org API URL prefix [" + AMO_API_PREFIX + "]", AMO_API_PREFIX)
-  .action(cmd.prepare("publish", program, function (manifest, options) {
-    publish(manifest, program, options);
+  .action(cmd.prepare("sign", program, function (manifest, options) {
+    sign(manifest, program, options);
   }));
 
 program
