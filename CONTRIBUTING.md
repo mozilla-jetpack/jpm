@@ -17,7 +17,7 @@
 as well as possible.
 * Write tests if possible.
 * Ask for a help if you need it.
-* Ask for a review from @jsantell, @erikvold, or @gozala
+* Ask for a review from @jsantell or @gozala
 when you are ready.
 
 ## License
