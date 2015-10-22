@@ -13,8 +13,9 @@ watchpost
 prefs
 ctrl
 jsantell
-erikvold
 gozala
+kumar303
+mossop
 mozilla-jetpack
 release-it
 release-it's
