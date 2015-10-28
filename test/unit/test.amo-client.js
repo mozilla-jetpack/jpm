@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+var path = require("path");
 var _ = require("lodash");
 var chai = require("chai");
 var expect = chai.expect;
@@ -119,10 +120,16 @@ describe('amoClient.Client', function() {
 
     it('waits for passing validation', function(done) {
       var self = this;
+      var downloadSignedFiles = new CallableMock();
+      this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
+
+      var files = [{
+        download_url: 'http://amo/the-signed-file-1.2.3.xpi',
+      }];
       this.client._request = new MockRequest({
         responseQueue: [
           signedResponse({valid: false, processed: false}),
-          signedResponse({valid: true, processed: true}),
+          signedResponse({valid: true, processed: true, files: files}),
         ],
       });
 
@@ -134,7 +141,7 @@ describe('amoClient.Client', function() {
         expect(self.client._request.calls.length).to.be.equal(2);
         expect(self.client._request.calls[0].conf.url).to.include(
           statusUrl);
-        expect(result.success).to.be.equal(true);
+        expect(downloadSignedFiles.call[0]).to.be.deep.equal(files);
         done();
       }).catch(done);
     });
@@ -185,6 +192,9 @@ describe('amoClient.Client', function() {
         ],
       });
 
+      var downloadSignedFiles = new CallableMock();
+      this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
+
       this.client.waitForSignedAddon('/status-url/', {
         clearTimeout: clearTimeout.getCallable(),
         setAbortTimeout: function() {
@@ -194,7 +204,69 @@ describe('amoClient.Client', function() {
           return 'status-check-timeout-id';
         },
       }).then(function() {
+        // Assert that signing resolved successfully.
+        expect(downloadSignedFiles.wasCalled).to.be.equal(true);
+        // Assert that the timeout-to-abort was cleared.
         expect(clearTimeout.call[0]).to.be.equal('abort-timeout-id');
+        done();
+      }).catch(done);
+    });
+
+    it('downloads signed files', function(done) {
+      var fakeResponse = {
+        on: function(event, handler) {
+          if (event === 'end') {
+            // Immediately complete the download.
+            handler();
+          }
+        },
+        pipe: function() {}
+      };
+
+      var files = signedResponse().responseBody.files;
+      var fakeRequest = new CallableMock({returnValue: fakeResponse});
+      var createWriteStream = new CallableMock();
+
+      this.client.downloadSignedFiles(files, {
+        request: fakeRequest.getCallable(),
+        createWriteStream: createWriteStream.getCallable(),
+        stdout: {
+          write: function() {},
+        }
+      }).then(function(result) {
+        expect(result.success).to.be.equal(true);
+        expect(createWriteStream.call[0]).to.be.equal(
+          path.join(process.cwd(), 'some-signed-file-1.2.3.xpi'));
+        expect(fakeRequest.call[0].uri).to.be.equal(files[0].download_url);
+        done();
+      }).catch(done);
+    });
+
+    it('handles download errors', function(done) {
+      var fakeResponse = {
+        on: function(event, handler) {
+          if (event === 'error') {
+            // Immediately trigger a download error.
+            handler(new Error('some download error'));
+          }
+        },
+        pipe: function() {}
+      };
+
+      var files = signedResponse().responseBody.files;
+      var fakeRequest = new CallableMock({returnValue: fakeResponse});
+      var createWriteStream = new CallableMock();
+
+      this.client.downloadSignedFiles(files, {
+        request: fakeRequest.getCallable(),
+        createWriteStream: createWriteStream.getCallable(),
+        stdout: {
+          write: function() {},
+        }
+      }).then(function() {
+        done(new Error('Unexpected success'));
+      }).catch(function(err) {
+        expect(err.message).to.include('download error');
         done();
       }).catch(done);
     });
