@@ -47,13 +47,21 @@ describe('amoClient.Client', function() {
         return self.client.sign(conf);
       };
 
+      this.waitForSignedAddon = function(url, options) {
+        url = url || '/some-status-url';
+        options = _.assign({
+          setAbortTimeout: function() {},
+        }, options);
+        return self.client.waitForSignedAddon(url, options);
+      };
+
     });
 
     function signedResponse(overrides) {
       var res = _.assign({
         processed: true,
         valid: true,
-        active: true,
+        reviewed: true,
         files: [{
           download_url: 'http://amo/some-signed-file-1.2.3.xpi',
         }],
@@ -73,6 +81,10 @@ describe('amoClient.Client', function() {
       };
       var waitForSignedAddon = new CallableMock();
       this.client.waitForSignedAddon = waitForSignedAddon.getCallable();
+
+      this.client._request = new MockRequest({
+        httpResponse: {statusCode: 202},
+      });
 
       this.sign(conf).then(function() {
         var putCall = self.client._request.calls[0];
@@ -134,14 +146,51 @@ describe('amoClient.Client', function() {
       });
 
       var statusUrl = '/addons/something/versions/1.2.3/';
-      this.client.waitForSignedAddon(statusUrl, {
-        setAbortTimeout: function() {},
-      }).then(function(result) {
+      this.waitForSignedAddon(statusUrl).then(function(result) {
         // Expect exactly two GETs before resolution.
         expect(self.client._request.calls.length).to.be.equal(2);
         expect(self.client._request.calls[0].conf.url).to.include(
           statusUrl);
         expect(downloadSignedFiles.call[0]).to.be.deep.equal(files);
+        done();
+      }).catch(done);
+    });
+
+    it('waits for for fully reviewed files', function(done) {
+      var self = this;
+      var downloadSignedFiles = new CallableMock();
+      this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
+
+      this.client._request = new MockRequest({
+        responseQueue: [
+          // This is a situation where the upload has been validated
+          // but the version object has not been saved yet.
+          signedResponse({valid: true, processed: true, reviewed: false}),
+          signedResponse({valid: true, processed: true, reviewed: true}),
+        ],
+      });
+
+      this.waitForSignedAddon().then(function(result) {
+        // Expect exactly two GETs before resolution.
+        expect(self.client._request.calls.length).to.be.equal(2);
+        expect(downloadSignedFiles.wasCalled).to.be.equal(true);
+        done();
+      }).catch(done);
+    });
+
+    it('requires at least one signed file to download', function(done) {
+      var downloadSignedFiles = new CallableMock();
+      this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
+      this.client._request = new MockRequest({
+        responseQueue: [
+          signedResponse({files: []}),
+        ],
+      });
+
+      this.waitForSignedAddon().then(function() {
+        done(new Error('Unexpected success'));
+      }).catch(function(err) {
+        expect(err.message).to.include('API did not return any signed files');
         done();
       }).catch(done);
     });
@@ -155,9 +204,7 @@ describe('amoClient.Client', function() {
         ],
       });
 
-      this.client.waitForSignedAddon('/status-url/', {
-        setAbortTimeout: function() {},
-      }).then(function(result) {
+      this.waitForSignedAddon().then(function(result) {
         // Expect exactly two GETs before resolution.
         expect(self.client._request.calls.length).to.be.equal(2);
         expect(result.success).to.be.equal(false);
@@ -195,7 +242,7 @@ describe('amoClient.Client', function() {
       var downloadSignedFiles = new CallableMock();
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
 
-      this.client.waitForSignedAddon('/status-url/', {
+      this.waitForSignedAddon('/status-url/', {
         clearTimeout: clearTimeout.getCallable(),
         setAbortTimeout: function() {
           return 'abort-timeout-id';
@@ -220,7 +267,7 @@ describe('amoClient.Client', function() {
             handler();
           }
         },
-        pipe: function() {}
+        pipe: function() {},
       };
 
       var files = signedResponse().responseBody.files;
@@ -422,6 +469,56 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
   });
+});
+
+
+describe('amoClient.formatResponse', function() {
+
+  it('should dump JSON objects', function() {
+    var res = amoClient.formatResponse({error: 'some error'});
+    expect(res).to.be.equal('{"error":"some error"}');
+  });
+
+  it('should truncate long JSON', function() {
+    var res = amoClient.formatResponse(
+      {error: 'pretend this is really long'},
+      {maxLength: 5});
+    expect(res).to.be.equal('{"err...');
+  });
+
+  it('ignores broken JSON objects', function() {
+    var res = amoClient.formatResponse({unserializable: process});  // any complex object
+    expect(res).to.be.equal('[object Object]');
+  });
+
+  it('should truncate long HTML', function() {
+    var res = amoClient.formatResponse(
+      '<h1>pretend this is really long</h1>',
+      {maxLength: 9});
+    expect(res).to.be.equal('<h1>prete...');
+  });
+
+  it('should leave short HTML in tact', function() {
+    var text = '<h1>404 or whatever</h1>';
+    var res = amoClient.formatResponse(text);
+    expect(res).to.be.equal(text);
+  });
+
+});
+
+
+describe('amoClient.getUrlBasename', function() {
+
+  it('gets a basename', function() {
+    var base = amoClient.getUrlBasename('http://foo.com/bar.zip');
+    expect(base).to.be.equal('bar.zip');
+  });
+
+  it('strips the query string', function() {
+    var base = amoClient.getUrlBasename('http://foo.com/bar.zip?baz=quz');
+    expect(base).to.be.equal('bar.zip');
+  });
+
 });
 
 
