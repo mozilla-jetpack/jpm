@@ -49,6 +49,7 @@ npm link
 * `jpm post` **experimental** Zips up the current add-on into a `.xpi` file and post that to the `--post-url`.
 * `jpm watchpost` **experimental** Zips up the current add-on into a `.xpi` file and post that to the `--post-url`,
   every time a file in the current working directory changes.
+* `jpm sign` Retrieve a Mozilla-signed `.xpi` file for your current add-on.
 
 
 ### Documentation

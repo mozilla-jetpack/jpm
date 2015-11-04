@@ -66,7 +66,7 @@ program
 
 program
   .command("sign")
-  .description("*EXPERIMENTAL* Upload XPI to addons.mozilla.org and retrieve an unlisted signed XPI")
+  .description("Retrieve a Mozilla-signed .xpi file for your current add-on")
   .option("--api-key <key>", "addons.mozilla.org API key string")
   .option("--api-secret <secret>", "addons.mozilla.org API secret string")
   .option("--api-url-prefix [urlPrefix]", "addons.mozilla.org API URL prefix [" + AMO_API_PREFIX + "]", AMO_API_PREFIX)
