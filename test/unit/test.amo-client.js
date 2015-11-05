@@ -17,10 +17,11 @@ describe('amoClient.Client', function() {
 
   function setUp() {
     var self = this;
+    this.apiUrlPrefix = 'http://not-a-real-amo-api.com/api/v3';
     this.client = new amoClient.Client({
       apiKey: 'fake-api-key',
       apiSecret: 'fake-api-secret',
-      apiUrlPrefix: 'http://not-a-real-amo-api.com/api/v3',
+      apiUrlPrefix: this.apiUrlPrefix,
       signedStatusCheckInterval: 0,
       fs: {
         createReadStream: function() {
@@ -284,7 +285,7 @@ describe('amoClient.Client', function() {
         expect(result.success).to.be.equal(true);
         expect(createWriteStream.call[0]).to.be.equal(
           path.join(process.cwd(), 'some-signed-file-1.2.3.xpi'));
-        expect(fakeRequest.call[0].uri).to.be.equal(files[0].download_url);
+        expect(fakeRequest.call[0].url).to.be.equal(files[0].download_url);
         done();
       }).catch(done);
     });
@@ -328,16 +329,55 @@ describe('amoClient.Client', function() {
 
     it('makes requests with an auth token', function(done) {
       var self = this;
+      var request = {url: '/somewhere'};
 
-      this.client.get({url: '/somewhere'}).then(function() {
+      this.client.get(request).then(function() {
         var call = self.client._request.calls[0];
         var headerMatch = call.conf.headers.Authorization.match(/JWT (.*)/);
         var token = headerMatch[1];
         var data = jwt.verify(token, self.client.apiSecret);
         expect(data.iss).to.be.equal(self.client.apiKey);
         expect(data).to.have.keys(['iss', 'iat', 'exp']);
+        expect(call.conf).to.be.deep.equal(
+            self.client.configureRequest(request));
         done();
       }).catch(done);
+    });
+
+    it('lets you configure a request directly', function() {
+      var conf = this.client.configureRequest({url: '/path'});
+      expect(conf).to.have.keys(['headers', 'url']);
+      expect(conf.headers).to.have.keys(['Accept', 'Authorization']);
+    });
+
+    it('preserves request headers', function() {
+      var headers = {'X-Custom': 'thing'};
+      var conf = this.client.configureRequest({
+        url: '/path',
+        headers: headers,
+      });
+      expect(conf.headers['X-Custom']).to.be.equal('thing');
+    });
+
+    it('allows you to override request headers', function() {
+      var headers = {'Accept': 'text/html'};
+      var conf = this.client.configureRequest({
+        url: '/path',
+        headers: headers,
+      });
+      expect(conf.headers['Accept']).to.be.equal('text/html');
+    });
+
+    it('makes relative URLs absolute', function() {
+      var urlPath = '/somewhere';
+      var conf = this.client.configureRequest({url: urlPath});
+      expect(conf.url).to.be.equal(this.apiUrlPrefix + urlPath);
+    });
+
+    it('accepts absolute URLs', function() {
+      var absUrl = 'http://some-site/somewhere';
+      var conf = this.client.configureRequest({url: absUrl});
+      expect(conf.url).to.be.equal(absUrl);
     });
 
     it('can make any HTTP request', function(done) {
@@ -348,7 +388,7 @@ describe('amoClient.Client', function() {
 
         requests.push(self.client[method]({url: urlPath}).then(function() {
           var call = self.client._request.callMap[method];
-          expect(call.conf.url).to.be.equal(self.client.apiUrlPrefix + urlPath);
+          expect(call.conf.url).to.be.equal(self.apiUrlPrefix + urlPath);
           expect(call.conf.headers).to.have.keys(['Accept', 'Authorization']);
         }));
 
@@ -356,13 +396,11 @@ describe('amoClient.Client', function() {
       when.all(requests).then(function() { done() }).catch(done);
     });
 
-    it('requires a URL', function(done) {
-      this.client.get({}).then(function() {
-        done(new Error('unexpected success'));
-      }).catch(function(err) {
-        expect(err.message).to.include('URL was not specified');
-        done();
-      }).catch(done);
+    it('requires a URL', function() {
+      var self = this;
+      expect(function() {
+        self.client.configureRequest({});
+      }).to.throw(Error, /URL was not specified/);
     });
 
     it('rejects the request promise on > 200 responses', function(done) {
