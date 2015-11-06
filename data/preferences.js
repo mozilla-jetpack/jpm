@@ -53,6 +53,7 @@ exports.DEFAULT_FENNEC_PREFS = {
 exports.DEFAULT_FIREFOX_PREFS = {
     "browser.startup.homepage" : "about:blank",
     "startup.homepage_welcome_url" : "about:blank",
+    "startup.homepage_welcome_url.additional" : "",
     "devtools.errorconsole.enabled" : true,
     "devtools.chrome.enabled" : true,
 
