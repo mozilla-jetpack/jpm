@@ -6,6 +6,7 @@ var console = require("../lib/utils").console;
 var run = require("../lib/run");
 var test = require("../lib/test");
 var xpi = require("../lib/xpi");
+var new_ = require("../lib/new");
 var init = require("../lib/init");
 var cmd = require("../lib/cmd");
 var open = require("open");
@@ -118,6 +119,13 @@ program
       process.exit(results.code);
     }, console.error);
   }));
+
+program
+  .command("new [name]")
+  .description("Creates a new directory and runs `jpm init` in it")
+  .action(function(name) {
+    new_(name).then(process.exit);
+  });
 
 program
   .command("init")
