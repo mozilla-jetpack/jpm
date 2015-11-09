@@ -10,7 +10,9 @@ var expect = chai.expect;
 var jwt = require('jsonwebtoken');
 var when = require("when");
 
+var signCmd = require('../../lib/sign');
 var amoClient = require('../../lib/amo-client');
+var utils = require("../utils");
 
 
 describe('amoClient.Client', function() {
@@ -590,6 +592,90 @@ describe('amoClient.PseudoProgress', function() {
     this.progress.finish();
     expect(this.clearIntervalMock.call[0]).to.be.equal('interval-id');
   });
+});
+
+
+describe('sign', function() {
+  var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
+  var manifest;
+  var mockProcessExit;
+  var mockProcess;
+
+  beforeEach(function() {
+    utils.setup();
+    process.chdir(simpleAddonPath);
+    manifest = require(path.join(simpleAddonPath, "package.json"));
+    mockProcessExit = new CallableMock();
+    mockProcess = {
+      exit: mockProcessExit.getCallable(),
+    };
+  });
+
+  afterEach(utils.tearDown);
+
+  function makeAMOClientStub(options) {
+    options = _.assign({
+      errorToThrow: null,
+      result: {success: true},
+    }, options);
+
+    function AMOClientStub() {}
+
+    AMOClientStub.prototype.sign = function() {
+      return when.promise(function(resolve) {
+        if (options.errorToThrow) {
+          throw options.errorToThrow;
+        }
+        resolve(options.result);
+      });
+    }
+
+    return AMOClientStub;
+  }
+
+  function runSignCmd(options) {
+    options = _.assign({
+      StubAMOClient: makeAMOClientStub(),
+    }, options);
+
+    var program = {};
+    var cmdOptions = {};
+
+    return signCmd(manifest, program, cmdOptions, {
+      systemProcess: mockProcess,
+      AMOClient: options.StubAMOClient,
+    });
+  }
+
+  it('should exit 0 on signing success', function(done) {
+    runSignCmd().then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(0);
+      done();
+    }).catch(done);
+  });
+
+  it('should exit 1 on signing failure', function(done) {
+    runSignCmd({
+      StubAMOClient: makeAMOClientStub({
+        result: {success: false},
+      }),
+    }).then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(1);
+      done();
+    }).catch(done);
+  });
+
+  it('should exit 1 on exception', function(done) {
+    runSignCmd({
+      StubAMOClient: makeAMOClientStub({
+        errorToThrow: new Error('some signing error'),
+      }),
+    }).then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(1);
+      done();
+    }).catch(done);
+  });
+
 });
 
 
