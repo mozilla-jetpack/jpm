@@ -600,10 +600,12 @@ describe('sign', function() {
   var manifest;
   var mockProcessExit;
   var mockProcess;
+  var wasSigned;
 
   beforeEach(function() {
     utils.setup();
     process.chdir(simpleAddonPath);
+    wasSigned = false;
     manifest = require(path.join(simpleAddonPath, "package.json"));
     mockProcessExit = new CallableMock();
     mockProcess = {
@@ -622,6 +624,7 @@ describe('sign', function() {
     function AMOClientStub() {}
 
     AMOClientStub.prototype.sign = function() {
+      wasSigned = true;
       return when.promise(function(resolve) {
         if (options.errorToThrow) {
           throw options.errorToThrow;
@@ -636,12 +639,15 @@ describe('sign', function() {
   function runSignCmd(options) {
     options = _.assign({
       StubAMOClient: makeAMOClientStub(),
+      cmdOptions: {
+        apiKey: 'some-key',
+        apiSecret: 'some-secret',
+      },
     }, options);
 
     var program = {};
-    var cmdOptions = {};
 
-    return signCmd(manifest, program, cmdOptions, {
+    return signCmd(manifest, program, options.cmdOptions, {
       systemProcess: mockProcess,
       AMOClient: options.StubAMOClient,
     });
@@ -649,6 +655,7 @@ describe('sign', function() {
 
   it('should exit 0 on signing success', function(done) {
     runSignCmd().then(function() {
+      expect(wasSigned).to.be.equal(true);
       expect(mockProcessExit.call[0]).to.be.equal(0);
       done();
     }).catch(done);
@@ -672,6 +679,32 @@ describe('sign', function() {
       }),
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
+      done();
+    }).catch(done);
+  });
+
+  it('should exit early for missing --api-key', function(done) {
+    runSignCmd({
+      cmdOptions: {
+        // missing apiKey.
+        apiSecret: 'secret',
+      },
+    }).then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(1);
+      expect(wasSigned).to.be.equal(false);
+      done();
+    }).catch(done);
+  });
+
+  it('should exit early for missing --api-secret', function(done) {
+    runSignCmd({
+      cmdOptions: {
+        apiKey: 'some-key',
+        // missing apiSecret.
+      },
+    }).then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(1);
+      expect(wasSigned).to.be.equal(false);
       done();
     }).catch(done);
   });
