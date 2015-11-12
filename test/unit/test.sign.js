@@ -181,19 +181,21 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('requires at least one signed file to download', function(done) {
+    it('waits until signed files are ready', function(done) {
+      var self = this;
       var downloadSignedFiles = new CallableMock();
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
       this.client._request = new MockRequest({
         responseQueue: [
-          signedResponse({files: []}),
+          signedResponse({files: []}),  // files aren't ready yet
+          signedResponse(),  // files are ready
         ],
       });
 
-      this.waitForSignedAddon().then(function() {
-        done(new Error('Unexpected success'));
-      }).catch(function(err) {
-        expect(err.message).to.include('API did not return any signed files');
+      this.waitForSignedAddon().then(function(result) {
+        // Expect exactly two GETs before resolution.
+        expect(self.client._request.calls.length).to.be.equal(2);
+        expect(downloadSignedFiles.wasCalled).to.be.equal(true);
         done();
       }).catch(done);
     });
