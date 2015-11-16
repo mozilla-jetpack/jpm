@@ -13,6 +13,7 @@ var all = require("when").all;
 var hasAOMSupport = utils.hasAOMSupport;
 
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
+var simpleAddonXPI = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
 var prevDir, prevBinary;
 
 describe("lib/utils", function () {
@@ -27,20 +28,61 @@ describe("lib/utils", function () {
     process.chdir(prevDir);
   });
 
-  it("getManifest() returns manifest in cwd()", function (done) {
-    process.chdir(simpleAddonPath);
-    utils.getManifest().then(function(manifest) {
-      expect(manifest.name).to.be.equal("simple-addon");
-      expect(manifest.title).to.be.equal("My Simple Addon");
-      done();
+  describe("getManifest", function() {
+    it("returns manifest in cwd()", function () {
+      process.chdir(simpleAddonPath);
+      return utils.getManifest().then(function(manifest) {
+        expect(manifest.name).to.be.equal("simple-addon");
+        expect(manifest.title).to.be.equal("My Simple Addon");
+      });
     });
-  });
 
-  it("getManifest() returns {} when no package.json found", function (done) {
-    process.chdir(path.join(__dirname, "..", "addons"));
-    utils.getManifest().then(function(manifest) {
-      expect(Object.keys(manifest).length).to.be.equal(0);
-      done();
+    it("returns manifest from custom XPI file", function () {
+      // Change into a non-package path.
+      process.chdir(path.join(__dirname, "..", "addons"));
+
+      return utils.getManifest({xpiPath: simpleAddonXPI})
+        .then(function(manifest) {
+          expect(manifest.name).to.be.equal("simple-addon");
+          expect(manifest.title).to.be.equal("My Simple Addon");
+        });
+    });
+
+    it("throws error for non-existant XPI file", function () {
+      var badXPIFile = path.join(__dirname, "..", "not-a-real-file.xpi");
+      return utils.getManifest({xpiPath: badXPIFile})
+        .then(function() {
+          throw new Error('unexpected success');
+        }).catch(function(err) {
+          expect(err.message).to.include('ENOENT');
+          expect(err.message).to.include(badXPIFile);
+        });
+    });
+
+    it("throws error for invalid zip file", function () {
+      var badXPIFile = path.join(__dirname, "..", "xpis", "@invalid-zip.xpi");
+      return utils.getManifest({xpiPath: badXPIFile})
+        .then(function() {
+          throw new Error('unexpected success');
+        }).catch(function(err) {
+          expect(err.message).to.include('invalid signature');
+        });
+    });
+
+    it("returns {} when no package.json found", function () {
+      process.chdir(path.join(__dirname, "..", "addons"));
+      return utils.getManifest().then(function(manifest) {
+        expect(Object.keys(manifest).length).to.be.equal(0);
+      });
+    });
+
+    it("returns {} when no package.json found in XPI", function () {
+      var noPackageXPI = path.join(__dirname, "..", "xpis",
+                                   "@missing-package-json.xpi");
+      return utils.getManifest({xpiPath: noPackageXPI})
+        .then(function(manifest) {
+          expect(Object.keys(manifest).length).to.be.equal(0);
+        });
     });
   });
 
