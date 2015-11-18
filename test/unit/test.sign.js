@@ -602,12 +602,12 @@ describe('sign', function() {
   var manifest;
   var mockProcessExit;
   var mockProcess;
-  var wasSigned;
+  var signingCall;
 
   beforeEach(function() {
     utils.setup();
     process.chdir(simpleAddonPath);
-    wasSigned = false;
+    signingCall = null;
     manifest = require(path.join(simpleAddonPath, "package.json"));
     mockProcessExit = new CallableMock();
     mockProcess = {
@@ -623,23 +623,24 @@ describe('sign', function() {
       result: {success: true},
     }, options);
 
-    function AMOClientStub() {}
+    function FakeAMOClient() {}
 
-    AMOClientStub.prototype.sign = function() {
-      wasSigned = true;
-      return when.promise(function(resolve) {
+    signingCall = new CallableMock({
+      returnValue: when.promise(function(resolve) {
         if (options.errorToThrow) {
           throw options.errorToThrow;
         }
         resolve(options.result);
-      });
-    }
+      }),
+    });
+    FakeAMOClient.prototype.sign = signingCall.getCallable();
 
-    return AMOClientStub;
+    return FakeAMOClient;
   }
 
   function runSignCmd(options) {
     options = _.assign({
+      getManifest: null,
       StubAMOClient: makeAMOClientStub(),
       cmdOptions: {
         apiKey: 'some-key',
@@ -648,17 +649,69 @@ describe('sign', function() {
     }, options);
 
     var program = {};
-
-    return signCmd(manifest, program, options.cmdOptions, {
+    var cmdConfig = {
       systemProcess: mockProcess,
       AMOClient: options.StubAMOClient,
-    });
+    };
+    if (options.getManifest !== null) {
+      cmdConfig.getManifest = options.getManifest;
+    }
+
+    return signCmd(program, options.cmdOptions, cmdConfig);
   }
 
   it('should exit 0 on signing success', function(done) {
     runSignCmd().then(function() {
-      expect(wasSigned).to.be.equal(true);
+      expect(signingCall.wasCalled).to.be.equal(true);
       expect(mockProcessExit.call[0]).to.be.equal(0);
+      done();
+    }).catch(done);
+  });
+
+  it('passes manifest info to the signer', function(done) {
+    runSignCmd().then(function() {
+      expect(signingCall.wasCalled).to.be.equal(true);
+      // This checks that version/guid values from
+      // the manifest (loaded from a fixture) are used.
+      expect(signingCall.call[0].version).to.be.equal('1.0.0');
+      expect(signingCall.call[0].guid).to.be.equal('@simple-addon');
+      done();
+    }).catch(done);
+  });
+
+  it('throws an error for XPI file errors', function(done) {
+    runSignCmd({
+      cmdOptions: {
+        xpi: "/not/a/real/path.xpi",
+        apiKey: 'some-key',
+        apiSecret: 'some-secret',
+      },
+    }).then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(1);
+      done();
+    }).catch(done);
+  });
+
+  it('passes custom XPI to the signer', function(done) {
+    var mockManifestGetter = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        resolve({});  // resolve with an empty manifest.
+      }),
+    });
+    // Make sure nothing is checking the working directory for add-on things.
+    process.chdir(path.join(__dirname, "..", "addons"));
+    runSignCmd({
+      getManifest: mockManifestGetter.getCallable(),
+      cmdOptions: {
+        xpi: '/some/path/to/file.xpi',
+        apiKey: 'some-key',
+        apiSecret: 'some-secret',
+      },
+    }).then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(0);
+      expect(mockManifestGetter.call[0].xpiPath).to.be.equal('/some/path/to/file.xpi');
+      expect(signingCall.wasCalled).to.be.equal(true);
+      expect(signingCall.call[0].xpiPath).to.be.equal('/some/path/to/file.xpi');
       done();
     }).catch(done);
   });
@@ -693,7 +746,7 @@ describe('sign', function() {
       },
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
-      expect(wasSigned).to.be.equal(false);
+      expect(signingCall.wasCalled).to.be.equal(false);
       done();
     }).catch(done);
   });
@@ -706,7 +759,7 @@ describe('sign', function() {
       },
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
-      expect(wasSigned).to.be.equal(false);
+      expect(signingCall.wasCalled).to.be.equal(false);
       done();
     }).catch(done);
   });
