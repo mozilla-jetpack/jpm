@@ -71,9 +71,9 @@ program
   .option("--api-secret <secret>", "addons.mozilla.org API secret string")
   .option("--api-url-prefix <urlPrefix>", "addons.mozilla.org API URL prefix [" + AMO_API_PREFIX + "]", AMO_API_PREFIX)
   .option("--xpi <filePath>", "optional XPI to be signed. By default, an XPI will be built from your working directory")
-  .action(cmd.prepare("sign", program, function (manifest, options) {
-    sign(manifest, program, options);
-  }));
+  .action(function(options) {
+    sign(program, options);
+  });
 
 program
   .command("watchpost")
