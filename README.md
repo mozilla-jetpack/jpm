@@ -38,7 +38,7 @@ npm link
 * `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or be considered a profile name.
 * `--prefs <path>` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
 * `-o, --overload <path>` Uses either the specified `<path>` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
-* `--dir <path>` Specify a source directory of the add-on (instead of current directory) when building an add-on with `xpi`.
+* `--addon-dir <path>` Specify a source directory of the add-on (instead of current directory) when building an add-on with `xpi`.
 * `--post-url <URL>` **experimental** Used to post a xpi to a URL.
 
 ### Commands
