@@ -78,6 +78,7 @@ describe('amoClient.Client', function() {
 
     it('lets you sign an add-on', function(done) {
       var self = this;
+      var apiStatusUrl = 'https://api/addon/version/upload/abc123';
       var conf = {
         guid: 'a-guid',
         version: 'a-version',
@@ -87,6 +88,11 @@ describe('amoClient.Client', function() {
 
       this.client._request = new MockRequest({
         httpResponse: {statusCode: 202},
+        // Partial response like:
+        // http://olympia.readthedocs.org/en/latest/topics/api/signing.html#checking-the-status-of-your-upload
+        responseBody: {
+          url: apiStatusUrl,
+        },
       });
 
       this.sign(conf).then(function() {
@@ -98,7 +104,7 @@ describe('amoClient.Client', function() {
         expect(putCall.conf.formData.upload).to.be.equal('fake-read-stream');
 
         expect(waitForSignedAddon.wasCalled).to.be.equal(true);
-        expect(waitForSignedAddon.call[0]).to.include(partialUrl);
+        expect(waitForSignedAddon.call[0]).to.be.equal(apiStatusUrl);
 
         done();
       }).catch(done);
