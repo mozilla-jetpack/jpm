@@ -267,17 +267,26 @@ describe('amoClient.Client', function() {
     it('downloads signed files', function(done) {
       var fakeResponse = {
         on: function(event, handler) {
-          if (event === 'end') {
-            // Immediately complete the download.
+          return this;
+        },
+        pipe: function() {
+          return this;
+        },
+      };
+
+      var fakeFileWriter = {
+        on: function(event, handler) {
+          if (event === 'finish') {
+            // Simulate completion of the download immediately when the
+            // handler is registered.
             handler();
           }
         },
-        pipe: function() {},
-      };
+      }
 
       var files = signedResponse().responseBody.files;
       var fakeRequest = new CallableMock({returnValue: fakeResponse});
-      var createWriteStream = new CallableMock();
+      var createWriteStream = new CallableMock({returnValue: fakeFileWriter});
 
       this.client.downloadSignedFiles(files, {
         request: fakeRequest.getCallable(),
