@@ -37,11 +37,13 @@ describe("lib/utils", function () {
     });
 
     it("returns manifest from custom XPI file", function () {
-      return utils.getManifest({xpiPath: simpleAddonXPI})
-        .then(function(manifest) {
-          expect(manifest.name).to.be.equal("simple-addon");
-          expect(manifest.title).to.be.equal("My Simple Addon");
-        });
+      return utils.getManifest({
+        xpiPath: simpleAddonXPI,
+        addonDir: path.join(__dirname, "..", "addons") // pass in an invalid dir just to make sure it's not used
+      }).then(function(manifest) {
+        expect(manifest.name).to.be.equal("simple-addon");
+        expect(manifest.title).to.be.equal("My Simple Addon");
+      });
     });
 
     it("throws error for non-existant XPI file", function () {

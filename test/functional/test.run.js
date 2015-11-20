@@ -302,7 +302,6 @@ describe("jpm run", function () {
       });
 
       it("run with options should receive options (--filter)", function(done) {
-        process.chdir(paramDumpPath);
         var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --do-not-quit --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
@@ -331,7 +330,6 @@ describe("jpm run", function () {
       });
 
       it("run with options should receive options (-f)", function(done) {
-        process.chdir(paramDumpPath);
         var cmd = "run -v --profile-memory --check-memory -f bar --times 3 --stop-on-error --do-not-quit --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
