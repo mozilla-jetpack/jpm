@@ -614,16 +614,13 @@ describe('amoClient.PseudoProgress', function() {
 
 describe('sign', function() {
   var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
-  var manifest;
   var mockProcessExit;
   var mockProcess;
   var signingCall;
 
   beforeEach(function() {
     utils.setup();
-    process.chdir(simpleAddonPath);
     signingCall = null;
-    manifest = require(path.join(simpleAddonPath, "package.json"));
     mockProcessExit = new CallableMock();
     mockProcess = {
       exit: mockProcessExit.getCallable(),
@@ -660,6 +657,7 @@ describe('sign', function() {
       cmdOptions: {
         apiKey: 'some-key',
         apiSecret: 'some-secret',
+        addonDir: simpleAddonPath
       },
     }, options);
 

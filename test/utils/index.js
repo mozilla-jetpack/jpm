@@ -54,7 +54,11 @@ function exec (args, options, callback) {
   options = options || {};
   var env = _.extend({}, options.env, process.env);
 
-  return child_process.exec("node " + jpm + " " + args, {
+  var cmdLine = [ "node", jpm ];
+  if (options.addonDir) cmdLine.push("--addon-dir", options.addonDir);
+  cmdLine.push(args);
+
+  return child_process.exec(cmdLine.join(" "), {
     cwd: options.cwd || tmpOutputDir,
     env: env
   }, function (err, stdout, stderr) {
@@ -70,10 +74,11 @@ function spawn (cmd, options) {
   options = options || {};
   var env = _.extend({}, options.env, process.env);
 
-  return child_process.spawn("node", [
-    jpm, cmd, "-v", "-f", options.filter || ""
-  ],
-  {
+  var cmdArgs = [ jpm, cmd, "-v" ];
+  if (options.addonDir) cmdArgs.push("--addon-dir", options.addonDir);
+  if (options.filter) cmdArgs.push("-f", options.filter);
+
+  return child_process.spawn("node", cmdArgs, {
     cwd: options.cwd || tmpOutputDir,
     env: env
   });
