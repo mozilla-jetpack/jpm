@@ -36,8 +36,9 @@ npm link
 * `--binary-args <CMDARGS>` Passes other arguments into Firefox. Enclose multiple arguments in quotes.
 * `--debug` Enable the add-on debugger when running the add-on.
 * `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or be considered a profile name.
-* `--prefs [path]` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
-* `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
+* `--prefs <path>` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
+* `-o, --overload <path>` Uses either the specified `<path>` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
+* `--addon-dir <path>` Specify a source directory of the add-on (instead of current directory) when building an add-on with `xpi`.
 * `--post-url <URL>` **experimental** Used to post a xpi to a URL.
 
 ### Commands
@@ -66,11 +67,11 @@ Run current add-on with Firefox Nightly on OSX:
 
     jpm run -b nightly
 
-Turn current add-on into a `.xpi` file for deployment and installation
+Turn add-on in the current directory into a `.xpi` file for deployment and installation:
 
     jpm xpi
 
-Use local checkout of SDK modules for working on the SDK itself.
+Use local checkout of SDK modules for working on the SDK itself:
 
     jpm run -o /path/to/addon-sdk
 

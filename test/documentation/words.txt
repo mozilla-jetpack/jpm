@@ -9,6 +9,7 @@ wget
 osx
 post-url
 binary-args
+addon-dir
 watchpost
 prefs
 ctrl
