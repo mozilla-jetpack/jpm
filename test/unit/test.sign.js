@@ -653,15 +653,17 @@ describe('sign', function() {
   function runSignCmd(options) {
     options = _.assign({
       getManifest: null,
+      createXPI: null,
       StubAMOClient: makeAMOClientStub(),
       cmdOptions: {
         apiKey: 'some-key',
         apiSecret: 'some-secret',
-        addonDir: simpleAddonPath
+      },
+      program: {
+        addonDir: simpleAddonPath,
       },
     }, options);
 
-    var program = {};
     var cmdConfig = {
       systemProcess: mockProcess,
       AMOClient: options.StubAMOClient,
@@ -669,8 +671,11 @@ describe('sign', function() {
     if (options.getManifest !== null) {
       cmdConfig.getManifest = options.getManifest;
     }
+    if (options.createXPI !== null) {
+      cmdConfig.createXPI = options.createXPI;
+    }
 
-    return signCmd(program, options.cmdOptions, cmdConfig);
+    return signCmd(options.program, options.cmdOptions, cmdConfig);
   }
 
   it('should exit 0 on signing success', function(done) {
@@ -701,6 +706,22 @@ describe('sign', function() {
       },
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
+      done();
+    }).catch(done);
+  });
+
+  it('passes addonDir to XPI creator', function(done) {
+    var mockXPICreator = new CallableMock();
+    runSignCmd({
+      createXPI: mockXPICreator.getCallable(),
+      program: {
+        addonDir: "/nowhere/stub/xpi/path",
+      }
+    }).then(function() {
+      expect(mockXPICreator.call[1].addonDir).to.be.equal("/nowhere/stub/xpi/path");
+      // Note that the stub XPI creator doesn't return a promise so it raises
+      // an exception which we are ignoring for this test (famous last words).
+      // The promise still resolves because that's how the command works.
       done();
     }).catch(done);
   });
