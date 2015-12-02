@@ -358,6 +358,108 @@ describe('amoClient.Client', function() {
   });
 
 
+  describe('debugging', function() {
+    var fakeDebug;
+    var fakeLog;
+
+    beforeEach(function() {
+      fakeDebug = new CallableMock();
+      fakeLog = {
+        debug: fakeDebug.getCallable(),
+      };
+    });
+
+    it('can be configured for debug output', function() {
+      var cli = new amoClient.Client({
+        debugLogging: true,
+        logger: fakeLog,
+      });
+      cli.debug('first', 'second');
+      expect(fakeDebug.call[0]).to.be.equal('first');
+      expect(fakeDebug.call[1]).to.be.equal('second');
+    });
+
+    it('hides debug output by default', function() {
+      var cli = new amoClient.Client({
+        logger: fakeLog,
+      });
+      cli.debug('first', 'second');
+      expect(fakeDebug.wasCalled).to.be.equal(false);
+    });
+
+    it('redacts authorization headers', function() {
+      var cli = new amoClient.Client({
+        debugLogging: true,
+        logger: fakeLog,
+      });
+      cli.debug('prefix', {
+        request: {
+          headers: {
+            Authorization: 'JWT abcdeabcde...',
+          }
+        },
+      });
+      expect(fakeDebug.call[1].request.headers.Authorization).to.be.equal('<REDACTED>');
+    });
+
+    it('redacts set-cookie headers', function() {
+      var cli = new amoClient.Client({
+        debugLogging: true,
+        logger: fakeLog,
+      });
+      cli.debug('prefix', {
+        response: {
+          headers: {
+            'set-cookie': ['foo=bar'],
+          }
+        },
+      });
+      expect(fakeDebug.call[1].response.headers['set-cookie']).to.be.equal('<REDACTED>');
+    });
+
+    it('redacts cookie headers', function() {
+      var cli = new amoClient.Client({
+        debugLogging: true,
+        logger: fakeLog,
+      });
+      cli.debug('prefix', {
+        request: {
+          headers: {
+            cookie: ['foo=bar'],
+          }
+        },
+      });
+      expect(fakeDebug.call[1].request.headers.cookie).to.be.equal('<REDACTED>');
+    });
+
+    it('handles null objects', function() {
+      var cli = new amoClient.Client({
+        debugLogging: true,
+        logger: fakeLog,
+      });
+      // This was throwing an error because null is an object.
+      cli.debug('prefix', null);
+    });
+
+    it('preserves redacted objects', function() {
+      var cli = new amoClient.Client({
+        debugLogging: true,
+        logger: fakeLog,
+      });
+      var response = {
+        headers: {
+          'set-cookie': ['foo=bar'],
+        }
+      };
+      cli.debug('prefix', {
+        response: response,
+      });
+      expect(response.headers['set-cookie']).to.be.deep.equal(['foo=bar']);
+    });
+
+  });
+
+
   describe('requests', function() {
 
     beforeEach(function() {
@@ -635,6 +737,7 @@ describe('sign', function() {
   var mockProcessExit;
   var mockProcess;
   var signingCall;
+  var fakeClientContructor;
 
   beforeEach(function() {
     utils.setup();
@@ -643,6 +746,7 @@ describe('sign', function() {
     mockProcess = {
       exit: mockProcessExit.getCallable(),
     };
+    fakeClientContructor = new CallableMock();
   });
 
   afterEach(utils.tearDown);
@@ -653,7 +757,10 @@ describe('sign', function() {
       result: {success: true},
     }, options);
 
-    function FakeAMOClient() {}
+    function FakeAMOClient() {
+      var constructor = fakeClientContructor.getCallable();
+      constructor.apply(constructor, arguments);
+    }
 
     signingCall = new CallableMock({
       returnValue: when.promise(function(resolve) {
@@ -729,7 +836,11 @@ describe('sign', function() {
   });
 
   it('passes addonDir to XPI creator', function(done) {
-    var mockXPICreator = new CallableMock();
+    var mockXPICreator = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        resolve({});
+      }),
+    });
     runSignCmd({
       createXPI: mockXPICreator.getCallable(),
       program: {
@@ -737,9 +848,24 @@ describe('sign', function() {
       }
     }).then(function() {
       expect(mockXPICreator.call[1].addonDir).to.be.equal("/nowhere/stub/xpi/path");
-      // Note that the stub XPI creator doesn't return a promise so it raises
-      // an exception which we are ignoring for this test (famous last words).
-      // The promise still resolves because that's how the command works.
+      done();
+    }).catch(done);
+  });
+
+  it('can turn on debug logging', function(done) {
+    var mockXPICreator = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        resolve({});
+      }),
+    });
+    runSignCmd({
+      createXPI: mockXPICreator.getCallable(),
+      program: {
+        verbose: true,
+        addonDir: '',
+      }
+    }).then(function() {
+      expect(fakeClientContructor.call[0].debugLogging).to.be.equal(true);
       done();
     }).catch(done);
   });
