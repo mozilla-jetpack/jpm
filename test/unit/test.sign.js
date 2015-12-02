@@ -62,6 +62,7 @@ describe('amoClient.Client', function() {
 
     function signedResponse(overrides) {
       var res = _.assign({
+        active: true,
         processed: true,
         valid: true,
         reviewed: true,
@@ -218,6 +219,23 @@ describe('amoClient.Client', function() {
       this.waitForSignedAddon().then(function(result) {
         // Expect exactly two GETs before resolution.
         expect(self.client._request.calls.length).to.be.equal(2);
+        expect(result.success).to.be.equal(false);
+        done();
+      }).catch(done);
+    });
+
+    it('handles complete yet inactive addons', function(done) {
+      var self = this;
+      this.client._request = new MockRequest({
+        responseQueue: [
+          signedResponse({
+            valid: true, processed: true,
+            active: false, reviewed: false,
+          }),
+        ],
+      });
+
+      this.waitForSignedAddon().then(function(result) {
         expect(result.success).to.be.equal(false);
         done();
       }).catch(done);
