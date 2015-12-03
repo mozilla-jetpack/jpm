@@ -194,7 +194,7 @@ describe('amoClient.Client', function() {
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
       this.client._request = new MockRequest({
         responseQueue: [
-          signedResponse({files: []}),  // files aren't ready yet
+          signedResponse({files: []}),  // valid, but files aren't ready yet
           signedResponse(),  // files are ready
         ],
       });
@@ -230,7 +230,7 @@ describe('amoClient.Client', function() {
         responseQueue: [
           signedResponse({
             valid: true, processed: true,
-            active: false, reviewed: false,
+            automated_signing: false,
           }),
         ],
       });
