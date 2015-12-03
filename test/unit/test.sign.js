@@ -224,7 +224,7 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('handles complete yet inactive addons', function(done) {
+    it.skip('handles complete yet inactive addons', function(done) {
       var self = this;
       this.client._request = new MockRequest({
         responseQueue: [
