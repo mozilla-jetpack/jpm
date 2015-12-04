@@ -760,6 +760,7 @@ describe('sign', function() {
     function FakeAMOClient() {
       var constructor = fakeClientContructor.getCallable();
       constructor.apply(constructor, arguments);
+      this.debug = function() {};
     }
 
     signingCall = new CallableMock({
@@ -848,6 +849,23 @@ describe('sign', function() {
       }
     }).then(function() {
       expect(mockXPICreator.call[1].addonDir).to.be.equal("/nowhere/stub/xpi/path");
+      done();
+    }).catch(done);
+  });
+
+  it('creates XPI in tmp directory', function(done) {
+    var mockXPICreator = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        resolve({});
+      }),
+    });
+    runSignCmd({
+      createXPI: mockXPICreator.getCallable(),
+      program: {
+        addonDir: "/nowhere/stub/xpi/path",
+      }
+    }).then(function() {
+      expect(mockXPICreator.call[1].xpiPath).to.include("tmp-unsigned-xpi-");
       done();
     }).catch(done);
   });
