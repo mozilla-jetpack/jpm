@@ -738,6 +738,7 @@ describe('sign', function() {
   var mockProcess;
   var signingCall;
   var fakeClientContructor;
+  var fakeFileRemover;
 
   beforeEach(function() {
     utils.setup();
@@ -747,6 +748,7 @@ describe('sign', function() {
       exit: mockProcessExit.getCallable(),
     };
     fakeClientContructor = new CallableMock();
+    fakeFileRemover = new CallableMock();
   });
 
   afterEach(utils.tearDown);
@@ -760,6 +762,7 @@ describe('sign', function() {
     function FakeAMOClient() {
       var constructor = fakeClientContructor.getCallable();
       constructor.apply(constructor, arguments);
+      this.debug = function() {};
     }
 
     signingCall = new CallableMock({
@@ -792,6 +795,7 @@ describe('sign', function() {
     var cmdConfig = {
       systemProcess: mockProcess,
       AMOClient: options.StubAMOClient,
+      removeFile: fakeFileRemover.getCallable(),
     };
     if (options.getManifest !== null) {
       cmdConfig.getManifest = options.getManifest;
@@ -890,6 +894,48 @@ describe('sign', function() {
       expect(mockManifestGetter.call[0].xpiPath).to.be.equal('/some/path/to/file.xpi');
       expect(signingCall.wasCalled).to.be.equal(true);
       expect(signingCall.call[0].xpiPath).to.be.equal('/some/path/to/file.xpi');
+      done();
+    }).catch(done);
+  });
+
+  it('removes auto-generated XPI after signing', function(done) {
+    var unsignedXpiPath = '/tmp/some/non-existant/file.xpi';
+    var mockManifestGetter = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        resolve({});  // resolve with an empty manifest.
+      }),
+    });
+    var mockXPICreator = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        resolve(unsignedXpiPath);
+      }),
+    });
+    runSignCmd({
+      getManifest: mockManifestGetter.getCallable(),
+      createXPI: mockXPICreator.getCallable(),
+    }).then(function() {
+      expect(fakeFileRemover.call[0]).to.be.equal(unsignedXpiPath);
+      expect(mockProcessExit.call[0]).to.be.equal(0);
+      done();
+    }).catch(done);
+  });
+
+  it('does not remove external XPI after signing', function(done) {
+    var mockManifestGetter = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        resolve({});  // resolve with an empty manifest.
+      }),
+    });
+    runSignCmd({
+      getManifest: mockManifestGetter.getCallable(),
+      cmdOptions: {
+        xpi: '/some/path/to/file.xpi',
+        apiKey: 'some-key',
+        apiSecret: 'some-secret',
+      },
+    }).then(function() {
+      expect(fakeFileRemover.wasCalled).to.be.equal(false);
+      expect(mockProcessExit.call[0]).to.be.equal(0);
       done();
     }).catch(done);
   });
