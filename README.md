@@ -1,4 +1,4 @@
-JPM [![Dependency Status](https://david-dm.org/mozilla/jpm.png)](https://david-dm.org/mozilla/jpm) [![Build Status](https://travis-ci.org/mozilla/jpm.png)](https://travis-ci.org/mozilla/jpm)
+JPM [![Dependency Status](https://david-dm.org/mozilla-jetpack/jpm.png)](https://david-dm.org/mozilla-jetpack/jpm) [![Build Status](https://travis-ci.org/mozilla-jetpack/jpm.png)](https://travis-ci.org/mozilla-jetpack/jpm)
 ===
 
 [![NPM](https://nodei.co/npm/jpm.png?stars&downloads)](https://nodei.co/npm/jpm/)
@@ -21,7 +21,7 @@ npm install jpm -g
 Installing from GitHub to get latest features or working on jpm itself, use [npm link](https://www.npmjs.org/doc/cli/npm-link.html) to add the `jpm` global to your path:
 
 ```
-git clone https://github.com/mozilla/jpm.git
+git clone https://github.com/mozilla-jetpack/jpm.git
 cd jpm
 npm install
 npm link
@@ -36,8 +36,9 @@ npm link
 * `--binary-args <CMDARGS>` Passes other arguments into Firefox. Enclose multiple arguments in quotes.
 * `--debug` Enable the add-on debugger when running the add-on.
 * `-p, --profile <PROFILE>` Uses the profile name or path when running Firefox. Paths must start with either "./" or "/", or be considered a profile name.
-* `--prefs [path]` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
-* `-o, --overload [path]` Uses either the specified `[path]` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
+* `--prefs <path>` Uses a JSON file or common js file which exports a JSON object.  The keys of this object will be the pref names, the values will be the pref values.
+* `-o, --overload <path>` Uses either the specified `<path>` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
+* `--addon-dir <path>` Specify a source directory of the add-on (instead of current directory) when building an add-on with `xpi`.
 * `--post-url <URL>` **experimental** Used to post a xpi to a URL.
 * `--out <filename>` Override default xpi file name. Work with `jpm xpi` 
 
@@ -50,6 +51,7 @@ npm link
 * `jpm post` **experimental** Zips up the current add-on into a `.xpi` file and post that to the `--post-url`.
 * `jpm watchpost` **experimental** Zips up the current add-on into a `.xpi` file and post that to the `--post-url`,
   every time a file in the current working directory changes.
+* `jpm sign` Retrieve a Mozilla-signed `.xpi` file for your current add-on.
 
 ### Fork features
 Extend addon manifest properties:
@@ -70,8 +72,10 @@ Extend addon manifest properties:
 
 ### Documentation
 
-* [Getting Started Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
+* [Getting Started with jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_Started_%28jpm%29)
+* [package.json keys that jpm uses](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/package_json#Key_reference)
 * [Command Line Guide](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
+* [Self-hosting signed add-ons](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm#Supporting_updates_for_self-hosted_add-ons)
 * [Transitioning From CFX](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx_to_jpm)
 
 ### Examples
@@ -80,11 +84,11 @@ Run current add-on with Firefox Nightly on OSX:
 
     jpm run -b nightly
 
-Turn current add-on into a `.xpi` file for deployment and installation
+Turn add-on in the current directory into a `.xpi` file for deployment and installation:
 
     jpm xpi
 
-Use local checkout of SDK modules for working on the SDK itself.
+Use local checkout of SDK modules for working on the SDK itself:
 
     jpm run -o /path/to/addon-sdk
 
@@ -130,7 +134,7 @@ $ cd PATH_TO_JPM_REPO
 $ release-it
 ```
 
-This will push to GitHub as well -- which should be your fork. To also push the tags upstream, where upstream is most likely `mozilla/jpm`:
+This will push to GitHub as well -- which should be your fork. To also push the tags upstream, where upstream is most likely `mozilla-jetpack/jpm`:
 
 ```
 $ git push upstream TAG_NAME

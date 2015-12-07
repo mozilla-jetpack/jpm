@@ -13,6 +13,7 @@ var all = require("when").all;
 var hasAOMSupport = utils.hasAOMSupport;
 
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
+var simpleAddonXPI = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
 var prevDir, prevBinary;
 
 describe("lib/utils", function () {
@@ -27,26 +28,65 @@ describe("lib/utils", function () {
     process.chdir(prevDir);
   });
 
-  it("getManifest() returns manifest in cwd()", function (done) {
-    process.chdir(simpleAddonPath);
-    utils.getManifest().then(function(manifest) {
-      expect(manifest.name).to.be.equal("simple-addon");
-      expect(manifest.title).to.be.equal("My Simple Addon");
-      done();
+  describe("getManifest", function() {
+    it("returns manifest in simple-addon directory", function () {
+      return utils.getManifest({addonDir: simpleAddonPath}).then(function(manifest) {
+        expect(manifest.name).to.be.equal("simple-addon");
+        expect(manifest.title).to.be.equal("My Simple Addon");
+      });
     });
-  });
 
-  it("getManifest() returns {} when no package.json found", function (done) {
-    process.chdir(path.join(__dirname, "..", "addons"));
-    utils.getManifest().then(function(manifest) {
-      expect(Object.keys(manifest).length).to.be.equal(0);
-      done();
+    it("returns manifest from custom XPI file", function () {
+      return utils.getManifest({
+        xpiPath: simpleAddonXPI,
+        addonDir: path.join(__dirname, "..", "addons") // pass in an invalid dir just to make sure it's not used
+      }).then(function(manifest) {
+        expect(manifest.name).to.be.equal("simple-addon");
+        expect(manifest.title).to.be.equal("My Simple Addon");
+      });
+    });
+
+    it("throws error for non-existant XPI file", function () {
+      var badXPIFile = path.join(__dirname, "..", "not-a-real-file.xpi");
+      return utils.getManifest({xpiPath: badXPIFile})
+        .then(function() {
+          throw new Error('unexpected success');
+        }).catch(function(err) {
+          expect(err.message).to.include('ENOENT');
+          expect(err.message).to.include(badXPIFile);
+        });
+    });
+
+    it("throws error for invalid zip file", function () {
+      var badXPIFile = path.join(__dirname, "..", "xpis", "@invalid-zip.xpi");
+      return utils.getManifest({xpiPath: badXPIFile})
+        .then(function() {
+          throw new Error('unexpected success');
+        }).catch(function(err) {
+          expect(err.message).to.include('invalid signature');
+        });
+    });
+
+    it("returns {} when no package.json found", function () {
+      var noAddonDir = path.join(__dirname, "..", "addons");
+      return utils.getManifest({addonDir: noAddonDir}).then(function(manifest) {
+        expect(Object.keys(manifest).length).to.be.equal(0);
+      });
+    });
+
+    it("returns {} when no package.json found in XPI", function () {
+      var noPackageXPI = path.join(__dirname, "..", "xpis",
+                                   "@missing-package-json.xpi");
+      return utils.getManifest({xpiPath: noPackageXPI})
+        .then(function(manifest) {
+          expect(Object.keys(manifest).length).to.be.equal(0);
+        });
     });
   });
 
   describe("hasAOMSupport", function () {
     it("hasAOMSupport true for valid ranges", function () {
-      [">=41 <=44", ">=41.0a <=42", ">=40", ">=41.0a"].forEach(function (range) {
+      [">=51 <=54", ">=50.0a <=52", ">=50", ">=51.0a"].forEach(function (range) {
         expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(true);
       });
     });

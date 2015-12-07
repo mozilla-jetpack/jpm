@@ -5,7 +5,7 @@
 
 ## New Issues
 
-* Check [existing issues](https://github.com/mozilla/jpm/issues).
+* Check [existing issues](https://github.com/mozilla-jetpack/jpm/issues).
 * Mention the OS, and software versions used.
 * Provide steps to reproduce the issue.
 * Mention your expected behavior.
@@ -17,7 +17,7 @@
 as well as possible.
 * Write tests if possible.
 * Ask for a help if you need it.
-* Ask for a review from @jsantell, @erikvold, or @gozala
+* Ask for a review from @kumar303, @gozala, @jsantell, @mossop
 when you are ready.
 
 ## License

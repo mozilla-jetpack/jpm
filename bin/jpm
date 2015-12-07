@@ -12,7 +12,9 @@ var open = require("open");
 var postXPI = require("../lib/post");
 var watch = require("node-watch");
 var cp = require('child_process');
+var sign = require("../lib/sign");
 
+var AMO_API_PREFIX = "https://addons.mozilla.org/api/v3";
 // TODO: use .jpmignore file here instead
 var IGNORE_FILES_REGEX = /(?:bootstrap\.js|install\.rdf|\.xpi)$/i;
 
@@ -25,6 +27,7 @@ program
   .option("-o, --overload [path]", "Overloads the built-in Firefox SDK modules with a local copy located at environment variable `JETPACK_ROOT` or `path` if supplied. Used for development on the SDK itself.")
   .option("-f, --filter <pattern>", "--filter=FILENAME[:TESTNAME] only run tests whose filenames match FILENAME and " +
                       "optionally match TESTNAME, both regexps")
+  .option("--addon-dir <path>", "Path of Firefox addon to build.", process.cwd())
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--prefs <path>", "Custom set user preferences (path to a json file)")
   .option("--post-url <url>", "A url to post a xpi of your extension")
@@ -62,6 +65,17 @@ program
   .action(cmd.prepare("post", program, function (manifest) {
     postXPI(manifest, program);
   }));
+
+program
+  .command("sign")
+  .description("Retrieve a Mozilla-signed .xpi file for your current add-on")
+  .option("--api-key <key>", "addons.mozilla.org API key string")
+  .option("--api-secret <secret>", "addons.mozilla.org API secret string")
+  .option("--api-url-prefix <urlPrefix>", "addons.mozilla.org API URL prefix [" + AMO_API_PREFIX + "]", AMO_API_PREFIX)
+  .option("--xpi <filePath>", "optional XPI to be signed. By default, an XPI will be built from your working directory")
+  .action(function(options) {
+    sign(program, options);
+  });
 
 program
   .command("watchpost")
@@ -128,4 +142,3 @@ program.parse(process.argv);
 if (cmd.isEmptyCommand(program)) {
   program.help();
 }
-

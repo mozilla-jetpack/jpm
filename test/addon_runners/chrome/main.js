@@ -68,13 +68,19 @@ exports.testChromeLocale = function(assert) {
                'locales en-US folder was copied correctly');
 }
 
+var { setInterval, clearInterval } = require("sdk/timers");
+
 exports.testChromeInPanel = function(assert, done) {
   let panel = Panel({
     contentURL: 'chrome://test/content/panel.html',
     contentScriptWhen: 'start',
     contentScriptFile: data.url('panel.js')
   });
+
+  var intervalId;
+
   panel.once('show', _ => {
+    clearInterval(intervalId);
     assert.pass('panel shown');
     panel.port.once('echo', _ => {
       assert.pass('got echo');
@@ -84,7 +90,13 @@ exports.testChromeInPanel = function(assert, done) {
     });
     panel.port.emit('echo');
   });
-  panel.show();
+
+  // NOTE: hack needed to prevents random test timeout (probably due to the
+  // setTimeout used in the 'panel.show' method:
+  // https://github.com/mozilla/addon-sdk/blob/a19bd8c/lib/sdk/panel/utils.js#L78)
+  intervalId = setInterval( _ => {
+    panel.show();
+  }, 50);
 }
 
 require('sdk/test/runner').runTestsFromModule(module);

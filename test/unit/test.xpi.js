@@ -19,6 +19,8 @@ var jpmignoreLFPath = path.join(__dirname, "..", "addons", "jpmignore-lf");
 var jpmignoreCRLFPath = path.join(__dirname, "..", "addons", "jpmignore-crlf");
 var jpmignoreMixedPath = path.join(__dirname, "..", "addons", "jpmignore-mixed");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
+var updateRDFPath = path.join(__dirname, "..", "fixtures", "updateRDF");
+var updateRDFFailPath = path.join(__dirname, "..", "fixtures", "updateRDF-fail");
 
 describe("lib/xpi", function () {
   beforeEach(utils.setup);
@@ -448,5 +450,44 @@ describe("lib/xpi", function () {
     .then(function() {
       done();
     }, done);
+  });
+
+  it("create an updateRDF file", function (done) {
+    process.chdir(updateRDFPath);
+    var manifest = require(path.join(updateRDFPath, "package.json"));
+    var xpiPath;
+    return xpi(manifest).then(function (filePath) {
+      xpiPath = filePath;
+      expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"))).to.equal(true);
+      expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.xpi"))).to.equal(true);
+      //Removing the update.RDF file to make utils.compareDirs works
+      fs.unlink(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"));
+      return utils.unzipTo(xpiPath, tmpOutputDir).then(function () {
+        utils.compareDirs(updateRDFPath, tmpOutputDir);
+      });
+    })
+    .then(function() {
+      fs.unlink(xpiPath);
+      done();
+    })
+    .catch(done);
+  });
+
+  it("failure in creation an updateRDF file", function (done) {
+    process.chdir(updateRDFFailPath);
+    var manifest = require(path.join(updateRDFFailPath, "package.json"));
+    return xpi(manifest).then(
+      function (filePath) {},
+      function (err) {
+        expect(fs.existsSync(path.join(updateRDFFailPath, "@simple-addon-1.0.0.update.rdf"))).to.equal(false);
+        expect(fs.existsSync(path.join(updateRDFFailPath, "@simple-addon-1.0.0.xpi"))).to.equal(true);
+        return;
+      }
+    )
+    .then(function() {
+      fs.unlink(path.join(updateRDFFailPath, "@simple-addon-1.0.0.xpi"));
+      done();
+    })
+    .catch(done);
   });
 });

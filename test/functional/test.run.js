@@ -40,7 +40,6 @@ describe("jpm run", function () {
 
   it("should not overwrite or delete xpi in current xpi", function (done) {
     var size = null;
-    process.chdir(paramDumpPath);
     // Copy over a different xpi and rename it to the would-be generated xpi name
     fs.copy(path.join(__dirname, "..", "xpis", "@aom-unsupported.xpi"), path.join(paramDumpPath, "@param-dump.xpi")).then(function () {
       return fs.stat(path.join(paramDumpPath, "@param-dump.xpi"));
@@ -48,7 +47,7 @@ describe("jpm run", function () {
       size = stat.size;
       expect(size).to.be.greaterThan(0);
 
-      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         fs.stat(path.join(paramDumpPath, "@param-dump.xpi")).then(function (stat) {
@@ -62,7 +61,7 @@ describe("jpm run", function () {
   // TODO: fix this
   describe("-o/--overload", function () {
     // Issue #204 intermittent --overload test failure
-    // See https://github.com/mozilla/jpm/issues/204
+    // See https://github.com/mozilla-jetpack/jpm/issues/204
     /*
     if (utils.isTravis()) {
       it("skip on travis", function() {
@@ -75,7 +74,7 @@ describe("jpm run", function () {
 
     it("does not overload if overload set and JETPACK_ROOT is not set", function (done) {
       process.env.JETPACK_ROOT = "";
-      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run -o -v", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.not.contain("OVERLOADED STARTUP");
@@ -86,7 +85,7 @@ describe("jpm run", function () {
 
     it("overloads the SDK if overload set and JETPACK_ROOT set", function (done) {
       process.env.JETPACK_ROOT = path.join(__dirname, "../fixtures/mock-sdk");
-      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run -o -v", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("OVERLOADED STARTUP");
@@ -97,7 +96,7 @@ describe("jpm run", function () {
     it("overloads the SDK with [path] if set over JETPACK_ROOT", function (done) {
       process.env.JETPACK_ROOT = "/an/invalid/path";
       var sdkPath = path.join(__dirname, "../fixtures/mock-sdk");
-      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run -v -o " + sdkPath, options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("OVERLOADED STARTUP");
@@ -108,7 +107,7 @@ describe("jpm run", function () {
     it("overloads the SDK if overload set and uses [path] if given", function (done) {
       process.env.JETPACK_ROOT = "";
       var sdkPath = path.join(__dirname, "../fixtures/mock-sdk");
-      var options = { cwd: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: overloadablePath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run -v -o " + sdkPath, options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("OVERLOADED STARTUP");
@@ -120,8 +119,7 @@ describe("jpm run", function () {
 
   describe("-v/--verbose", function () {
     it("logs out only console messages from the addon without -v", function (done) {
-      process.chdir(paramDumpPath);
-      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("console\.log: param-dump:")
@@ -131,8 +129,7 @@ describe("jpm run", function () {
     });
 
     it("logs out everything from console with -v", function (done) {
-      process.chdir(paramDumpPath);
-      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run -v", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout.split("\n").length).to.be.gt(2);
@@ -143,8 +140,7 @@ describe("jpm run", function () {
     });
 
     it("logs errors without `verbose`", function (done) {
-      process.chdir(errorAddonPath);
-      var options = { cwd: errorAddonPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: errorAddonPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stderr).to.contain("ReferenceError");
@@ -155,8 +151,7 @@ describe("jpm run", function () {
 
   describe("-b/--binary <BINARY>", function () {
     it("Uses specified binary instead of default Firefox", function (done) {
-      process.chdir(simpleAddonPath);
-      var proc = exec("run -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -b " + fakeBinary, { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-foreground -no-remote -profile");
         done();
@@ -166,8 +161,7 @@ describe("jpm run", function () {
 
   describe("--binary-args <CMDARGS>", function () {
     it("Passes in additional arguments to Firefox (single)", function (done) {
-      process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary + " --binary-args -some-value", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -v -b " + fakeBinary + " --binary-args -some-value", { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-some-value");
         done();
@@ -175,8 +169,7 @@ describe("jpm run", function () {
     });
 
     it("Passes in additional arguments to Firefox (multiple)", function (done) {
-      process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary + " --binary-args \"-one -two -three\"", { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -v -b " + fakeBinary + " --binary-args \"-one -two -three\"", { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-one -two -three");
         done();
@@ -186,8 +179,7 @@ describe("jpm run", function () {
 
   describe("-p/--profile", function () {
     it("Passes in a new temporary profile path to Firefox when -profile is not set", function (done) {
-      process.chdir(simpleAddonPath);
-      var proc = exec("run -v -b " + fakeBinary, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -v -b " + fakeBinary, { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile ");
         expect(stdout).to.not.contain("-no-copy");
@@ -196,9 +188,8 @@ describe("jpm run", function () {
     });
 
     it("Passes in a temporary profile path instead of the original", function (done) {
-      process.chdir(simpleAddonPath);
       var tempProfile = new FirefoxProfile();
-      var proc = exec("run -v -b " + fakeBinary + " -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -v -b " + fakeBinary + " -p " + tempProfile.profileDir, { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile ");
         expect(stdout).to.not.contain("-profile " + tempProfile.profileDir);
@@ -208,9 +199,8 @@ describe("jpm run", function () {
     });
 
     it("Does not pass in a temporary profile path instead of the original with --no-copy", function (done) {
-      process.chdir(simpleAddonPath);
       var tempProfile = new FirefoxProfile();
-      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile ");
         expect(stdout).to.contain("-profile " + tempProfile.profileDir);
@@ -220,9 +210,8 @@ describe("jpm run", function () {
     });
 
     it("--no-copy alone passes in a temporary profile path instead of the original", function (done) {
-      process.chdir(simpleAddonPath);
       var tempProfile = new FirefoxProfile();
-      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+      var proc = exec("run -v -b " + fakeBinary + " --no-copy -p " + tempProfile.profileDir, { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("-profile " + tempProfile.profileDir);
         expect(stdout).to.not.contain("-no-copy");
@@ -231,7 +220,6 @@ describe("jpm run", function () {
     });
 
     it("Passes in a profile name results in -p <path>", function (done) {
-      process.chdir(simpleAddonPath);
       var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
 
       // find firefox nightly
@@ -256,7 +244,7 @@ describe("jpm run", function () {
           then(function(profilePath) {
             var cmd = "run -v -b " + fakeBinary + " -p jpm-test";
             // jpm run -b fakeBinary -p jpm-test
-            var proc = exec(cmd, { cwd: simpleAddonPath }, function (err, stdout, stderr) {
+            var proc = exec(cmd, { addonDir: simpleAddonPath }, function (err, stdout, stderr) {
               expect(err).to.not.be.ok;
               expect(stdout).to.not.contain("-P jpm-test");
               expect(stdout).to.not.contain("-profile " + profilePath);
@@ -269,7 +257,7 @@ describe("jpm run", function () {
     });
 
     describe("options passed to an add-on", function() {
-      var options = { cwd: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } }
+      var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } }
 
       function readParams(stdout) {
         var output = stdout.toString()
@@ -288,7 +276,6 @@ describe("jpm run", function () {
       }
 
       it("run with only -v option", function(done) {
-        process.chdir(paramDumpPath);
         var task = exec("run -v", options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
           //expect(stderr).to.not.be.ok;
@@ -315,7 +302,6 @@ describe("jpm run", function () {
       });
 
       it("run with options should receive options (--filter)", function(done) {
-        process.chdir(paramDumpPath);
         var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --do-not-quit --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
@@ -344,7 +330,6 @@ describe("jpm run", function () {
       });
 
       it("run with options should receive options (-f)", function(done) {
-        process.chdir(paramDumpPath);
         var cmd = "run -v --profile-memory --check-memory -f bar --times 3 --stop-on-error --do-not-quit --tbpl"
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
@@ -375,8 +360,7 @@ describe("jpm run", function () {
 
   describe("SDK context", function () {
     it("@loader/options#metadata loads in package.json", function (done) {
-      process.chdir(loaderOptionsPath);
-      var options = { cwd: loaderOptionsPath, env: { JPM_FIREFOX_BINARY: binary }};
+      var options = { addonDir: loaderOptionsPath, env: { JPM_FIREFOX_BINARY: binary }};
       var task = exec("run -v", options, function(error, stdout, stderr) {
         expect(error).to.not.be.ok;
 
