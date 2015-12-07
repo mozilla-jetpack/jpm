@@ -59,12 +59,12 @@ Extend addon manifest properties:
 * `optionsURL` URL of option page, that must be inner page of plugin. Preferences from manifest are available (also their default values), but not visible at extension page.
 
 ```js
-  "title": "Dr.Web Anti-Virus Link Checker",
-  "description": "Check links with Dr. Web unix-httpd. Check link by click at context menu. Check page before navigation. Filtering search engine results page from non recommended results.",
+  "title": "Your addon title",
+  "description": "Your addon description",
   "localized_description": {
      "ru": {
-        "title": "Dr.Web Антивирус Link Checker",
-        "description": "Проверяет ссылки с помощью Dr. Web unix-httpd. Проверяет ссылки из контекстного меню. Проверяет страницы перед переходом. Фильтрует результаты поисковой выдачи от подозрительных сайтов."
+        "title": "Your addon title on another language",
+        "description": "Your addon description on another language too"
      }
   },
  "optionsURL": "data/page/option_page.html",
