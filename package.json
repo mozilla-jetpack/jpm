@@ -63,6 +63,7 @@
     "glob": "5.0.3",
     "husky": "^0.10.1",
     "mocha": "2.3.4",
+    "release-it": "2.3.1",
     "rimraf": "2.3.2",
     "teacher": "0.0.1",
     "xmldom": "0.1.19"

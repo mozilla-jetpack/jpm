@@ -110,7 +110,7 @@ For a simple xpi and post, use:
 
 ## Releasing new jpm versions
 
-For releasing a new version, ensure you have `release-it` via npm, which creates an incremental version commit, pushes to GH, and npm, and adds a tag. If you want to do a minor or major release as opposed to the default patch release, [check out release-it's documentation](https://github.com/webpro/release-it#usage-examples) on how to do it (it's easy).
+For releasing a new version, use the `release-it` command (installed when you run `npm install`) which creates an incremental version commit, pushes to GH, and npm, and adds a tag. If you want to do a minor or major release as opposed to the default patch release, [check out release-it's documentation](https://github.com/webpro/release-it#usage-examples) on how to do it (it's easy).
 
 ```
 $ cd PATH_TO_JPM_REPO
