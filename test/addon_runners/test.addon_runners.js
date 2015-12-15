@@ -35,7 +35,12 @@ describe("jpm run addons", function () {
   });
 });
 
+// function fileFilter(file) {
+//   var stat = fs.statSync(path.join(addonsPath, file))
+//   return (stat && stat.isDirectory());
+// }
+
 function fileFilter(file) {
   var stat = fs.statSync(path.join(addonsPath, file))
-  return (stat && stat.isDirectory());
+  return (stat && stat.isDirectory() && file == 'options-page-url');
 }

@@ -40,7 +40,7 @@ npm link
 * `-o, --overload <path>` Uses either the specified `<path>` or the path set in the environment variables `JETPACK_ROOT` as the root for [addon-sdk](https://github.com/mozilla/addon-sdk) modules instead of the ones built into Firefox.
 * `--addon-dir <path>` Specify a source directory of the add-on (instead of current directory) when building an add-on with `xpi`.
 * `--post-url <URL>` **experimental** Used to post a xpi to a URL.
-* `--out <filename>` Override default xpi file name. Work with `jpm xpi` 
+* `--out <filename>` Set custom file name for `.xpi` file for `jpm xpi` command
 
 ### Commands
 
@@ -53,8 +53,8 @@ npm link
   every time a file in the current working directory changes.
 * `jpm sign` Retrieve a Mozilla-signed `.xpi` file for your current add-on.
 
-### Fork features
-Extend addon manifest properties:
+### Extended manifest properties 
+Extend addon manifest by properties:
 * `localized_description` property to localize addon `title` and `description`,
 * `optionsURL` URL of option page, that must be inner page of plugin. Preferences from manifest are available (also their default values), but not visible at extension page.
 
