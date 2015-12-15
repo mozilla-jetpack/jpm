@@ -1,9 +1,9 @@
 sudo: false
 language: node_js
 node_js:
-  - "iojs"
   - "0.10"
-  - "0.12"
+  - "4"
+  - "5"
 env:
   - FIREFOX_VERSION=nightly
 #  - FIREFOX_VERSION=aurora
@@ -16,6 +16,10 @@ notifications:
 before_install:
   - "export DISPLAY=:99.0"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR"
+  - npm install -g npm
+
+install:
+  - npm install
 
 before_script:
   - pwd

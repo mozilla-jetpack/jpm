@@ -42,7 +42,7 @@
     "jsontoxml": "0.0.11",
     "jsonwebtoken": "5.4.0",
     "lodash": "3.3.1",
-    "minimatch": "2.0.4",
+    "minimatch": "2.0.10",
     "node-watch": "0.3.4",
     "tmp": "0.0.28",
     "open": "0.0.5",
