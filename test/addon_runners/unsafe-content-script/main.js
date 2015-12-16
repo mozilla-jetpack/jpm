@@ -1,3 +1,4 @@
+/* jshint moz: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -38,10 +39,10 @@ exports.testMembranelessMode = function(assert, done) {
         'new ' + function () {
           var assert = function assert(v, msg) {
             self.port.emit("assert", { assertion: v, msg: msg });
-          }
+          };
           var done = function done() {
             self.port.emit("done");
-          }
+          };
           window.wrappedJSObject.fuu = { bar: 42 };
           window.wrappedJSObject.assert = assert;
           window.wrappedJSObject.runTest();

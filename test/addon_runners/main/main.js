@@ -1,3 +1,4 @@
+/* jshint moz: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,10 +19,10 @@ exports.main = function main(options, callbacks) {
     assert.equal(typeof callbacks.print, 'function', 'callbacks.print is a function');
     assert.equal(typeof callbacks.quit, 'function', 'callbacks.quit is a function');
     assert.equal(options.loadReason, 'install', 'options.loadReason is install');
-  }
+  };
 
   require('sdk/test/runner').runTestsFromModule({exports: tests});
-}
+};
 
 // this causes a fail if main does not start
 setTimeout(function() {

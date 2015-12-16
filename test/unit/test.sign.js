@@ -1,3 +1,4 @@
+/* jshint mocha: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,6 +19,7 @@ var utils = require("../utils");
 describe('amoClient.Client', function() {
 
   function setUp() {
+    /* jshint validthis: true */
     var self = this;
     this.apiUrlPrefix = 'http://not-a-real-amo-api.com/api/v3';
     this.client = new amoClient.Client({
@@ -73,8 +75,8 @@ describe('amoClient.Client', function() {
       }, overrides);
 
       return {
-        responseBody: res,
-      }
+        responseBody: res
+      };
     }
 
     it('lets you sign an add-on', function(done) {
@@ -306,7 +308,7 @@ describe('amoClient.Client', function() {
             handler();
           }
         },
-      }
+      };
 
       var files = signedResponse().responseBody.files;
       var fakeRequest = new CallableMock({returnValue: fakeResponse});
@@ -504,7 +506,7 @@ describe('amoClient.Client', function() {
         url: '/path',
         headers: headers,
       });
-      expect(conf.headers['Accept']).to.be.equal('text/html');
+      expect(conf.headers.Accept).to.be.equal('text/html');
     });
 
     it('makes relative URLs absolute', function() {
@@ -532,7 +534,7 @@ describe('amoClient.Client', function() {
         }));
 
       });
-      when.all(requests).then(function() { done() }).catch(done);
+      when.all(requests).then(function() { done(); }).catch(done);
     });
 
     it('requires a URL', function() {
@@ -1038,7 +1040,7 @@ MockRequest.prototype['delete'] = function(conf, callback) {
 };
 
 
-function MockProgress() {};
+function MockProgress() {}
 
 MockProgress.prototype.animate = function() {};
 MockProgress.prototype.finish = function() {};

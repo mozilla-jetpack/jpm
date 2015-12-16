@@ -1,7 +1,8 @@
+/* jshint esversion: 6, moz: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-'use strict'
+'use strict';
 
 const { Cu, Cc, Ci } = require('chrome');
 const Request = require('sdk/request').Request;
@@ -9,9 +10,9 @@ const { WindowTracker } = require('sdk/deprecated/window-utils');
 const { close, open } = require('sdk/window/helpers');
 const { data } = require('sdk/self');
 const { Panel } = require('sdk/panel');
-const { setTimeout } = require("sdk/timers")
+const { setTimeout } = require("sdk/timers");
 
-const XUL_URL = 'chrome://test/content/new-window.xul'
+const XUL_URL = 'chrome://test/content/new-window.xul';
 
 const { Services } = Cu.import('resource://gre/modules/Services.jsm', {});
 const { NetUtil } = Cu.import('resource://gre/modules/NetUtil.jsm', {});
@@ -29,7 +30,7 @@ exports.testChromeSkin = function(assert, done) {
   }).get();
 
   assert.pass('requesting ' + skinURL);
-}
+};
 
 exports.testChromeContent = function(assert, done) {
   let wt = WindowTracker({
@@ -48,7 +49,7 @@ exports.testChromeContent = function(assert, done) {
     assert.fail);
 
   assert.pass('opening ' + XUL_URL);
-}
+};
 
 exports.testChromeLocale = function(assert) {
   let jpLocalePath = Cc['@mozilla.org/chrome/chrome-registry;1'].
@@ -66,7 +67,7 @@ exports.testChromeLocale = function(assert) {
   assert.equal(enStringBundle.GetStringFromName('test'),
                'Test',
                'locales en-US folder was copied correctly');
-}
+};
 
 var { setInterval, clearInterval } = require("sdk/timers");
 
@@ -97,6 +98,6 @@ exports.testChromeInPanel = function(assert, done) {
   intervalId = setInterval( _ => {
     panel.show();
   }, 50);
-}
+};
 
 require('sdk/test/runner').runTestsFromModule(module);

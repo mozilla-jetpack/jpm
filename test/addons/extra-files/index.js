@@ -1,3 +1,5 @@
+/* jshint moz: true */
+
 "use strict";
 
 const { Cc, Ci } = require("chrome");
