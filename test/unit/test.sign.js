@@ -6,6 +6,7 @@
 
 var path = require("path");
 var _ = require("lodash");
+var merge = require("lodash.merge");
 var chai = require("chai");
 var expect = chai.expect;
 var jwt = require('jsonwebtoken');
@@ -22,19 +23,25 @@ describe('amoClient.Client', function() {
     /* jshint validthis: true */
     var self = this;
     this.apiUrlPrefix = 'http://not-a-real-amo-api.com/api/v3';
-    this.client = new amoClient.Client({
-      apiKey: 'fake-api-key',
-      apiSecret: 'fake-api-secret',
-      apiUrlPrefix: this.apiUrlPrefix,
-      signedStatusCheckInterval: 0,
-      fs: {
-        createReadStream: function() {
-          return 'fake-read-stream';
-        }
-      },
-      request: new MockRequest(),
-      validateProgress: new MockProgress(),
-    });
+
+    this.newClient = function(opt) {
+      opt = merge({
+        apiKey: 'fake-api-key',
+        apiSecret: 'fake-api-secret',
+        apiUrlPrefix: self.apiUrlPrefix,
+        signedStatusCheckInterval: 0,
+        fs: {
+          createReadStream: function() {
+            return 'fake-read-stream';
+          }
+        },
+        request: new MockRequest(),
+        validateProgress: new MockProgress(),
+      }, opt);
+      return new amoClient.Client(opt);
+    };
+
+    this.client = this.newClient();
   }
 
   describe('signing', function() {
@@ -257,6 +264,26 @@ describe('amoClient.Client', function() {
       }).catch(function(err) {
         expect(err.message).to.include('took too long');
         expect(clearTimeout.call[0]).to.be.equal('status-check-timeout-id');
+        done();
+      }).catch(done);
+    });
+
+    it('can configure signing status check timeout', function(done) {
+      var clearTimeout = new CallableMock();
+      var client = this.newClient({
+        // This should cause an immediate timeout.
+        signedStatusCheckTimeout: 0,
+      });
+
+      client.waitForSignedAddon('/status-url', {
+        clearTimeout: clearTimeout.getCallable(),
+        setStatusCheckTimeout: function() {
+          return 'status-check-timeout-id';
+        },
+      }).then(function() {
+        done(new Error('Unexpected success'));
+      }).catch(function(err) {
+        expect(err.message).to.include('took too long');
         done();
       }).catch(done);
     });
@@ -886,6 +913,20 @@ describe('sign', function() {
       }
     }).then(function() {
       expect(fakeClientContructor.call[0].debugLogging).to.be.equal(true);
+      done();
+    }).catch(done);
+  });
+
+  it('can configure polling timeouts', function(done) {
+    runSignCmd({
+      cmdOptions: {
+        apiKey: 'some-key',
+        apiSecret: 'some-secret',
+        timeout: 5000,
+      },
+    }).then(function() {
+      expect(fakeClientContructor.call[0].signedStatusCheckTimeout)
+        .to.be.equal(5000);
       done();
     }).catch(done);
   });
