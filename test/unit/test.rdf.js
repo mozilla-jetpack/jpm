@@ -1,3 +1,4 @@
+/* jshint mocha: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,7 +17,7 @@ var getData = require("../../lib/xpi/utils").getData;
 describe("lib/rdf", function () {
   describe("defaults", function () {
     it("uses default values when none specified", function () {
-      var str = RDF.createRDF({ id: "myaddon@jetpack" })
+      var str = RDF.createRDF({ id: "myaddon@jetpack" });
       var xml = parseRDF(str);
       expect(getData(xml, "em:id")).to.be.equal("myaddon@jetpack");
       // This should throw elsewhere
@@ -151,7 +152,7 @@ describe("lib/rdf", function () {
       var xml = RDF.createRDF({ id: "1" });
       expect(xml.indexOf("updateURL")).to.be.equal(-1);
 
-      var xml = RDF.createRDF({ id: "1", updateURL: undefined });
+      xml = RDF.createRDF({ id: "1", updateURL: undefined });
       expect(xml.indexOf("updateURL")).to.be.equal(-1);
     });
 
@@ -165,7 +166,7 @@ describe("lib/rdf", function () {
       var xml = RDF.createRDF({ id: "1" });
       expect(xml.indexOf("updateKey")).to.be.equal(-1);
 
-      var xml = RDF.createRDF({ id: "1", updateKey: undefined });
+      xml = RDF.createRDF({ id: "1", updateKey: undefined });
       expect(xml.indexOf("updateKey")).to.be.equal(-1);
     });
 
@@ -174,11 +175,11 @@ describe("lib/rdf", function () {
       expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
       expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
 
-      var xml = parseRDF(RDF.createRDF({ id: "1", permissions: { multiprocess: true } }));
+      xml = parseRDF(RDF.createRDF({ id: "1", permissions: { multiprocess: true } }));
       expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(true);
       expect(getData(xml, "em:multiprocessCompatible")).to.be.equal("true");
 
-      var xml = parseRDF(RDF.createRDF({ id: "1", permissions: { multiprocess: false } }));
+      xml = parseRDF(RDF.createRDF({ id: "1", permissions: { multiprocess: false } }));
       expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
       expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
     });
@@ -343,8 +344,8 @@ describe("lib/rdf", function () {
           version: "1.4.1",
           engines: { fennec: ">=21.0a <32.0" }
         }
-      )
-      var xml = parseRDF(str)
+      );
+      var xml = parseRDF(str);
 
       expect(getData(xml, "em:version")).to.be.equal("1.4.1");
       var apps = xml.getElementsByTagName("em:targetApplication");
@@ -369,8 +370,8 @@ describe("lib/rdf", function () {
           version: "1.4.1",
           engines: { fennec: ">=21.0a <32.0", firefox: ">=21.0a <=33.0"}
         }
-      )
-      var xml = parseRDF(str)
+      );
+      var xml = parseRDF(str);
 
       expect(getData(xml, "em:version")).to.be.equal("1.4.1");
       var apps = xml.getElementsByTagName("em:targetApplication");
@@ -405,7 +406,7 @@ describe("lib/rdf", function () {
           id : "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi"
         }
-      )
+      );
       var xml = parseRDF(str);
 
       expect(getData(xml, "em:version")).to.be.equal("0.0.0");

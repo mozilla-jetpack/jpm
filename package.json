@@ -12,6 +12,7 @@
     "addon_runners": "node ./test/run.js addon_runners",
     "unit": "node ./test/run.js unit",
     "documentation": "mocha -t 5000 test/documentation",
+    "pretest": "jshint bin/jpm lib test --exclude test/addons,test/addon_runners,test/fixtures",
     "test": "node ./test/run.js",
     "prepush": "npm run documentation"
   },
@@ -62,6 +63,7 @@
     "dive": "0.4.0",
     "glob": "5.0.3",
     "husky": "^0.10.1",
+    "jshint": "^2.9.1-rc1",
     "mocha": "2.3.4",
     "release-it": "2.3.1",
     "rimraf": "2.3.2",

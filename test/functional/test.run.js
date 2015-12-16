@@ -1,3 +1,4 @@
+/* jshint expr: true, mocha: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -122,7 +123,7 @@ describe("jpm run", function () {
       var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
       var proc = exec("run", options, function (err, stdout, stderr) {
         expect(err).to.not.be.ok;
-        expect(stdout).to.contain("console\.log: param-dump:")
+        expect(stdout).to.contain("console\.log: param-dump:");
         expect(stdout).to.contain("PARAMS DUMP START");
         done();
       });
@@ -252,15 +253,15 @@ describe("jpm run", function () {
               done();
             });
           });
-        })
-      })
+        });
+      });
     });
 
     describe("options passed to an add-on", function() {
-      var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } }
+      var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary } };
 
       function readParams(stdout) {
-        var output = stdout.toString()
+        var output = stdout.toString();
         var start = "PARAMS DUMP START";
         var end = "PARAMS DUMP END";
         var data = output.slice(output.indexOf(start) + start.length,
@@ -302,7 +303,7 @@ describe("jpm run", function () {
       });
 
       it("run with options should receive options (--filter)", function(done) {
-        var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --do-not-quit --tbpl"
+        var cmd = "run -v --profile-memory --check-memory --filter bar --times 3 --stop-on-error --do-not-quit --tbpl";
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
           //expect(stderr).to.not.be.ok;
@@ -330,7 +331,7 @@ describe("jpm run", function () {
       });
 
       it("run with options should receive options (-f)", function(done) {
-        var cmd = "run -v --profile-memory --check-memory -f bar --times 3 --stop-on-error --do-not-quit --tbpl"
+        var cmd = "run -v --profile-memory --check-memory -f bar --times 3 --stop-on-error --do-not-quit --tbpl";
         var task = exec(cmd, options, function(error, stdout, stderr) {
           expect(error).to.not.be.ok;
           //expect(stderr).to.not.be.ok;

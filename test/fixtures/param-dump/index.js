@@ -1,3 +1,4 @@
+/* jshint esversion: 6, moz: true */
 "use strict";
 
 const { Cc, Ci } = require("chrome");
@@ -23,7 +24,7 @@ const read = (name, defaultValue=null) => {
     default:
       return defaultValue;
   }
-}
+};
 
 const params = {
   command: read("extensions.@param-dump.sdk.load.command"),

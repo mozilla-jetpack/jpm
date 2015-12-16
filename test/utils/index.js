@@ -101,7 +101,7 @@ function run (cmd, options, p) {
       var noTests = /No tests were run/.test(out);
       var hasSuccess = /All tests passed!/.test(out);
       var hasFailure = /There were test failures\.\.\./.test(out);
-      if (noTests || hasFailure || !hasSuccess || code != 0) {
+      if (noTests || hasFailure || !hasSuccess || code !== 0) {
         process.stdout.write(out);
       }
       expect(code).to.equal(hasFailure ? 1 : 0);

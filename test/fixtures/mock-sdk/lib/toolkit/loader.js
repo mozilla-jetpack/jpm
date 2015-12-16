@@ -1,3 +1,4 @@
+/* jshint esversion: 6, moz: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -67,6 +68,12 @@ const COMPONENT_ERROR = '`Components` is not available in this context.\n' +
   'Example: \n' +
   '    let { Cc, Ci } = require(\'chrome\');\n';
 
+let isJSONURI = uri => uri.substr(-5) === '.json';
+let isJSMURI = uri => uri.substr(-4) === '.jsm';
+let isJSURI = uri => uri.substr(-3) === '.js';
+let isResourceURI = uri => uri.substr(0, 11) === 'resource://';
+let isRelative = id => id[0] === '.';
+
 // Workaround for bug 674195. Freezing objects from other compartments fail,
 // so we use `Object.freeze` from the same component instead.
 function freeze(object) {
@@ -85,7 +92,7 @@ function freeze(object) {
 const descriptor = iced(function descriptor(object) {
   let value = {};
   getOwnPropertyNames(object).forEach(function(name) {
-    value[name] = getOwnPropertyDescriptor(object, name)
+    value[name] = getOwnPropertyDescriptor(object, name);
   });
   return value;
 });
@@ -119,8 +126,8 @@ function iced(f) {
 // useful during loader bootstrap when other util modules can't be used &
 // thats only case where this export should be used.
 const override = iced(function override(target, source) {
-  let properties = descriptor(target)
-  let extension = descriptor(source || {})
+  let properties = descriptor(target);
+  let extension = descriptor(source || {});
   getOwnPropertyNames(extension).forEach(function(name) {
     properties[name] = extension[name];
   });
@@ -131,7 +138,7 @@ exports.override = override;
 function sourceURI(uri) { return String(uri).split(" -> ").pop(); }
 exports.sourceURI = iced(sourceURI);
 
-function isntLoaderFrame(frame) { return frame.fileName !== module.uri }
+function isntLoaderFrame(frame) { return frame.fileName !== module.uri; }
 
 function parseURI(uri) { return String(uri).split(" -> ").pop(); }
 exports.parseURI = parseURI;
@@ -184,7 +191,7 @@ function readURI(uri) {
 
 // Combines all arguments into a resolved, normalized path
 function join (...paths) {
-  let resolved = normalize(pathJoin(...paths))
+  let resolved = normalize(pathJoin(...paths));
   // OS.File `normalize` strips out the second slash in
   // `resource://` or `chrome://`, and third slash in
   // `file:///`, so we work around this
@@ -443,10 +450,10 @@ function loadAsDirectory (path) {
     // If `path/package.json` exists, parse the `main` entry
     // and attempt to load that
     let main = getManifestMain(JSON.parse(readURI(path + '/package.json')));
-    if (main != null) {
+    if (main !== null) {
       let tmpPath = join(path, main);
       if (found = loadAsFile(tmpPath))
-        return found
+        return found;
     }
     try {
       let tmpPath = path + '/index.js';
@@ -493,9 +500,12 @@ function isNodeModule (name) {
 // Make mapping array that is sorted from longest path to shortest path
 // to allow overlays. Used by `resolveURI`, returns an array
 function sortPaths (paths) {
-  return keys(paths).
-    sort(function(a, b) { return b.length - a.length }).
-    map(function(path) { return [ path, paths[path] ] });
+  return keys(paths)
+    .sort(function(a, b) {
+      return b.length - a.length;
+    }).map(function(path) {
+      return [ path, paths[path] ];
+    });
 }
 
 const resolveURI = iced(function resolveURI(id, mapping) {
@@ -524,8 +534,8 @@ const Require = iced(function Require(loader, requirer) {
 
   function require(id) {
     if (!id) // Throw if `id` is not passed.
-      throw Error('you must provide a module name when calling require() from '
-                  + requirer.id, requirer.uri);
+      throw Error('you must provide a module name when calling require() from ' +
+                  requirer.id, requirer.uri);
 
     let requirement;
     let uri;
@@ -759,14 +769,14 @@ const Loader = iced(function Loader(options) {
     load: { enumerable: false, value: options.load || load },
     // Main (entry point) module, it can be set only once, since loader
     // instance can have only one main module.
-    main: new function() {
+    main: function() {
       let main;
       return {
         enumerable: false,
         get: function() { return main; },
         // Only set main if it has not being set yet!
         set: function(module) { main = main || module; }
-      }
+      };
     }
   };
 
@@ -780,12 +790,6 @@ const Loader = iced(function Loader(options) {
   return freeze(create(null, returnObj));
 });
 exports.Loader = Loader;
-
-let isJSONURI = uri => uri.substr(-5) === '.json';
-let isJSMURI = uri => uri.substr(-4) === '.jsm';
-let isJSURI = uri => uri.substr(-3) === '.js';
-let isResourceURI = uri => uri.substr(0, 11) === 'resource://';
-let isRelative = id => id[0] === '.'
 
 const generateMap = iced(function generateMap(options, callback) {
   let { rootURI, resolve, paths } = override({
@@ -851,7 +855,7 @@ function findAllModuleIncludes (uri, options, results, callback) {
 
     let includes = keys(results[uri]);
     let count = 0;
-    let subcallback = () => { if (++count >= includes.length) callback(results) };
+    let subcallback = () => { if (++count >= includes.length) callback(results); };
     includes.map(id => {
       let moduleURI = results[uri][id];
       if (!results[moduleURI])
@@ -887,7 +891,7 @@ function walk (src, callback) {
 function traverse (node, cb) {
   if (Array.isArray(node)) {
     node.map(x => {
-      if (x != null) {
+      if (x !== null) {
         x.parent = node;
         traverse(x, cb);
       }
@@ -910,12 +914,12 @@ function traverse (node, cb) {
 // has a value being passed in as an argument
 function isRequire (node) {
   var c = node.callee;
-  return c
-    && node.type === 'CallExpression'
-    && c.type === 'Identifier'
-    && c.name === 'require'
-    && node.arguments.length
-   && node.arguments[0].type === 'Literal';
+  return c &&
+    node.type === 'CallExpression' &&
+    c.type === 'Identifier' &&
+    c.name === 'require' &&
+    node.arguments.length &&
+    node.arguments[0].type === 'Literal';
 }
 
 });

@@ -1,3 +1,4 @@
+/* jshint moz: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -19,7 +20,7 @@ exports.testExpectedID = function(assert) {
   simple.prefs.test2 = '25';
   assert.equal(service.get('extensions.'+expected_id+'.test2'), '25', 'test pref is 25');
   assert.equal(service.get('extensions.'+expected_id+'.test2'), simple.prefs.test2, 'test pref is 25');
-}
+};
 
 exports.testSelfID = function*(assert) {
   assert.equal(typeof(id), 'string', 'self.id is a string');
@@ -27,6 +28,6 @@ exports.testSelfID = function*(assert) {
 
   let addon = yield getAddonByID(id);
   assert.equal(addon.id, id, 'found addon with self.id');
-}
+};
 
 require('sdk/test/runner').runTestsFromModule(module);
