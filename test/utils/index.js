@@ -163,6 +163,6 @@ function invalidResolve () {
 exports.invalidResolve = invalidResolve;
 
 function isTravis() {
-  return (process.env.JPM_FIREFOX_BINARY == "travis");
+  return (process.env.TRAVIS == 'true');
 }
 exports.isTravis = isTravis;
