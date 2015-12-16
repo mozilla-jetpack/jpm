@@ -12,7 +12,7 @@
     "addon_runners": "node ./test/run.js addon_runners",
     "unit": "node ./test/run.js unit",
     "documentation": "mocha -t 5000 test/documentation",
-    "pretest": "jshint bin/jpm lib test --exclude test/addons,test/addon_runners,test/fixtures",
+    "jshint": "jshint bin/jpm lib test --exclude test/addons,test/addon_runners,test/fixtures",
     "test": "node ./test/run.js",
     "prepush": "npm run documentation"
   },
