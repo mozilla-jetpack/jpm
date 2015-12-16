@@ -93,7 +93,9 @@ To run just a specific type of test (functional, unit), run the associated scrip
 ### Setup
 
 You must have the [Extension Auto-Installer](https://addons.mozilla.org/en-US/firefox/addon/autoinstaller/)
-installed on Firefox.
+installed on a pre-production Firefox and you need to use a profile
+that sets `xpinstall.signatures.required` to `false`
+([more info](http://www.ghacks.net/2015/06/19/how-to-disable-the-firefox-40-add-on-signing-requirement/)).
 
 ### Usage
 
