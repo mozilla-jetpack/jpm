@@ -49,7 +49,7 @@
     "promzard": "0.3.0",
     "read": "1.0.7",
     "request": "2.65.0",
-    "semver": "4.3.3",
+    "semver": "5.1.0",
     "mozilla-version-comparator": "1.0.2",
     "mozilla-toolkit-versioning": "0.0.2",
     "when": "3.7.2",
