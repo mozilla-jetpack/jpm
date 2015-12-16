@@ -14,6 +14,13 @@ before_install:
   - npm install -g npm
 install:
   - npm install
+
+# To use firefox nightly, uncomment the following lines:
+# before_script:
+#   - pwd
+#   - cd ..
+#   - wget "https://download.mozilla.org/?product=firefox-nightly-latest&os=linux64&lang=en-US" -O firefox.tar.bz2 && tar xvf firefox.tar.bz2
+
 script:
   - export JPM_FIREFOX_BINARY=`which firefox`
   - npm run-script jshint
