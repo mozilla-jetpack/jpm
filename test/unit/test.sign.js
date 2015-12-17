@@ -12,7 +12,7 @@ var expect = chai.expect;
 var jwt = require('jsonwebtoken');
 var when = require("when");
 
-var signCmd = require('../../lib/sign');
+var signCmd = require('../../lib/sign').signCmd;
 var amoClient = require('../../lib/amo-client');
 var utils = require("../utils");
 
@@ -830,7 +830,7 @@ describe('sign', function() {
       cmdConfig.createXPI = options.createXPI;
     }
 
-    return signCmd(_.assign(options.program, options.cmdOptions), cmdConfig);
+    return signCmd(options.program, options.cmdOptions, cmdConfig);
   }
 
   it('should exit 0 on signing success', function(done) {

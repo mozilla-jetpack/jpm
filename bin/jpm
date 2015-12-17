@@ -12,7 +12,7 @@ var open = require("open");
 var postXPI = require("../lib/post");
 var watch = require("node-watch");
 var cp = require('child_process');
-var sign = require("../lib/sign");
+var signCmd = require("../lib/sign").signCmd;
 var _ = require("lodash");
 
 var AMO_API_PREFIX = require("../lib/settings").AMO_API_PREFIX;
@@ -75,17 +75,7 @@ program
   .option("--xpi <filePath>", "optional XPI to be signed. By default, an XPI will be built from your working directory")
   .option("--timeout <milliseconds>", "time to wait for a signing result")
   .action(function(options) {
-    cmd.validateProgram(program);
-    sign(_.assign(options, program)).then(function (result) {
-      console.log(result.success ? 'SUCCESS' : 'FAIL');
-      process.exit(result.success ? 0 : 1);
-    }, function (err) {
-      console.error('FAIL');
-      if (err) {
-        console.error(err.stack);
-      }
-      process.exit(1);
-    });
+    signCmd(program, options);
   });
 
 program
