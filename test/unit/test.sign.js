@@ -830,7 +830,7 @@ describe('sign', function() {
       cmdConfig.createXPI = options.createXPI;
     }
 
-    return signCmd(options.program, options.cmdOptions, cmdConfig);
+    return signCmd(_.assign(options.program, options.cmdOptions), cmdConfig);
   }
 
   it('should exit 0 on signing success', function(done) {
