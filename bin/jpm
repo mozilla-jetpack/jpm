@@ -12,9 +12,9 @@ var open = require("open");
 var postXPI = require("../lib/post");
 var watch = require("node-watch");
 var cp = require('child_process');
-var sign = require("../lib/sign");
+var signCmd = require("../lib/sign").signCmd;
 
-var AMO_API_PREFIX = "https://addons.mozilla.org/api/v3";
+var AMO_API_PREFIX = require("../lib/settings").AMO_API_PREFIX;
 // TODO: use .jpmignore file here instead
 var IGNORE_FILES_REGEX = /(?:bootstrap\.js|install\.rdf|\.xpi)$/i;
 
@@ -74,7 +74,7 @@ program
   .option("--xpi <filePath>", "optional XPI to be signed. By default, an XPI will be built from your working directory")
   .option("--timeout <milliseconds>", "time to wait for a signing result")
   .action(function(options) {
-    sign(program, options);
+    signCmd(program, options);
   });
 
 program

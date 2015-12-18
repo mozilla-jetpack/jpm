@@ -12,7 +12,7 @@ var expect = chai.expect;
 var jwt = require('jsonwebtoken');
 var when = require("when");
 
-var signCmd = require('../../lib/sign');
+var signCmd = require('../../lib/sign').signCmd;
 var amoClient = require('../../lib/amo-client');
 var utils = require("../utils");
 
