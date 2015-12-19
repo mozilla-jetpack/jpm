@@ -17,27 +17,27 @@ var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var simpleAddonXPI = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
 var prevDir, prevBinary;
 
-describe("lib/utils", function () {
-  beforeEach(function () {
+describe("lib/utils", function() {
+  beforeEach(function() {
     if (process.env.JPM_FIREFOX_BINARY)
       prevBinary = process.env.JPM_FIREFOX_BINARY;
     prevDir = process.cwd();
   });
-  afterEach(function () {
+  afterEach(function() {
     if (prevBinary)
       process.env.JPM_FIREFOX_BINARY = prevBinary;
     process.chdir(prevDir);
   });
 
   describe("getManifest", function() {
-    it("returns manifest in simple-addon directory", function () {
+    it("returns manifest in simple-addon directory", function() {
       return utils.getManifest({addonDir: simpleAddonPath}).then(function(manifest) {
         expect(manifest.name).to.be.equal("simple-addon");
         expect(manifest.title).to.be.equal("My Simple Addon");
       });
     });
 
-    it("returns manifest from custom XPI file", function () {
+    it("returns manifest from custom XPI file", function() {
       return utils.getManifest({
         xpiPath: simpleAddonXPI,
         addonDir: path.join(__dirname, "..", "addons") // pass in an invalid dir just to make sure it's not used
@@ -47,35 +47,35 @@ describe("lib/utils", function () {
       });
     });
 
-    it("throws error for non-existant XPI file", function () {
+    it("throws error for non-existant XPI file", function() {
       var badXPIFile = path.join(__dirname, "..", "not-a-real-file.xpi");
       return utils.getManifest({xpiPath: badXPIFile})
         .then(function() {
-          throw new Error('unexpected success');
+          throw new Error("unexpected success");
         }).catch(function(err) {
-          expect(err.message).to.include('ENOENT');
+          expect(err.message).to.include("ENOENT");
           expect(err.message).to.include(badXPIFile);
         });
     });
 
-    it("throws error for invalid zip file", function () {
+    it("throws error for invalid zip file", function() {
       var badXPIFile = path.join(__dirname, "..", "xpis", "@invalid-zip.xpi");
       return utils.getManifest({xpiPath: badXPIFile})
         .then(function() {
-          throw new Error('unexpected success');
+          throw new Error("unexpected success");
         }).catch(function(err) {
-          expect(err.message).to.include('invalid signature');
+          expect(err.message).to.include("invalid signature");
         });
     });
 
-    it("returns {} when no package.json found", function () {
+    it("returns {} when no package.json found", function() {
       var noAddonDir = path.join(__dirname, "..", "addons");
       return utils.getManifest({addonDir: noAddonDir}).then(function(manifest) {
         expect(Object.keys(manifest).length).to.be.equal(0);
       });
     });
 
-    it("returns {} when no package.json found in XPI", function () {
+    it("returns {} when no package.json found in XPI", function() {
       var noPackageXPI = path.join(__dirname, "..", "xpis",
                                    "@missing-package-json.xpi");
       return utils.getManifest({xpiPath: noPackageXPI})
@@ -85,29 +85,29 @@ describe("lib/utils", function () {
     });
   });
 
-  describe("hasAOMSupport", function () {
-    it("hasAOMSupport true for valid ranges", function () {
-      [">=51 <=54", ">=50.0a <=52", ">=50", ">=51.0a"].forEach(function (range) {
-        expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(true);
+  describe("hasAOMSupport", function() {
+    it("hasAOMSupport true for valid ranges", function() {
+      [">=51 <=54", ">=50.0a <=52", ">=50", ">=51.0a"].forEach(function(range) {
+        expect(hasAOMSupport({ engines: { "firefox": range } })).to.be.equal(true);
       });
     });
-    it("hasAOMSupport false for invalid ranges", function () {
-      [">=28 <=34", ">=30 <=32", ">=26", ">=30.0a", ">=38 <=44"].forEach(function (range) {
-        expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(false);
+    it("hasAOMSupport false for invalid ranges", function() {
+      [">=28 <=34", ">=30 <=32", ">=26", ">=30.0a", ">=38 <=44"].forEach(function(range) {
+        expect(hasAOMSupport({ engines: { "firefox": range } })).to.be.equal(false);
       });
     });
-    it("hasAOMSupport false for unspecified min", function () {
-      ["<26", "<=32", "<40.0a"].forEach(function (range) {
-        expect(hasAOMSupport({ engines: { 'firefox': range } })).to.be.equal(false);
+    it("hasAOMSupport false for unspecified min", function() {
+      ["<26", "<=32", "<40.0a"].forEach(function(range) {
+        expect(hasAOMSupport({ engines: { "firefox": range } })).to.be.equal(false);
       });
     });
-    it("hasAOMSupport false for no engines field", function () {
+    it("hasAOMSupport false for no engines field", function() {
       expect(hasAOMSupport({})).to.be.equal(false);
     });
-    it("hasAOMSupport false for unpopulated engines field", function () {
+    it("hasAOMSupport false for unpopulated engines field", function() {
       expect(hasAOMSupport({ engines: {}})).to.be.equal(false);
     });
-    it("hasAOMSupport false for one valid and one invalid engine", function () {
+    it("hasAOMSupport false for one valid and one invalid engine", function() {
       expect(hasAOMSupport({ engines: {
         "firefox": ">=40.0a",
         "fennec": "<31"

@@ -24,4 +24,5 @@ install:
 script:
   - export JPM_FIREFOX_BINARY=`which firefox`
   - npm run-script jshint
+  - npm run-script jscs
   - npm test

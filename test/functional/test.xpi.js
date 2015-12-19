@@ -13,16 +13,16 @@ var exec = utils.exec;
 
 var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
 
-describe("jpm xpi", function () {
+describe("jpm xpi", function() {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
 
-  it("creates a xpi of the simple-addon", function (done) {
+  it("creates a xpi of the simple-addon", function(done) {
     var proc = exec("xpi", { addonDir: simpleAddonPath });
-    proc.on("close", function () {
+    proc.on("close", function() {
       var xpiPath = path.join(simpleAddonPath, "@simple-addon-1.0.0.xpi");
 
-      utils.unzipTo(xpiPath, utils.tmpOutputDir).then(function () {
+      utils.unzipTo(xpiPath, utils.tmpOutputDir).then(function() {
         utils.compareDirs(simpleAddonPath, utils.tmpOutputDir);
         fs.unlink(xpiPath);
         done();

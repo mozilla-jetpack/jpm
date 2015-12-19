@@ -2,10 +2,10 @@
 "use strict";
 
 const { Cc, Ci } = require("chrome");
-const prefs = Cc['@mozilla.org/preferences-service;1'].
+const prefs = Cc["@mozilla.org/preferences-service;1"].
                     getService(Ci.nsIPrefService).
                     QueryInterface(Ci.nsIPrefBranch);
-const { quit, eForceQuit } = Cc['@mozilla.org/toolkit/app-startup;1'].
+const { quit, eForceQuit } = Cc["@mozilla.org/toolkit/app-startup;1"].
                              getService(Ci.nsIAppStartup);
 
 const exit = () => quit(eForceQuit);

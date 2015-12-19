@@ -15,14 +15,14 @@ var jpm = utils.run;
 var addonsPath = path.join(__dirname, "..", "addon_runners");
 var binary = process.env.JPM_FIREFOX_BINARY || "nightly";
 
-describe("jpm run addons", function () {
+describe("jpm run addons", function() {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
 
   fs.readdirSync(addonsPath)
   .filter(fileFilter)
-  .forEach(function (file) {
-    it(file, function (done) {
+  .forEach(function(file) {
+    it(file, function(done) {
       var addonPath = path.join(addonsPath, file);
       process.chdir(addonPath);
 

@@ -7,9 +7,9 @@
 const { Toolbar } = require("sdk/ui/toolbar");
 const { Frame } = require("sdk/ui/frame");
 const { ActionButton } = require("sdk/ui/button/action");
-const { data } = require('sdk/self');
+const { data } = require("sdk/self");
 
-console.log(data.url('index.html'));
+console.log(data.url("index.html"));
 
 let button = new ActionButton({
   id: "button",

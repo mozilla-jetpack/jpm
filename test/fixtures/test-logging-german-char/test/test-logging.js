@@ -9,4 +9,4 @@ exports.testRequireIndex = function(assert) {
   assert.equal(done, true, "Required index.js!");
 };
 
-require('sdk/test').run(exports);
+require("sdk/test").run(exports);

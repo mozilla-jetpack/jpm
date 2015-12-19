@@ -8,4 +8,4 @@ exports.testFailure = function(assert) {
   assert.fail("Fails!");
 };
 
-require('sdk/test').run(exports);
+require("sdk/test").run(exports);

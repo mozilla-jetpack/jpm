@@ -1,6 +1,6 @@
 const { Cc, Ci } = require("chrome");
 const { metadata } = require("@loader/options");
-const { quit, eForceQuit } = Cc['@mozilla.org/toolkit/app-startup;1'].
+const { quit, eForceQuit } = Cc["@mozilla.org/toolkit/app-startup;1"].
                              getService(Ci.nsIAppStartup);
 
 for (let k in metadata) {

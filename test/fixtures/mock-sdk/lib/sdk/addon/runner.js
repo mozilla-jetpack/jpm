@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const { Cc, Ci } = require("chrome");
-const { quit, eForceQuit } = Cc['@mozilla.org/toolkit/app-startup;1'].
+const { quit, eForceQuit } = Cc["@mozilla.org/toolkit/app-startup;1"].
                              getService(Ci.nsIAppStartup);
 
 exports.startup = (reasonCode, prefs) => {

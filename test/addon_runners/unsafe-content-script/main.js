@@ -6,19 +6,19 @@
 
 const { create: makeFrame } = require("sdk/frame/utils");
 const { window } = require("sdk/addon/window");
-const { Loader } = require('sdk/test/loader');
+const { Loader } = require("sdk/test/loader");
 const loader = Loader(module);
 const Worker = loader.require("sdk/content/worker").Worker;
 
 exports.testMembranelessMode = function(assert, done) {
 
   let url = "data:text/html;charset=utf-8," + encodeURIComponent(
-    '<script>' +
-    'function runTest() {' +
-    '  assert(fuu.bar == 42, "Content-script objects should be accessible to content with' +
-    '         the unsafe-content-script flag on.");' +
-    '}' +
-    '</script>'
+    "<script>" +
+    "function runTest() {" +
+    "  assert(fuu.bar == 42, \"Content-script objects should be accessible to content with" +
+    "         the unsafe-content-script flag on.\");" +
+    "}" +
+    "</script>"
   );
 
   let element = makeFrame(window.document, {
@@ -36,7 +36,7 @@ exports.testMembranelessMode = function(assert, done) {
     let worker = Worker({
       window: element.contentWindow,
       contentScript:
-        'new ' + function () {
+        "new " + function() {
           var assert = function assert(v, msg) {
             self.port.emit("assert", { assertion: v, msg: msg });
           };
@@ -49,11 +49,11 @@ exports.testMembranelessMode = function(assert, done) {
           done();
         }
     });
-    worker.port.on("done", function () {
+    worker.port.on("done", function() {
       element.parentNode.removeChild(element);
       done();
     });
-    worker.port.on("assert", function (data) {
+    worker.port.on("assert", function(data) {
       assert.ok(data.assertion, data.msg);
     });
   }

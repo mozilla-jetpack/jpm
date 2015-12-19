@@ -4,10 +4,10 @@
 "use strict";
 
 const prefs = require("sdk/preferences/service");
-const { LoaderWithHookedConsole } = require('sdk/test/loader');
-const { resolveURI } = require('toolkit/loader');
+const { LoaderWithHookedConsole } = require("sdk/test/loader");
+const { resolveURI } = require("toolkit/loader");
 const { rootURI } = require("@loader/options");
-const { usingJSON } = require('sdk/l10n/json/core');
+const { usingJSON } = require("sdk/l10n/json/core");
 
 const PREF_MATCH_OS_LOCALE  = "intl.locale.matchOS";
 const PREF_SELECTED_LOCALE  = "general.useragent.locale";
@@ -28,7 +28,7 @@ function definePseudo(loader, id, exports) {
 }
 
 function createTest(locale, testFunction) {
-  return function (assert, done) {
+  return function(assert, done) {
     let { loader } = LoaderWithHookedConsole(module);
     assert.pass("created a loader");
 
@@ -101,7 +101,7 @@ exports.testHtmlLocalization = createTest("en-GB", function(assert, loader, done
                         nodes[2].innerHTML,
                         nodes[3].innerHTML]);
     },
-    onMessage: function (data) {
+    onMessage: function(data) {
       assert.equal(
         data[0],
         "Kept as-is",
@@ -179,7 +179,7 @@ exports.testEnUsLocaleName = createTest("en-GB", function(assert, loader, done) 
 });
 
 exports.testUsingJSON = function(assert) {
-  assert.equal(usingJSON, false, 'not using json');
+  assert.equal(usingJSON, false, "not using json");
 }
 
 exports.testShortLocaleName = createTest("eo", function(assert, loader, done) {
@@ -194,6 +194,6 @@ exports.testShortLocaleName = createTest("eo", function(assert, loader, done) {
 
 // Before running tests, disable HTML service which is automatially enabled
 // in api-utils/addon/runner.js
-require('sdk/l10n/html').disable();
+require("sdk/l10n/html").disable();
 
 require("sdk/test").run(exports);

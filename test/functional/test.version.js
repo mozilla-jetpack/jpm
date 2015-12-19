@@ -10,11 +10,11 @@ var expect = chai.expect;
 var exec = utils.exec;
 var pjson = require("../../package.json");
 
-describe("jpm version", function () {
+describe("jpm version", function() {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);
 
-  it("prints the version number", function (done) {
+  it("prints the version number", function(done) {
     var proc = exec("version", {}, function(error, stdout, stderr) {
       expect(stdout.trim()).to.equal(pjson.version);
       done();

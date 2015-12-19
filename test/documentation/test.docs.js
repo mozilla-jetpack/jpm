@@ -21,11 +21,11 @@ var IGNORED_TEACHER_DESCRIPTIONS = [
   "Passive voice"
 ];
 
-describe("Spell Checking", function () {
-  it("Spellcheck README.md", function (done) {
+describe("Spell Checking", function() {
+  it("Spellcheck README.md", function(done) {
    var readme = path.join(rootURI, "README.md");
 
-    fs.readFile(readme, function (err, data) {
+    fs.readFile(readme, function(err, data) {
       expect(err).to.be.equal(null);
       var text = data.toString();
 
@@ -58,7 +58,7 @@ describe("Spell Checking", function () {
         }
 
         // filter out results with descriptions which we do not want to consider as errors
-        results = results.filter(function (result) {
+        results = results.filter(function(result) {
           return IGNORED_TEACHER_DESCRIPTIONS.indexOf(result.description) == -1;
         });
 
@@ -69,10 +69,10 @@ describe("Spell Checking", function () {
     });
   });
 
-  it("Spellcheck CONTRIBUTING.md", function (done) {
+  it("Spellcheck CONTRIBUTING.md", function(done) {
    var readme = path.join(rootURI, "CONTRIBUTING.md");
 
-    fs.readFile(readme, function (err, data) {
+    fs.readFile(readme, function(err, data) {
       expect(err).to.be.equal(null);
       var text = data.toString();
 
