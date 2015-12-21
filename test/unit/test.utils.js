@@ -19,13 +19,15 @@ var prevDir, prevBinary;
 
 describe("lib/utils", function() {
   beforeEach(function() {
-    if (process.env.JPM_FIREFOX_BINARY)
+    if (process.env.JPM_FIREFOX_BINARY) {
       prevBinary = process.env.JPM_FIREFOX_BINARY;
+    }
     prevDir = process.cwd();
   });
   afterEach(function() {
-    if (prevBinary)
+    if (prevBinary) {
       process.env.JPM_FIREFOX_BINARY = prevBinary;
+    }
     process.chdir(prevDir);
   });
 
@@ -34,6 +36,13 @@ describe("lib/utils", function() {
       return utils.getManifest({addonDir: simpleAddonPath}).then(function(manifest) {
         expect(manifest.name).to.be.equal("simple-addon");
         expect(manifest.title).to.be.equal("My Simple Addon");
+      });
+    });
+
+    it("gets the manifest from the current working dir by default", function() {
+      process.chdir(simpleAddonPath);
+      return utils.getManifest().then(function(manifest) {
+        expect(manifest.name).to.be.equal("simple-addon");
       });
     });
 
