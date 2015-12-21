@@ -8,4 +8,4 @@ exports.testSuccess = function(assert) {
   assert.pass("Passes again!");
 };
 
-require('sdk/test').run(exports);
+require("sdk/test").run(exports);

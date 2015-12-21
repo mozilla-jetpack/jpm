@@ -9,30 +9,30 @@ var _ = require("lodash");
 var merge = require("lodash.merge");
 var chai = require("chai");
 var expect = chai.expect;
-var jwt = require('jsonwebtoken');
+var jwt = require("jsonwebtoken");
 var when = require("when");
 
-var signCmd = require('../../lib/sign').signCmd;
-var amoClient = require('../../lib/amo-client');
+var signCmd = require("../../lib/sign").signCmd;
+var amoClient = require("../../lib/amo-client");
 var utils = require("../utils");
 
 
-describe('amoClient.Client', function() {
+describe("amoClient.Client", function() {
 
   function setUp() {
     /* jshint validthis: true */
     var self = this;
-    this.apiUrlPrefix = 'http://not-a-real-amo-api.com/api/v3';
+    this.apiUrlPrefix = "http://not-a-real-amo-api.com/api/v3";
 
     this.newClient = function(opt) {
       opt = merge({
-        apiKey: 'fake-api-key',
-        apiSecret: 'fake-api-secret',
+        apiKey: "fake-api-key",
+        apiSecret: "fake-api-secret",
         apiUrlPrefix: self.apiUrlPrefix,
         signedStatusCheckInterval: 0,
         fs: {
           createReadStream: function() {
-            return 'fake-read-stream';
+            return "fake-read-stream";
           }
         },
         request: new MockRequest(),
@@ -44,7 +44,7 @@ describe('amoClient.Client', function() {
     this.client = this.newClient();
   }
 
-  describe('signing', function() {
+  describe("signing", function() {
 
     beforeEach(function() {
       setUp.call(this);
@@ -52,15 +52,15 @@ describe('amoClient.Client', function() {
 
       this.sign = function(conf) {
         conf = _.assign({}, {
-          guid: 'some-guid',
-          version: 'some-version',
-          xpiPath: 'some-xpi-path',
+          guid: "some-guid",
+          version: "some-version",
+          xpiPath: "some-xpi-path",
         }, conf);
         return self.client.sign(conf);
       };
 
       this.waitForSignedAddon = function(url, options) {
-        url = url || '/some-status-url';
+        url = url || "/some-status-url";
         options = _.assign({
           setAbortTimeout: function() {},
         }, options);
@@ -76,9 +76,9 @@ describe('amoClient.Client', function() {
         valid: true,
         reviewed: true,
         files: [{
-          download_url: 'http://amo/some-signed-file-1.2.3.xpi',
+          download_url: "http://amo/some-signed-file-1.2.3.xpi",
         }],
-        validation_url: 'http://amo/validation-results/',
+        validation_url: "http://amo/validation-results/",
       }, overrides);
 
       return {
@@ -86,12 +86,12 @@ describe('amoClient.Client', function() {
       };
     }
 
-    it('lets you sign an add-on', function(done) {
+    it("lets you sign an add-on", function(done) {
       var self = this;
-      var apiStatusUrl = 'https://api/addon/version/upload/abc123';
+      var apiStatusUrl = "https://api/addon/version/upload/abc123";
       var conf = {
-        guid: 'a-guid',
-        version: 'a-version',
+        guid: "a-guid",
+        version: "a-version",
       };
       var waitForSignedAddon = new CallableMock();
       this.client.waitForSignedAddon = waitForSignedAddon.getCallable();
@@ -107,11 +107,11 @@ describe('amoClient.Client', function() {
 
       this.sign(conf).then(function() {
         var putCall = self.client._request.calls[0];
-        expect(putCall.name).to.be.equal('put');
+        expect(putCall.name).to.be.equal("put");
 
-        var partialUrl = '/addons/' + conf.guid + '/versions/' + conf.version;
+        var partialUrl = "/addons/" + conf.guid + "/versions/" + conf.version;
         expect(putCall.conf.url).to.include(partialUrl);
-        expect(putCall.conf.formData.upload).to.be.equal('fake-read-stream');
+        expect(putCall.conf.formData.upload).to.be.equal("fake-read-stream");
 
         expect(waitForSignedAddon.wasCalled).to.be.equal(true);
         expect(waitForSignedAddon.call[0]).to.be.equal(apiStatusUrl);
@@ -120,14 +120,14 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('handles already validated add-ons', function(done) {
+    it("handles already validated add-ons", function(done) {
       var self = this;
       var waitForSignedAddon = new CallableMock();
       this.client.waitForSignedAddon = waitForSignedAddon.getCallable();
 
       this.client._request = new MockRequest({
         httpResponse: {statusCode: 409},
-        responseBody: {error: 'version already exists'},
+        responseBody: {error: "version already exists"},
       });
 
       this.sign().then(function(result) {
@@ -137,25 +137,25 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('throws an error when signing on a 500 server response', function(done) {
+    it("throws an error when signing on a 500 server response", function(done) {
       var self = this;
       this.client._request = new MockRequest({httpResponse: {statusCode: 500}});
 
       this.sign().then(function() {
-        done(new Error('unexpected success'));
+        done(new Error("unexpected success"));
       }).catch(function(err) {
-        expect(err.message).to.include('Received bad response');
+        expect(err.message).to.include("Received bad response");
         done();
       }).catch(done);
     });
 
-    it('waits for passing validation', function(done) {
+    it("waits for passing validation", function(done) {
       var self = this;
       var downloadSignedFiles = new CallableMock();
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
 
       var files = [{
-        download_url: 'http://amo/the-signed-file-1.2.3.xpi',
+        download_url: "http://amo/the-signed-file-1.2.3.xpi",
       }];
       this.client._request = new MockRequest({
         responseQueue: [
@@ -164,7 +164,7 @@ describe('amoClient.Client', function() {
         ],
       });
 
-      var statusUrl = '/addons/something/versions/1.2.3/';
+      var statusUrl = "/addons/something/versions/1.2.3/";
       this.waitForSignedAddon(statusUrl).then(function(result) {
         // Expect exactly two GETs before resolution.
         expect(self.client._request.calls.length).to.be.equal(2);
@@ -175,7 +175,7 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('waits for for fully reviewed files', function(done) {
+    it("waits for for fully reviewed files", function(done) {
       var self = this;
       var downloadSignedFiles = new CallableMock();
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
@@ -197,7 +197,7 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('waits until signed files are ready', function(done) {
+    it("waits until signed files are ready", function(done) {
       var self = this;
       var downloadSignedFiles = new CallableMock();
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
@@ -216,7 +216,7 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('waits for failing validation', function(done) {
+    it("waits for failing validation", function(done) {
       var self = this;
       this.client._request = new MockRequest({
         responseQueue: [
@@ -233,7 +233,7 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('handles complete yet inactive addons', function(done) {
+    it("handles complete yet inactive addons", function(done) {
       var self = this;
       this.client._request = new MockRequest({
         responseQueue: [
@@ -250,45 +250,45 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('aborts validation check after timeout', function(done) {
+    it("aborts validation check after timeout", function(done) {
       var clearTimeout = new CallableMock();
 
-      this.client.waitForSignedAddon('/status-url', {
+      this.client.waitForSignedAddon("/status-url", {
         clearTimeout: clearTimeout.getCallable(),
         setStatusCheckTimeout: function() {
-          return 'status-check-timeout-id';
+          return "status-check-timeout-id";
         },
         abortAfter: 0,
       }).then(function() {
-        done(new Error('Unexpected success'));
+        done(new Error("Unexpected success"));
       }).catch(function(err) {
-        expect(err.message).to.include('took too long');
-        expect(clearTimeout.call[0]).to.be.equal('status-check-timeout-id');
+        expect(err.message).to.include("took too long");
+        expect(clearTimeout.call[0]).to.be.equal("status-check-timeout-id");
         done();
       }).catch(done);
     });
 
-    it('can configure signing status check timeout', function(done) {
+    it("can configure signing status check timeout", function(done) {
       var clearTimeout = new CallableMock();
       var client = this.newClient({
         // This should cause an immediate timeout.
         signedStatusCheckTimeout: 0,
       });
 
-      client.waitForSignedAddon('/status-url', {
+      client.waitForSignedAddon("/status-url", {
         clearTimeout: clearTimeout.getCallable(),
         setStatusCheckTimeout: function() {
-          return 'status-check-timeout-id';
+          return "status-check-timeout-id";
         },
       }).then(function() {
-        done(new Error('Unexpected success'));
+        done(new Error("Unexpected success"));
       }).catch(function(err) {
-        expect(err.message).to.include('took too long');
+        expect(err.message).to.include("took too long");
         done();
       }).catch(done);
     });
 
-    it('clears abort timeout after resolution', function(done) {
+    it("clears abort timeout after resolution", function(done) {
       var clearTimeout = new CallableMock();
       var self = this;
       this.client._request = new MockRequest({
@@ -300,24 +300,24 @@ describe('amoClient.Client', function() {
       var downloadSignedFiles = new CallableMock();
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
 
-      this.waitForSignedAddon('/status-url/', {
+      this.waitForSignedAddon("/status-url/", {
         clearTimeout: clearTimeout.getCallable(),
         setAbortTimeout: function() {
-          return 'abort-timeout-id';
+          return "abort-timeout-id";
         },
         setStatusCheckTimeout: function() {
-          return 'status-check-timeout-id';
+          return "status-check-timeout-id";
         },
       }).then(function() {
         // Assert that signing resolved successfully.
         expect(downloadSignedFiles.wasCalled).to.be.equal(true);
         // Assert that the timeout-to-abort was cleared.
-        expect(clearTimeout.call[0]).to.be.equal('abort-timeout-id');
+        expect(clearTimeout.call[0]).to.be.equal("abort-timeout-id");
         done();
       }).catch(done);
     });
 
-    it('downloads signed files', function(done) {
+    it("downloads signed files", function(done) {
       var fakeResponse = {
         on: function(event, handler) {
           return this;
@@ -329,7 +329,7 @@ describe('amoClient.Client', function() {
 
       var fakeFileWriter = {
         on: function(event, handler) {
-          if (event === 'finish') {
+          if (event === "finish") {
             // Simulate completion of the download immediately when the
             // handler is registered.
             handler();
@@ -350,18 +350,18 @@ describe('amoClient.Client', function() {
       }).then(function(result) {
         expect(result.success).to.be.equal(true);
         expect(createWriteStream.call[0]).to.be.equal(
-          path.join(process.cwd(), 'some-signed-file-1.2.3.xpi'));
+          path.join(process.cwd(), "some-signed-file-1.2.3.xpi"));
         expect(fakeRequest.call[0].url).to.be.equal(files[0].download_url);
         done();
       }).catch(done);
     });
 
-    it('handles download errors', function(done) {
+    it("handles download errors", function(done) {
       var fakeResponse = {
         on: function(event, handler) {
-          if (event === 'error') {
+          if (event === "error") {
             // Immediately trigger a download error.
-            handler(new Error('some download error'));
+            handler(new Error("some download error"));
           }
         },
         pipe: function() {}
@@ -378,16 +378,16 @@ describe('amoClient.Client', function() {
           write: function() {},
         }
       }).then(function() {
-        done(new Error('Unexpected success'));
+        done(new Error("Unexpected success"));
       }).catch(function(err) {
-        expect(err.message).to.include('download error');
+        expect(err.message).to.include("download error");
         done();
       }).catch(done);
     });
   });
 
 
-  describe('debugging', function() {
+  describe("debugging", function() {
     var fakeDebug;
     var fakeLog;
 
@@ -398,106 +398,106 @@ describe('amoClient.Client', function() {
       };
     });
 
-    it('can be configured for debug output', function() {
+    it("can be configured for debug output", function() {
       var cli = new amoClient.Client({
         debugLogging: true,
         logger: fakeLog,
       });
-      cli.debug('first', 'second');
-      expect(fakeDebug.call[0]).to.be.equal('first');
-      expect(fakeDebug.call[1]).to.be.equal('second');
+      cli.debug("first", "second");
+      expect(fakeDebug.call[0]).to.be.equal("first");
+      expect(fakeDebug.call[1]).to.be.equal("second");
     });
 
-    it('hides debug output by default', function() {
+    it("hides debug output by default", function() {
       var cli = new amoClient.Client({
         logger: fakeLog,
       });
-      cli.debug('first', 'second');
+      cli.debug("first", "second");
       expect(fakeDebug.wasCalled).to.be.equal(false);
     });
 
-    it('redacts authorization headers', function() {
+    it("redacts authorization headers", function() {
       var cli = new amoClient.Client({
         debugLogging: true,
         logger: fakeLog,
       });
-      cli.debug('prefix', {
+      cli.debug("prefix", {
         request: {
           headers: {
-            Authorization: 'JWT abcdeabcde...',
+            Authorization: "JWT abcdeabcde...",
           }
         },
       });
-      expect(fakeDebug.call[1].request.headers.Authorization).to.be.equal('<REDACTED>');
+      expect(fakeDebug.call[1].request.headers.Authorization).to.be.equal("<REDACTED>");
     });
 
-    it('redacts set-cookie headers', function() {
+    it("redacts set-cookie headers", function() {
       var cli = new amoClient.Client({
         debugLogging: true,
         logger: fakeLog,
       });
-      cli.debug('prefix', {
+      cli.debug("prefix", {
         response: {
           headers: {
-            'set-cookie': ['foo=bar'],
+            "set-cookie": ["foo=bar"],
           }
         },
       });
-      expect(fakeDebug.call[1].response.headers['set-cookie']).to.be.equal('<REDACTED>');
+      expect(fakeDebug.call[1].response.headers["set-cookie"]).to.be.equal("<REDACTED>");
     });
 
-    it('redacts cookie headers', function() {
+    it("redacts cookie headers", function() {
       var cli = new amoClient.Client({
         debugLogging: true,
         logger: fakeLog,
       });
-      cli.debug('prefix', {
+      cli.debug("prefix", {
         request: {
           headers: {
-            cookie: ['foo=bar'],
+            cookie: ["foo=bar"],
           }
         },
       });
-      expect(fakeDebug.call[1].request.headers.cookie).to.be.equal('<REDACTED>');
+      expect(fakeDebug.call[1].request.headers.cookie).to.be.equal("<REDACTED>");
     });
 
-    it('handles null objects', function() {
+    it("handles null objects", function() {
       var cli = new amoClient.Client({
         debugLogging: true,
         logger: fakeLog,
       });
       // This was throwing an error because null is an object.
-      cli.debug('prefix', null);
+      cli.debug("prefix", null);
     });
 
-    it('preserves redacted objects', function() {
+    it("preserves redacted objects", function() {
       var cli = new amoClient.Client({
         debugLogging: true,
         logger: fakeLog,
       });
       var response = {
         headers: {
-          'set-cookie': ['foo=bar'],
+          "set-cookie": ["foo=bar"],
         }
       };
-      cli.debug('prefix', {
+      cli.debug("prefix", {
         response: response,
       });
-      expect(response.headers['set-cookie']).to.be.deep.equal(['foo=bar']);
+      expect(response.headers["set-cookie"]).to.be.deep.equal(["foo=bar"]);
     });
 
   });
 
 
-  describe('requests', function() {
+  describe("requests", function() {
 
     beforeEach(function() {
       setUp.call(this);
     });
 
-    it('makes requests with an auth token', function(done) {
+    it("makes requests with an auth token", function(done) {
       var self = this;
-      var request = {url: '/somewhere'};
+      var request = {url: "/somewhere"};
 
       this.client.get(request).then(function() {
         var call = self.client._request.calls[0];
@@ -505,108 +505,108 @@ describe('amoClient.Client', function() {
         var token = headerMatch[1];
         var data = jwt.verify(token, self.client.apiSecret);
         expect(data.iss).to.be.equal(self.client.apiKey);
-        expect(data).to.have.keys(['iss', 'iat', 'exp']);
+        expect(data).to.have.keys(["iss", "iat", "exp"]);
         expect(call.conf).to.be.deep.equal(
             self.client.configureRequest(request));
         done();
       }).catch(done);
     });
 
-    it('lets you configure a request directly', function() {
-      var conf = this.client.configureRequest({url: '/path'});
-      expect(conf).to.have.keys(['headers', 'url']);
-      expect(conf.headers).to.have.keys(['Accept', 'Authorization']);
+    it("lets you configure a request directly", function() {
+      var conf = this.client.configureRequest({url: "/path"});
+      expect(conf).to.have.keys(["headers", "url"]);
+      expect(conf.headers).to.have.keys(["Accept", "Authorization"]);
     });
 
-    it('preserves request headers', function() {
-      var headers = {'X-Custom': 'thing'};
+    it("preserves request headers", function() {
+      var headers = {"X-Custom": "thing"};
       var conf = this.client.configureRequest({
-        url: '/path',
+        url: "/path",
         headers: headers,
       });
-      expect(conf.headers['X-Custom']).to.be.equal('thing');
+      expect(conf.headers["X-Custom"]).to.be.equal("thing");
     });
 
-    it('allows you to override request headers', function() {
-      var headers = {'Accept': 'text/html'};
+    it("allows you to override request headers", function() {
+      var headers = {"Accept": "text/html"};
       var conf = this.client.configureRequest({
-        url: '/path',
+        url: "/path",
         headers: headers,
       });
-      expect(conf.headers.Accept).to.be.equal('text/html');
+      expect(conf.headers.Accept).to.be.equal("text/html");
     });
 
-    it('makes relative URLs absolute', function() {
-      var urlPath = '/somewhere';
+    it("makes relative URLs absolute", function() {
+      var urlPath = "/somewhere";
       var conf = this.client.configureRequest({url: urlPath});
       expect(conf.url).to.be.equal(this.apiUrlPrefix + urlPath);
     });
 
-    it('accepts absolute URLs', function() {
-      var absUrl = 'http://some-site/somewhere';
+    it("accepts absolute URLs", function() {
+      var absUrl = "http://some-site/somewhere";
       var conf = this.client.configureRequest({url: absUrl});
       expect(conf.url).to.be.equal(absUrl);
     });
 
-    it('can make any HTTP request', function(done) {
+    it("can make any HTTP request", function(done) {
       var self = this;
       var requests = [];
-      ['get', 'put', 'post', 'patch', 'delete'].forEach(function(method) {
-        var urlPath = '/some/path';
+      ["get", "put", "post", "patch", "delete"].forEach(function(method) {
+        var urlPath = "/some/path";
 
         requests.push(self.client[method]({url: urlPath}).then(function() {
           var call = self.client._request.callMap[method];
           expect(call.conf.url).to.be.equal(self.apiUrlPrefix + urlPath);
-          expect(call.conf.headers).to.have.keys(['Accept', 'Authorization']);
+          expect(call.conf.headers).to.have.keys(["Accept", "Authorization"]);
         }));
 
       });
       when.all(requests).then(function() { done(); }).catch(done);
     });
 
-    it('requires a URL', function() {
+    it("requires a URL", function() {
       var self = this;
       expect(function() {
         self.client.configureRequest({});
       }).to.throw(Error, /URL was not specified/);
     });
 
-    it('rejects the request promise on > 200 responses', function(done) {
+    it("rejects the request promise on > 200 responses", function(done) {
       this.client._request = new MockRequest({httpResponse: {statusCode: 409}});
-      this.client.get({url: '/something'}).then(function() {
-        done(new Error('unexpected success'));
+      this.client.get({url: "/something"}).then(function() {
+        done(new Error("unexpected success"));
       }).catch(function(err) {
-        expect(err.message).to.include('Received bad response');
+        expect(err.message).to.include("Received bad response");
         done();
       }).catch(done);
     });
 
-    it('rejects the request promise on < 200 responses', function(done) {
+    it("rejects the request promise on < 200 responses", function(done) {
       this.client._request = new MockRequest({httpResponse: {statusCode: 122}});
-      this.client.get({url: '/something'}).then(function() {
-        done(new Error('unexpected success'));
+      this.client.get({url: "/something"}).then(function() {
+        done(new Error("unexpected success"));
       }).catch(function(err) {
-        expect(err.message).to.include('Received bad response');
+        expect(err.message).to.include("Received bad response");
         done();
       }).catch(done);
     });
 
-    it('rejects the request promise with callback error', function(done) {
-      var callbackError = new Error('some error');
+    it("rejects the request promise with callback error", function(done) {
+      var callbackError = new Error("some error");
       this.client._request = new MockRequest({responseError: callbackError});
 
-      this.client.get({url: '/something'}).then(function() {
-        done(new Error('unexpected success'));
+      this.client.get({url: "/something"}).then(function() {
+        done(new Error("unexpected success"));
       }).catch(function(err) {
         expect(err).to.be.equal(callbackError);
         done();
       }).catch(done);
     });
 
-    it('can be configured not to throw on a bad response status', function(done) {
+    it("can be configured not to throw on a bad response status", function(done) {
       this.client._request = new MockRequest({httpResponse: {statusCode: 409}});
       this.client.get({
-        url: '/something',
+        url: "/something",
       }, {
         throwOnBadResponse: false,
       }).then(function(result) {
@@ -615,30 +615,30 @@ describe('amoClient.Client', function() {
       }).catch(done);
     });
 
-    it('resolves the request promise with the HTTP response', function(done) {
+    it("resolves the request promise with the HTTP response", function(done) {
       var httpResponse = {statusCode: 201};
       this.client._request = new MockRequest({httpResponse: httpResponse});
 
-      this.client.get({url: '/something'}).then(function(responseResult) {
+      this.client.get({url: "/something"}).then(function(responseResult) {
         var returnedResponse = responseResult[0];
         expect(returnedResponse).to.be.equal(httpResponse);
         done();
       }).catch(done);
     });
 
-    it('resolves the request promise with the response body', function(done) {
-      var responseBody = 'some text response';
+    it("resolves the request promise with the response body", function(done) {
+      var responseBody = "some text response";
       this.client._request = new MockRequest({responseBody: responseBody});
 
-      this.client.get({url: '/something'}).then(function(responseResult) {
+      this.client.get({url: "/something"}).then(function(responseResult) {
         var returnedBody = responseResult[1];
         expect(returnedBody).to.be.equal(responseBody);
         done();
       }).catch(done);
     });
 
-    it('resolves the request promise with a JSON object', function(done) {
-      var data = {someKey: 'some value'};
+    it("resolves the request promise with a JSON object", function(done) {
+      var data = {someKey: "some value"};
 
       this.client._request = new MockRequest({
         responseBody: JSON.stringify(data),
@@ -650,16 +650,16 @@ describe('amoClient.Client', function() {
         },
       });
 
-      this.client.get({url: '/something'}).then(function(responseResult) {
+      this.client.get({url: "/something"}).then(function(responseResult) {
         var result = responseResult[1];
         expect(result).to.deep.equal(data);
         done();
       }).catch(done);
     });
 
-    it('ignores broken JSON responses', function(done) {
+    it("ignores broken JSON responses", function(done) {
       this.client._request = new MockRequest({
-        responseBody: '}{',  // broken JSON
+        responseBody: "}{",  // broken JSON
         httpResponse: {
           statusCode: 200,
           headers: {
@@ -668,9 +668,9 @@ describe('amoClient.Client', function() {
         },
       });
 
-      this.client.get({url: '/something'}).then(function(responseResult) {
+      this.client.get({url: "/something"}).then(function(responseResult) {
         var result = responseResult[1];
-        expect(result).to.be.a('string');
+        expect(result).to.be.a("string");
         done();
       }).catch(done);
     });
@@ -678,34 +678,34 @@ describe('amoClient.Client', function() {
 });
 
 
-describe('amoClient.formatResponse', function() {
+describe("amoClient.formatResponse", function() {
 
-  it('should dump JSON objects', function() {
-    var res = amoClient.formatResponse({error: 'some error'});
-    expect(res).to.be.equal('{"error":"some error"}');
+  it("should dump JSON objects", function() {
+    var res = amoClient.formatResponse({error: "some error"});
+    expect(res).to.be.equal("{\"error\":\"some error\"}");
   });
 
-  it('should truncate long JSON', function() {
+  it("should truncate long JSON", function() {
     var res = amoClient.formatResponse(
-      {error: 'pretend this is really long'},
+      {error: "pretend this is really long"},
       {maxLength: 5});
-    expect(res).to.be.equal('{"err...');
+    expect(res).to.be.equal("{\"err...");
   });
 
-  it('ignores broken JSON objects', function() {
+  it("ignores broken JSON objects", function() {
     var res = amoClient.formatResponse({unserializable: process});  // any complex object
-    expect(res).to.be.equal('[object Object]');
+    expect(res).to.be.equal("[object Object]");
   });
 
-  it('should truncate long HTML', function() {
+  it("should truncate long HTML", function() {
     var res = amoClient.formatResponse(
-      '<h1>pretend this is really long</h1>',
+      "<h1>pretend this is really long</h1>",
       {maxLength: 9});
-    expect(res).to.be.equal('<h1>prete...');
+    expect(res).to.be.equal("<h1>prete...");
   });
 
-  it('should leave short HTML in tact', function() {
-    var text = '<h1>404 or whatever</h1>';
+  it("should leave short HTML in tact", function() {
+    var text = "<h1>404 or whatever</h1>";
     var res = amoClient.formatResponse(text);
     expect(res).to.be.equal(text);
   });
@@ -713,26 +713,26 @@ describe('amoClient.formatResponse', function() {
 });
 
 
-describe('amoClient.getUrlBasename', function() {
+describe("amoClient.getUrlBasename", function() {
 
-  it('gets a basename', function() {
-    var base = amoClient.getUrlBasename('http://foo.com/bar.zip');
-    expect(base).to.be.equal('bar.zip');
+  it("gets a basename", function() {
+    var base = amoClient.getUrlBasename("http://foo.com/bar.zip");
+    expect(base).to.be.equal("bar.zip");
   });
 
-  it('strips the query string', function() {
-    var base = amoClient.getUrlBasename('http://foo.com/bar.zip?baz=quz');
-    expect(base).to.be.equal('bar.zip');
+  it("strips the query string", function() {
+    var base = amoClient.getUrlBasename("http://foo.com/bar.zip?baz=quz");
+    expect(base).to.be.equal("bar.zip");
   });
 
 });
 
 
-describe('amoClient.PseudoProgress', function() {
+describe("amoClient.PseudoProgress", function() {
 
   beforeEach(function() {
     this.setIntervalMock = new CallableMock({
-      returnValue: 'interval-id',
+      returnValue: "interval-id",
     });
     this.clearIntervalMock = new CallableMock();
 
@@ -747,21 +747,21 @@ describe('amoClient.PseudoProgress', function() {
     });
   });
 
-  it('should set an interval', function() {
+  it("should set an interval", function() {
     this.progress.animate();
     expect(this.setIntervalMock.wasCalled).to.be.equal(true);
   });
 
-  it('should clear an interval', function() {
+  it("should clear an interval", function() {
     this.progress.animate();
     expect(this.setIntervalMock.wasCalled).to.be.equal(true);
     this.progress.finish();
-    expect(this.clearIntervalMock.call[0]).to.be.equal('interval-id');
+    expect(this.clearIntervalMock.call[0]).to.be.equal("interval-id");
   });
 });
 
 
-describe('sign', function() {
+describe("sign", function() {
   var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
   var mockProcessExit;
   var mockProcess;
@@ -811,8 +811,8 @@ describe('sign', function() {
       createXPI: null,
       StubAMOClient: makeAMOClientStub(),
       cmdOptions: {
-        apiKey: 'some-key',
-        apiSecret: 'some-secret',
+        apiKey: "some-key",
+        apiSecret: "some-secret",
       },
       program: {
         addonDir: simpleAddonPath,
@@ -833,7 +833,7 @@ describe('sign', function() {
     return signCmd(options.program, options.cmdOptions, cmdConfig);
   }
 
-  it('should exit 0 on signing success', function(done) {
+  it("should exit 0 on signing success", function(done) {
     runSignCmd().then(function() {
       expect(signingCall.wasCalled).to.be.equal(true);
       expect(mockProcessExit.call[0]).to.be.equal(0);
@@ -841,23 +841,23 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('passes manifest info to the signer', function(done) {
+  it("passes manifest info to the signer", function(done) {
     runSignCmd().then(function() {
       expect(signingCall.wasCalled).to.be.equal(true);
       // This checks that version/guid values from
       // the manifest (loaded from a fixture) are used.
-      expect(signingCall.call[0].version).to.be.equal('1.0.0');
-      expect(signingCall.call[0].guid).to.be.equal('@simple-addon');
+      expect(signingCall.call[0].version).to.be.equal("1.0.0");
+      expect(signingCall.call[0].guid).to.be.equal("@simple-addon");
       done();
     }).catch(done);
   });
 
-  it('throws an error for XPI file errors', function(done) {
+  it("throws an error for XPI file errors", function(done) {
     runSignCmd({
       cmdOptions: {
         xpi: "/not/a/real/path.xpi",
-        apiKey: 'some-key',
-        apiSecret: 'some-secret',
+        apiKey: "some-key",
+        apiSecret: "some-secret",
       },
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
@@ -865,7 +865,7 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('passes addonDir to XPI creator', function(done) {
+  it("passes addonDir to XPI creator", function(done) {
     var mockXPICreator = new CallableMock({
       returnValue: when.promise(function(resolve) {
         resolve({});
@@ -882,7 +882,7 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('creates XPI in tmp directory', function(done) {
+  it("creates XPI in tmp directory", function(done) {
     var mockXPICreator = new CallableMock({
       returnValue: when.promise(function(resolve) {
         resolve({});
@@ -899,7 +899,7 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('can turn on debug logging', function(done) {
+  it("can turn on debug logging", function(done) {
     var mockXPICreator = new CallableMock({
       returnValue: when.promise(function(resolve) {
         resolve({});
@@ -909,7 +909,7 @@ describe('sign', function() {
       createXPI: mockXPICreator.getCallable(),
       program: {
         verbose: true,
-        addonDir: '',
+        addonDir: "",
       }
     }).then(function() {
       expect(fakeClientContructor.call[0].debugLogging).to.be.equal(true);
@@ -917,11 +917,11 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('can configure polling timeouts', function(done) {
+  it("can configure polling timeouts", function(done) {
     runSignCmd({
       cmdOptions: {
-        apiKey: 'some-key',
-        apiSecret: 'some-secret',
+        apiKey: "some-key",
+        apiSecret: "some-secret",
         timeout: 5000,
       },
     }).then(function() {
@@ -931,7 +931,7 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('passes custom XPI to the signer', function(done) {
+  it("passes custom XPI to the signer", function(done) {
     var mockManifestGetter = new CallableMock({
       returnValue: when.promise(function(resolve) {
         resolve({});  // resolve with an empty manifest.
@@ -942,20 +942,20 @@ describe('sign', function() {
     runSignCmd({
       getManifest: mockManifestGetter.getCallable(),
       cmdOptions: {
-        xpi: '/some/path/to/file.xpi',
-        apiKey: 'some-key',
-        apiSecret: 'some-secret',
+        xpi: "/some/path/to/file.xpi",
+        apiKey: "some-key",
+        apiSecret: "some-secret",
       },
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(0);
-      expect(mockManifestGetter.call[0].xpiPath).to.be.equal('/some/path/to/file.xpi');
+      expect(mockManifestGetter.call[0].xpiPath).to.be.equal("/some/path/to/file.xpi");
       expect(signingCall.wasCalled).to.be.equal(true);
-      expect(signingCall.call[0].xpiPath).to.be.equal('/some/path/to/file.xpi');
+      expect(signingCall.call[0].xpiPath).to.be.equal("/some/path/to/file.xpi");
       done();
     }).catch(done);
   });
 
-  it('should exit 1 on signing failure', function(done) {
+  it("should exit 1 on signing failure", function(done) {
     runSignCmd({
       StubAMOClient: makeAMOClientStub({
         result: {success: false},
@@ -966,10 +966,10 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('should exit 1 on exception', function(done) {
+  it("should exit 1 on exception", function(done) {
     runSignCmd({
       StubAMOClient: makeAMOClientStub({
-        errorToThrow: new Error('some signing error'),
+        errorToThrow: new Error("some signing error"),
       }),
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
@@ -977,11 +977,11 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('should exit early for missing --api-key', function(done) {
+  it("should exit early for missing --api-key", function(done) {
     runSignCmd({
       cmdOptions: {
         // missing apiKey.
-        apiSecret: 'secret',
+        apiSecret: "secret",
       },
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
@@ -990,10 +990,10 @@ describe('sign', function() {
     }).catch(done);
   });
 
-  it('should exit early for missing --api-secret', function(done) {
+  it("should exit early for missing --api-secret", function(done) {
     runSignCmd({
       cmdOptions: {
-        apiKey: 'some-key',
+        apiKey: "some-key",
         // missing apiSecret.
       },
     }).then(function() {
@@ -1010,7 +1010,7 @@ function MockRequest(conf) {
   var self = this;
   var defaultResponse = {
     httpResponse: {statusCode: 200},
-    responseBody: '',
+    responseBody: "",
     responseError: null,
   };
   conf = _.assign({
@@ -1044,7 +1044,7 @@ MockRequest.prototype._mockRequest = function(method, conf, callback) {
   var info = {conf: conf};
   this.calls.push(_.assign({}, info, {name: method}));
   this.callMap[method] = info;
-  //console.log('MockRequest:', method, conf.url);
+  //console.log("MockRequest:", method, conf.url);
 
   var response;
   if (this.returnMultipleResponses) {
@@ -1055,29 +1055,29 @@ MockRequest.prototype._mockRequest = function(method, conf, callback) {
   }
   if (!response) {
     response = {};
-    response.responseError = new Error('Response queue is empty');
+    response.responseError = new Error("Response queue is empty");
   }
   callback(response.responseError, response.httpResponse, response.responseBody);
 };
 
 MockRequest.prototype.get = function(conf, callback) {
-  return this._mockRequest('get', conf, callback);
+  return this._mockRequest("get", conf, callback);
 };
 
 MockRequest.prototype.post = function(conf, callback) {
-  return this._mockRequest('post', conf, callback);
+  return this._mockRequest("post", conf, callback);
 };
 
 MockRequest.prototype.put = function(conf, callback) {
-  return this._mockRequest('put', conf, callback);
+  return this._mockRequest("put", conf, callback);
 };
 
 MockRequest.prototype.patch = function(conf, callback) {
-  return this._mockRequest('patch', conf, callback);
+  return this._mockRequest("patch", conf, callback);
 };
 
-MockRequest.prototype['delete'] = function(conf, callback) {
-  return this._mockRequest('delete', conf, callback);
+MockRequest.prototype["delete"] = function(conf, callback) {
+  return this._mockRequest("delete", conf, callback);
 };
 
 

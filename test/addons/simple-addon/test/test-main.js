@@ -8,7 +8,7 @@ const url = require("sdk/url");
 const { getAddonByID } = require("sdk/addon/manager");
 
 exports["test self.packed"] = (assert) => {
-  assert.ok(self.packed, "require('sdk/self').packed is correct");
+  assert.ok(self.packed, "require(\"sdk/self\").packed is correct");
 }
 
 exports["test Addon is packed"] = function*(assert) {

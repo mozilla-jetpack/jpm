@@ -5,7 +5,7 @@ function getAttributes(ele) {
     type: ele.getAttribute("type"),
     title: ele.getAttribute("title"),
     desc: ele.getAttribute("desc"),
-    "data-jetpack-id": ele.getAttribute('data-jetpack-id')
+    "data-jetpack-id": ele.getAttribute("data-jetpack-id")
   }
 }
 

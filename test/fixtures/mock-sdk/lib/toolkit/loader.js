@@ -4,29 +4,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 ;(function(id, factory) { // Module boilerplate :(
-  if (typeof(define) === 'function') { // RequireJS
+  if (typeof(define) === "function") { // RequireJS
     define(factory);
-  } else if (typeof(require) === 'function') { // CommonJS
+  } else if (typeof(require) === "function") { // CommonJS
     factory.call(this, require, exports, module);
-  } else if (~String(this).indexOf('BackstagePass')) { // JSM
+  } else if (~String(this).indexOf("BackstagePass")) { // JSM
     this[factory.name] = {};
     factory(function require(uri) {
       var imports = {};
-      this['Components'].utils.import(uri, imports);
+      this["Components"].utils.import(uri, imports);
       return imports;
     }, this[factory.name], { uri: __URI__, id: id });
     this.EXPORTED_SYMBOLS = [factory.name];
-  } else if (~String(this).indexOf('Sandbox')) { // Sandbox
+  } else if (~String(this).indexOf("Sandbox")) { // Sandbox
     factory(function require(uri) {}, this, { uri: __URI__, id: id });
   } else {  // Browser or alike
     var globals = this
     factory(function require(id) {
       return globals[id];
-    }, (globals[id] = {}), { uri: document.location.href + '#' + id, id: id });
+    }, (globals[id] = {}), { uri: document.location.href + "#" + id, id: id });
   }
-}).call(this, 'loader', function Loader(require, exports, module) {
+}).call(this, "loader", function Loader(require, exports, module) {
 
-'use strict';
+"use strict";
 
 module.metadata = {
   "stability": "unstable"
@@ -34,10 +34,10 @@ module.metadata = {
 
 const { classes: Cc, Constructor: CC, interfaces: Ci, utils: Cu,
         results: Cr, manager: Cm } = Components;
-const systemPrincipal = CC('@mozilla.org/systemprincipal;1', 'nsIPrincipal')();
-const { loadSubScript } = Cc['@mozilla.org/moz/jssubscript-loader;1'].
+const systemPrincipal = CC("@mozilla.org/systemprincipal;1", "nsIPrincipal")();
+const { loadSubScript } = Cc["@mozilla.org/moz/jssubscript-loader;1"].
                      getService(Ci.mozIJSSubScriptLoader);
-const { notifyObservers } = Cc['@mozilla.org/observer-service;1'].
+const { notifyObservers } = Cc["@mozilla.org/observer-service;1"].
                         getService(Ci.nsIObserverService);
 const { NetUtil } = Cu.import("resource://gre/modules/NetUtil.jsm", {});
 const { Reflect } = Cu.import("resource://gre/modules/reflect.jsm", {});
@@ -55,24 +55,24 @@ const keys = Object.keys;
 
 const NODE_MODULES = ["assert", "buffer_ieee754", "buffer", "child_process", "cluster", "console", "constants", "crypto", "_debugger", "dgram", "dns", "domain", "events", "freelist", "fs", "http", "https", "_linklist", "module", "net", "os", "path", "punycode", "querystring", "readline", "repl", "stream", "string_decoder", "sys", "timers", "tls", "tty", "url", "util", "vm", "zlib"];
 
-const COMPONENT_ERROR = '`Components` is not available in this context.\n' +
-  'Functionality provided by Components may be available in an SDK\n' +
-  'module: https://developer.mozilla.org/en-US/Add-ons/SDK \n\n' +
-  'However, if you still need to import Components, you may use the\n' +
-  '`chrome` module\'s properties for shortcuts to Component properties:\n\n' +
-  'Shortcuts: \n' +
-  '    Cc = Components' + '.classes \n' +
-  '    Ci = Components' + '.interfaces \n' +
-  '    Cu = Components' + '.utils \n' +
-  '    CC = Components' + '.Constructor \n' +
-  'Example: \n' +
-  '    let { Cc, Ci } = require(\'chrome\');\n';
+const COMPONENT_ERROR = "`Components` is not available in this context.\n" +
+  "Functionality provided by Components may be available in an SDK\n" +
+  "module: https://developer.mozilla.org/en-US/Add-ons/SDK \n\n" +
+  "However, if you still need to import Components, you may use the\n" +
+  "`chrome` module\"s properties for shortcuts to Component properties:\n\n" +
+  "Shortcuts: \n" +
+  "    Cc = Components" + ".classes \n" +
+  "    Ci = Components" + ".interfaces \n" +
+  "    Cu = Components" + ".utils \n" +
+  "    CC = Components" + ".Constructor \n" +
+  "Example: \n" +
+  "    let { Cc, Ci } = require(\"chrome\");\n";
 
-let isJSONURI = uri => uri.substr(-5) === '.json';
-let isJSMURI = uri => uri.substr(-4) === '.jsm';
-let isJSURI = uri => uri.substr(-3) === '.js';
-let isResourceURI = uri => uri.substr(0, 11) === 'resource://';
-let isRelative = id => id[0] === '.';
+let isJSONURI = uri => uri.substr(-5) === ".json";
+let isJSMURI = uri => uri.substr(-4) === ".jsm";
+let isJSURI = uri => uri.substr(-3) === ".js";
+let isResourceURI = uri => uri.substr(0, 11) === "resource://";
+let isRelative = id => id[0] === ".";
 
 // Workaround for bug 674195. Freezing objects from other compartments fail,
 // so we use `Object.freeze` from the same component instead.
@@ -178,10 +178,10 @@ function serializeStack(frames) {
 exports.serializeStack = serializeStack;
 
 function readURI(uri) {
-  let stream = NetUtil.newChannel(uri, 'UTF-8', null).open();
+  let stream = NetUtil.newChannel(uri, "UTF-8", null).open();
   let count = stream.available();
   let data = NetUtil.readInputStreamToString(stream, count, {
-    charset: 'UTF-8'
+    charset: "UTF-8"
   });
 
   stream.close();
@@ -195,9 +195,9 @@ function join (...paths) {
   // OS.File `normalize` strips out the second slash in
   // `resource://` or `chrome://`, and third slash in
   // `file:///`, so we work around this
-  resolved = resolved.replace(/^resource\:\/([^\/])/, 'resource://$1');
-  resolved = resolved.replace(/^file\:\/([^\/])/, 'file:///$1');
-  resolved = resolved.replace(/^chrome\:\/([^\/])/, 'chrome://$1');
+  resolved = resolved.replace(/^resource\:\/([^\/])/, "resource://$1");
+  resolved = resolved.replace(/^file\:\/([^\/])/, "file:///$1");
+  resolved = resolved.replace(/^chrome\:\/([^\/])/, "chrome://$1");
   return resolved;
 }
 exports.join = join;
@@ -226,14 +226,14 @@ const Sandbox = iced(function Sandbox(options) {
     // still can expose via prototype.
     wantComponents: false,
     sandboxName: options.name,
-    principal: 'principal' in options ? options.principal : systemPrincipal,
-    wantXrays: 'wantXrays' in options ? options.wantXrays : true,
-    wantGlobalProperties: 'wantGlobalProperties' in options ?
+    principal: "principal" in options ? options.principal : systemPrincipal,
+    wantXrays: "wantXrays" in options ? options.wantXrays : true,
+    wantGlobalProperties: "wantGlobalProperties" in options ?
                           options.wantGlobalProperties : [],
-    sandboxPrototype: 'prototype' in options ? options.prototype : {},
-    invisibleToDebugger: 'invisibleToDebugger' in options ?
+    sandboxPrototype: "prototype" in options ? options.prototype : {},
+    invisibleToDebugger: "invisibleToDebugger" in options ?
                          options.invisibleToDebugger : false,
-    metadata: 'metadata' in options ? options.metadata : {}
+    metadata: "metadata" in options ? options.metadata : {}
   };
 
   let sandbox = Cu.Sandbox(options.principal, options);
@@ -259,9 +259,9 @@ exports.Sandbox = Sandbox;
 // - `options.version`: Version of JS used, defaults to '1.8'.
 const evaluate = iced(function evaluate(sandbox, uri, options) {
   let { source, line, version, encoding } = override({
-    encoding: 'UTF-8',
+    encoding: "UTF-8",
     line: 1,
-    version: '1.8',
+    version: "1.8",
     source: null
   }, options);
 
@@ -342,7 +342,7 @@ const load = iced(function load(loader, module) {
     });
   }
 
-  if (module.exports && typeof(module.exports) === 'object')
+  if (module.exports && typeof(module.exports) === "object")
     freeze(module.exports);
 
   return module;
@@ -354,13 +354,13 @@ function normalizeExt (uri) {
   return isJSURI(uri) ? uri :
          isJSONURI(uri) ? uri :
          isJSMURI(uri) ? uri :
-         uri + '.js';
+         uri + ".js";
 }
 
 // Strips `rootURI` from `string` -- used to remove absolute resourceURI
 // from a relative path
 function stripBase (rootURI, string) {
-  return string.replace(rootURI, './');
+  return string.replace(rootURI, "./");
 }
 
 // Utility function to join paths. In common case `base` is a
@@ -368,19 +368,19 @@ function stripBase (rootURI, string) {
 // avoid complexity we require `baseURI` with a trailing `/`.
 const resolve = iced(function resolve(id, base) {
   if (!isRelative(id)) return id;
-  let basePaths = base.split('/');
+  let basePaths = base.split("/");
   // Pop the last element in the `base`, because it is from a
   // relative file
   // '../mod.js' from '/path/to/file.js' should resolve to '/path/mod.js'
   basePaths.pop();
   if (!basePaths.length)
     return normalize(id);
-  let resolved = join(basePaths.join('/'), id);
+  let resolved = join(basePaths.join("/"), id);
 
   // Joining and normalizing removes the './' from relative files.
   // We need to ensure the resolution still has the root
   if (isRelative(base))
-    resolved = './' + resolved;
+    resolved = "./" + resolved;
 
   return resolved;
 });
@@ -449,20 +449,20 @@ function loadAsDirectory (path) {
   try {
     // If `path/package.json` exists, parse the `main` entry
     // and attempt to load that
-    let main = getManifestMain(JSON.parse(readURI(path + '/package.json')));
+    let main = getManifestMain(JSON.parse(readURI(path + "/package.json")));
     if (main !== null) {
       let tmpPath = join(path, main);
       if (found = loadAsFile(tmpPath))
         return found;
     }
     try {
-      let tmpPath = path + '/index.js';
+      let tmpPath = path + "/index.js";
       readURI(tmpPath);
       return tmpPath;
     } catch (e) {}
   } catch (e) {
     try {
-      let tmpPath = path + '/index.js';
+      let tmpPath = path + "/index.js";
       readURI(tmpPath);
       return tmpPath;
     } catch (e) {}
@@ -474,13 +474,13 @@ function loadAsDirectory (path) {
 // https://github.com/substack/node-resolve/blob/master/lib/node-modules-paths.js
 function getNodeModulePaths (start) {
   // Configurable in node -- do we need this to be configurable?
-  let moduleDir = 'node_modules';
+  let moduleDir = "node_modules";
 
-  let parts = start.split('/');
+  let parts = start.split("/");
   let dirs = [];
   for (let i = parts.length - 1; i >= 0; i--) {
     if (parts[i] === moduleDir) continue;
-    let dir = join(parts.slice(0, i + 1).join('/'), moduleDir);
+    let dir = join(parts.slice(0, i + 1).join("/"), moduleDir);
     dirs.push(dir);
   }
   return dirs;
@@ -488,7 +488,7 @@ function getNodeModulePaths (start) {
 
 
 function addTrailingSlash (path) {
-  return !path ? null : !path.endsWith('/') ? path + '/' : path;
+  return !path ? null : !path.endsWith("/") ? path + "/" : path;
 }
 
 // Utility function to determine of module id `name` is a built in
@@ -534,7 +534,7 @@ const Require = iced(function Require(loader, requirer) {
 
   function require(id) {
     if (!id) // Throw if `id` is not passed.
-      throw Error('you must provide a module name when calling require() from ' +
+      throw Error("you must provide a module name when calling require() from " +
                   requirer.id, requirer.uri);
 
     let requirement;
@@ -583,8 +583,8 @@ const Require = iced(function Require(loader, requirer) {
     uri = uri || resolveURI(requirement, mapping);
 
     if (!uri) // Throw if `uri` can not be resolved.
-      throw Error('Module: Can not resolve "' + id + '" module required by ' +
-                  requirer.id + ' located at ' + requirer.uri, requirer.uri);
+      throw Error("Module: Can not resolve \"" + id + "\" module required by " +
+                  requirer.id + " located at " + requirer.uri, requirer.uri);
 
     let module = null;
     // If module is already cached by loader then just use it.
@@ -614,7 +614,7 @@ const Require = iced(function Require(loader, requirer) {
         // attempt to find .json.js file
         if (err && /JSON\.parse/.test(err.message))
           throw err;
-        uri = uri + '.js';
+        uri = uri + ".js";
       }
     }
     // If not yet cached, load and cache it.
@@ -678,7 +678,7 @@ const unload = iced(function unload(loader, reason) {
   // some modules may do cleanup in subsequent turns of event loop. Destroying
   // cache may cause module identity problems in such cases.
   let subject = { wrappedJSObject: loader.destructor };
-  notifyObservers(subject, 'sdk:loader:destroy', reason);
+  notifyObservers(subject, "sdk:loader:destroy", reason);
 });
 exports.unload = unload;
 
@@ -725,9 +725,9 @@ const Loader = iced(function Loader(options) {
 
   // Define pseudo modules.
   modules = override({
-    '@loader/unload': destructor,
-    '@loader/options': options,
-    'chrome': { Cc: Cc, Ci: Ci, Cu: Cu, Cr: Cr, Cm: Cm,
+    "@loader/unload": destructor,
+    "@loader/options": options,
+    "chrome": { Cc: Cc, Ci: Ci, Cu: Cu, Cr: Cr, Cm: Cm,
                 CC: bind(CC, Components), components: Components,
                 // `ChromeWorker` has to be inject in loader global scope.
                 // It is done by bootstrap.js:loadSandbox for the SDK.
@@ -800,12 +800,12 @@ const generateMap = iced(function generateMap(options, callback) {
   rootURI = addTrailingSlash(rootURI);
 
   let manifest;
-  let manifestURI = join(rootURI, 'package.json');
+  let manifestURI = join(rootURI, "package.json");
 
   if (rootURI)
     manifest = JSON.parse(readURI(manifestURI));
   else
-    throw new Error('No `rootURI` given to generate map');
+    throw new Error("No `rootURI` given to generate map");
 
   let main = getManifestMain(manifest);
 
@@ -821,8 +821,8 @@ exports.generateMap = generateMap;
 // Default `main` entry to './index.js' and ensure is relative,
 // since node allows 'lib/index.js' without relative `./`
 function getManifestMain (manifest) {
-  let main = manifest.main || './index.js';
-  return isRelative(main) ? main : './' + main;
+  let main = manifest.main || "./index.js";
+  return isRelative(main) ? main : "./" + main;
 }
 
 function findAllModuleIncludes (uri, options, results, callback) {
@@ -875,7 +875,7 @@ function findModuleIncludes (uri, callback) {
   let src = isResourceURI(uri) ? readURI(uri) : uri;
   let modules = [];
 
-  walk(src, function (node) {
+  walk(src, function(node) {
     if (isRequire(node))
       modules.push(node.arguments[0].value);
   });
@@ -897,10 +897,10 @@ function traverse (node, cb) {
       }
     });
   }
-  else if (node && typeof node === 'object') {
+  else if (node && typeof node === "object") {
     cb(node);
     keys(node).map(key => {
-      if (key === 'parent' || !node[key]) return;
+      if (key === "parent" || !node[key]) return;
       node[key].parent = node;
       traverse(node[key], cb);
     });
@@ -915,11 +915,11 @@ function traverse (node, cb) {
 function isRequire (node) {
   var c = node.callee;
   return c &&
-    node.type === 'CallExpression' &&
-    c.type === 'Identifier' &&
-    c.name === 'require' &&
+    node.type === "CallExpression" &&
+    c.type === "Identifier" &&
+    c.name === "require" &&
     node.arguments.length &&
-    node.arguments[0].type === 'Literal';
+    node.arguments[0].type === "Literal";
 }
 
 });

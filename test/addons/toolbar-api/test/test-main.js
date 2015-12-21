@@ -8,8 +8,8 @@ var self = require("sdk/self");
 var tabs = require("sdk/tabs");
 
 exports.testMain = function(assert) {
-  assert.ok(m.button, 'button exists');
-  assert.ok(m.toolbar, 'toolbar exists');
+  assert.ok(m.button, "button exists");
+  assert.ok(m.toolbar, "toolbar exists");
 };
 
-require('sdk/test').run(exports);
+require("sdk/test").run(exports);

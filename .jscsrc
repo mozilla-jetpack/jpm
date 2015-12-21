@@ -1,0 +1,7 @@
+{
+  "preset": "google",
+  "validateIndentation": 2,
+  "validateQuoteMarks": "\"",
+  "jsDoc": null,
+  "disallowTrailingWhitespace": true
+}
