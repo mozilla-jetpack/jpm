@@ -348,9 +348,10 @@ describe("amoClient.Client", function() {
           write: function() {},
         }
       }).then(function(result) {
+        var filePath = path.join(process.cwd(), "some-signed-file-1.2.3.xpi");
         expect(result.success).to.be.equal(true);
-        expect(createWriteStream.call[0]).to.be.equal(
-          path.join(process.cwd(), "some-signed-file-1.2.3.xpi"));
+        expect(result.downloadedFiles).to.be.deep.equal([filePath]);
+        expect(createWriteStream.call[0]).to.be.equal(filePath);
         expect(fakeRequest.call[0].url).to.be.equal(files[0].download_url);
         done();
       }).catch(done);
