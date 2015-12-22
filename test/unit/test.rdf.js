@@ -338,7 +338,7 @@ describe("lib/rdf", function() {
   describe("createUpdateRDF", function() {
     it("create the update.rdf file with the correct value", function() {
       var str = RDF.createUpdateRDF(
-        { 
+        {
           id : "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi",
           version: "1.4.1",
@@ -347,9 +347,17 @@ describe("lib/rdf", function() {
       );
       var xml = parseRDF(str);
 
+      // Check <RDF><Description about="..."/>...
+      var allDescriptions = xml.getElementsByTagName("Description");
+      var firstDesc = allDescriptions[0];
+      expect(firstDesc.tagName).to.be.equal("Description");
+      expect(firstDesc.getAttribute("about"))
+        .to.be.equal("urn:mozilla:extension:myaddon@jetpack");
+
       expect(getData(xml, "em:version")).to.be.equal("1.4.1");
       var apps = xml.getElementsByTagName("em:targetApplication");
-      var app = apps[0].childNodes[1]; // Description
+      // Check the <Description> nested inside <em:targetApplication>
+      var app = apps[0].childNodes[1];
       expect(apps.length).to.be.equal(1);
       expect(app.tagName).to.be.equal("Description");
       expect(app.childNodes[1].tagName).to.be.equal("em:id");
@@ -364,7 +372,7 @@ describe("lib/rdf", function() {
 
     it("create the update.rdf file with multiple engine", function() {
       var str = RDF.createUpdateRDF(
-        { 
+        {
           id : "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi",
           version: "1.4.1",
@@ -402,7 +410,7 @@ describe("lib/rdf", function() {
 
     it("create the update.rdf file with default value", function() {
       var str = RDF.createUpdateRDF(
-        { 
+        {
           id : "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi"
         }
