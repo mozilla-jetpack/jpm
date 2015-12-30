@@ -13,8 +13,11 @@ var jwt = require("jsonwebtoken");
 var when = require("when");
 
 var signCmd = require("../../lib/sign").signCmd;
+var getXpiInfo = require("../../lib/sign").getXpiInfo;
 var amoClient = require("../../lib/amo-client");
 var utils = require("../utils");
+var testDir = path.join(__dirname, "..");
+var simpleAddonPath = path.join(testDir, "fixtures", "simple-addon");
 
 
 describe("amoClient.Client", function() {
@@ -763,7 +766,6 @@ describe("amoClient.PseudoProgress", function() {
 
 
 describe("sign", function() {
-  var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
   var mockProcessExit;
   var mockProcess;
   var signingCall;
@@ -808,7 +810,7 @@ describe("sign", function() {
 
   function runSignCmd(options) {
     options = _.assign({
-      getManifest: null,
+      getXpiInfo: null,
       createXPI: null,
       StubAMOClient: makeAMOClientStub(),
       cmdOptions: {
@@ -824,8 +826,8 @@ describe("sign", function() {
       systemProcess: mockProcess,
       AMOClient: options.StubAMOClient,
     };
-    if (options.getManifest !== null) {
-      cmdConfig.getManifest = options.getManifest;
+    if (options.getXpiInfo !== null) {
+      cmdConfig.getXpiInfo = options.getXpiInfo;
     }
     if (options.createXPI !== null) {
       cmdConfig.createXPI = options.createXPI;
@@ -933,15 +935,16 @@ describe("sign", function() {
   });
 
   it("passes custom XPI to the signer", function(done) {
-    var mockManifestGetter = new CallableMock({
+    var mockXpiInfoGetter = new CallableMock({
       returnValue: when.promise(function(resolve) {
-        resolve({});  // resolve with an empty manifest.
+        resolve({});  // resolve with empty xpiInfo.
       }),
     });
-    // Make sure nothing is checking the working directory for add-on things.
+    // Make sure nothing is checking the working directory for add-on
+    // things.
     process.chdir(path.join(__dirname, "..", "addons"));
     runSignCmd({
-      getManifest: mockManifestGetter.getCallable(),
+      getXpiInfo: mockXpiInfoGetter.getCallable(),
       cmdOptions: {
         xpi: "/some/path/to/file.xpi",
         apiKey: "some-key",
@@ -949,9 +952,11 @@ describe("sign", function() {
       },
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(0);
-      expect(mockManifestGetter.call[0].xpiPath).to.be.equal("/some/path/to/file.xpi");
+      expect(mockXpiInfoGetter.call[0].xpiPath)
+        .to.be.equal("/some/path/to/file.xpi");
       expect(signingCall.wasCalled).to.be.equal(true);
-      expect(signingCall.call[0].xpiPath).to.be.equal("/some/path/to/file.xpi");
+      expect(signingCall.call[0].xpiPath)
+        .to.be.equal("/some/path/to/file.xpi");
       done();
     }).catch(done);
   });
@@ -1002,6 +1007,38 @@ describe("sign", function() {
       expect(signingCall.wasCalled).to.be.equal(false);
       done();
     }).catch(done);
+  });
+
+});
+
+
+describe("getXpiInfo", function() {
+  var simpleAddonXPI = path.join(testDir, "xpis", "@simple-addon.xpi");
+  var altRdfXpi = path.join(testDir, "xpis", "alt-rdf.xpi");
+
+  it("gets info from an SDK add-on", function() {
+    return getXpiInfo({xpiPath: simpleAddonXPI})
+      .then(function(xpiInfo) {
+        expect(xpiInfo.version).to.be.equal("1.0.0");
+        expect(xpiInfo.id).to.be.equal("@simple-addon");
+      });
+  });
+
+  it("gets info from current jetpack", function() {
+    return getXpiInfo({addonDir: simpleAddonPath})
+      .then(function(xpiInfo) {
+        expect(xpiInfo.version).to.be.equal("1.0.0");
+        expect(xpiInfo.id).to.be.equal("@simple-addon");
+      });
+  });
+
+  it.skip("gets info from an alternate RDF XPI", function() {
+    return getXpiInfo({xpiPath: altRdfXpi})
+      .then(function(xpiInfo) {
+        expect(xpiInfo.version).to.be.equal("2.1.106");
+        expect(xpiInfo.id)
+          .to.be.equal("{2fa4ed95-0317-4c6a-a74c-5f3e3912c1f9}");
+      });
   });
 
 });

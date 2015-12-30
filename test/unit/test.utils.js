@@ -56,27 +56,6 @@ describe("lib/utils", function() {
       });
     });
 
-    it("throws error for non-existant XPI file", function() {
-      var badXPIFile = path.join(__dirname, "..", "not-a-real-file.xpi");
-      return utils.getManifest({xpiPath: badXPIFile})
-        .then(function() {
-          throw new Error("unexpected success");
-        }).catch(function(err) {
-          expect(err.message).to.include("ENOENT");
-          expect(err.message).to.include(badXPIFile);
-        });
-    });
-
-    it("throws error for invalid zip file", function() {
-      var badXPIFile = path.join(__dirname, "..", "xpis", "@invalid-zip.xpi");
-      return utils.getManifest({xpiPath: badXPIFile})
-        .then(function() {
-          throw new Error("unexpected success");
-        }).catch(function(err) {
-          expect(err.message).to.include("invalid signature");
-        });
-    });
-
     it("returns {} when no package.json found", function() {
       var noAddonDir = path.join(__dirname, "..", "addons");
       return utils.getManifest({addonDir: noAddonDir}).then(function(manifest) {
@@ -92,6 +71,77 @@ describe("lib/utils", function() {
           expect(Object.keys(manifest).length).to.be.equal(0);
         });
     });
+  });
+
+  describe("extractXPI", function() {
+
+    it("lets you inspect an XPI", function() {
+      return utils.extractXPI(simpleAddonXPI)
+        .then(function(tmpXPI) {
+          try {
+            var manifest = require(
+              path.join(tmpXPI.path, 'package.json'));
+            expect(manifest.name).to.be.equal("simple-addon");
+          } catch (e) {
+            tmpXPI.remove();
+            throw e;
+          }
+        });
+    });
+
+    it("requires you to remove the tmp dir when finished", function() {
+      return utils.extractXPI(simpleAddonXPI)
+        .then(function(tmpXPI) {
+          expect(fs.statSync(tmpXPI.path).isDirectory())
+            .to.be.equal(true);
+
+          tmpXPI.remove();
+
+          expect(function() {
+            fs.statSync(tmpXPI.path);
+          }).to.throw(/no such file or directory/);
+        });
+    });
+
+    it("throws error for non-existant XPI file", function() {
+      var badXPIFile = path.join(__dirname, "..", "not-a-real-file.xpi");
+      return utils.extractXPI(badXPIFile)
+        .then(function() {
+          throw new Error("unexpected success");
+        }).catch(function(err) {
+          expect(err.message).to.include("ENOENT");
+          expect(err.message).to.include(badXPIFile);
+        });
+    });
+
+    it("throws error for invalid zip file", function() {
+      var badXPIFile = path.join(__dirname, "..", "xpis", "@invalid-zip.xpi");
+      return utils.extractXPI(badXPIFile)
+        .then(function() {
+          throw new Error("unexpected success");
+        }).catch(function(err) {
+          expect(err.message).to.include("invalid signature");
+        });
+    });
+
+    it("throws error for directories (not XPIs)", function() {
+      return utils.extractXPI(__dirname)
+        .then(function() {
+          throw new Error("unexpected success");
+        }).catch(function(err) {
+          expect(err.message).to.include("expected an XPI file");
+        });
+    });
+
+    it("throws error for undefined xpiPath", function() {
+      return utils.extractXPI(undefined)
+        .then(function() {
+          throw new Error("unexpected success");
+        }).catch(function(err) {
+          expect(err.message).to.include("xpiPath cannot be empty");
+        });
+    });
+
   });
 
   describe("hasAOMSupport", function() {
