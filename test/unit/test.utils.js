@@ -58,9 +58,10 @@ describe("lib/utils", function() {
 
     it("returns {} when no package.json found", function() {
       var noAddonDir = path.join(__dirname, "..", "addons");
-      return utils.getManifest({addonDir: noAddonDir}).then(function(manifest) {
-        expect(Object.keys(manifest).length).to.be.equal(0);
-      });
+      return utils.getManifest({addonDir: noAddonDir})
+        .then(function(manifest) {
+          expect(Object.keys(manifest).length).to.be.equal(0);
+        });
     });
 
     it("returns {} when no package.json found in XPI", function() {

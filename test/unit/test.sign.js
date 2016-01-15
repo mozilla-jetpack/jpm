@@ -13,7 +13,7 @@ var jwt = require("jsonwebtoken");
 var when = require("when");
 
 var signCmd = require("../../lib/sign").signCmd;
-var getXpiInfo = require("../../lib/sign").getXpiInfo;
+var getXpiInfoForSigning = require("../../lib/sign").getXpiInfoForSigning;
 var amoClient = require("../../lib/amo-client");
 var utils = require("../utils");
 var testDir = path.join(__dirname, "..");
@@ -810,7 +810,7 @@ describe("sign", function() {
 
   function runSignCmd(options) {
     options = _.assign({
-      getXpiInfo: null,
+      getXpiInfoForSigning: null,
       createXPI: null,
       StubAMOClient: makeAMOClientStub(),
       cmdOptions: {
@@ -826,8 +826,8 @@ describe("sign", function() {
       systemProcess: mockProcess,
       AMOClient: options.StubAMOClient,
     };
-    if (options.getXpiInfo !== null) {
-      cmdConfig.getXpiInfo = options.getXpiInfo;
+    if (options.getXpiInfoForSigning !== null) {
+      cmdConfig.getXpiInfoForSigning = options.getXpiInfoForSigning;
     }
     if (options.createXPI !== null) {
       cmdConfig.createXPI = options.createXPI;
@@ -944,7 +944,7 @@ describe("sign", function() {
     // things.
     process.chdir(path.join(__dirname, "..", "addons"));
     runSignCmd({
-      getXpiInfo: mockXpiInfoGetter.getCallable(),
+      getXpiInfoForSigning: mockXpiInfoGetter.getCallable(),
       cmdOptions: {
         xpi: "/some/path/to/file.xpi",
         apiKey: "some-key",
@@ -1012,12 +1012,12 @@ describe("sign", function() {
 });
 
 
-describe("getXpiInfo", function() {
+describe("getXpiInfoForSigning", function() {
   var simpleAddonXPI = path.join(testDir, "xpis", "@simple-addon.xpi");
   var altRdfXpi = path.join(testDir, "xpis", "alt-rdf.xpi");
 
   it("gets info from an SDK add-on", function() {
-    return getXpiInfo({xpiPath: simpleAddonXPI})
+    return getXpiInfoForSigning({xpiPath: simpleAddonXPI})
       .then(function(xpiInfo) {
         expect(xpiInfo.version).to.be.equal("1.0.0");
         expect(xpiInfo.id).to.be.equal("@simple-addon");
@@ -1025,7 +1025,7 @@ describe("getXpiInfo", function() {
   });
 
   it("gets info from current jetpack", function() {
-    return getXpiInfo({addonDir: simpleAddonPath})
+    return getXpiInfoForSigning({addonDir: simpleAddonPath})
       .then(function(xpiInfo) {
         expect(xpiInfo.version).to.be.equal("1.0.0");
         expect(xpiInfo.id).to.be.equal("@simple-addon");
@@ -1033,7 +1033,7 @@ describe("getXpiInfo", function() {
   });
 
   it.skip("gets info from an alternate RDF XPI", function() {
-    return getXpiInfo({xpiPath: altRdfXpi})
+    return getXpiInfoForSigning({xpiPath: altRdfXpi})
       .then(function(xpiInfo) {
         expect(xpiInfo.version).to.be.equal("2.1.106");
         expect(xpiInfo.id)
