@@ -65,10 +65,13 @@ program
   .command("xpi")
   .description("Bundle the addon into an .xpi file")
   .action(cmd.prepare("xpi", program, function(manifest) {
+    var start = Date.now();
     xpi(manifest, program).then(function(xpiPath) {
-      console.log("Successfully created xpi at " + xpiPath);
+      var diff = Date.now() - start;
+      console.log("Successfully created XPI at " +
+                  xpiPath + " (" + diff + "ms)");
     }, function(reason) {
-      console.error("xpi creation failed: " + reason);
+      console.error("XPI creation failed: " + reason);
     });
   }));
 
