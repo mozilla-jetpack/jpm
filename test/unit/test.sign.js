@@ -1009,38 +1009,35 @@ describe("sign", function() {
     }).catch(done);
   });
 
-});
+  describe("getXpiInfoForSigning", function() {
+    var simpleAddonXPI = path.join(testDir, "xpis", "@simple-addon.xpi");
+    var installRdfXpi = path.join(testDir, "xpis", "install-rdf.xpi");
 
+    it("gets info from an SDK add-on", function() {
+      return getXpiInfoForSigning({xpiPath: simpleAddonXPI})
+        .then(function(xpiInfo) {
+          expect(xpiInfo.version).to.be.equal("1.0.0");
+          expect(xpiInfo.id).to.be.equal("@simple-addon");
+        });
+    });
 
-describe("getXpiInfoForSigning", function() {
-  var simpleAddonXPI = path.join(testDir, "xpis", "@simple-addon.xpi");
-  var altRdfXpi = path.join(testDir, "xpis", "alt-rdf.xpi");
+    it("gets info from current jetpack", function() {
+      return getXpiInfoForSigning({addonDir: simpleAddonPath})
+        .then(function(xpiInfo) {
+          expect(xpiInfo.version).to.be.equal("1.0.0");
+          expect(xpiInfo.id).to.be.equal("@simple-addon");
+        });
+    });
 
-  it("gets info from an SDK add-on", function() {
-    return getXpiInfoForSigning({xpiPath: simpleAddonXPI})
-      .then(function(xpiInfo) {
-        expect(xpiInfo.version).to.be.equal("1.0.0");
-        expect(xpiInfo.id).to.be.equal("@simple-addon");
-      });
+    it("gets info from install.rdf in non-SDK XPIs", function() {
+      return getXpiInfoForSigning({xpiPath: installRdfXpi})
+        .then(function(xpiInfo) {
+          expect(xpiInfo.version).to.be.equal("2.1.106");
+          expect(xpiInfo.id)
+            .to.be.equal("{2fa4ed95-0317-4c6a-a74c-5f3e3912c1f9}");
+        });
+    });
   });
-
-  it("gets info from current jetpack", function() {
-    return getXpiInfoForSigning({addonDir: simpleAddonPath})
-      .then(function(xpiInfo) {
-        expect(xpiInfo.version).to.be.equal("1.0.0");
-        expect(xpiInfo.id).to.be.equal("@simple-addon");
-      });
-  });
-
-  it.skip("gets info from an alternate RDF XPI", function() {
-    return getXpiInfoForSigning({xpiPath: altRdfXpi})
-      .then(function(xpiInfo) {
-        expect(xpiInfo.version).to.be.equal("2.1.106");
-        expect(xpiInfo.id)
-          .to.be.equal("{2fa4ed95-0317-4c6a-a74c-5f3e3912c1f9}");
-      });
-  });
-
 });
 
 

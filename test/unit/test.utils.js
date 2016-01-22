@@ -68,8 +68,11 @@ describe("lib/utils", function() {
       var noPackageXPI = path.join(__dirname, "..", "xpis",
                                    "@missing-package-json.xpi");
       return utils.getManifest({xpiPath: noPackageXPI})
-        .then(function(manifest) {
-          expect(Object.keys(manifest).length).to.be.equal(0);
+        .then(function() {
+          throw new Error('Unexpected success');
+        })
+        .catch(function(err) {
+          expect(err.message).to.match(/no manifest found/);
         });
     });
   });
@@ -140,6 +143,132 @@ describe("lib/utils", function() {
           throw new Error("unexpected success");
         }).catch(function(err) {
           expect(err.message).to.include("xpiPath cannot be empty");
+        });
+    });
+
+  });
+
+  describe("getXpiInfoFromInstallRdf", function() {
+
+    it("throws for missing RDF element", function() {
+      var xml = "<?xml version=\"1.0\"?><empty></empty>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function() {
+          throw new Error('Unexpected success');
+        })
+        .catch(function(err) {
+          expect(err.message).to.match(/Could not find root RDF element/);
+        });
+    });
+
+    it("throws for missing descriptions", function() {
+      var xml = "<?xml version=\"1.0\"?><RDF:RDF><whatever/></RDF:RDF>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function() {
+          throw new Error('Unexpected success');
+        })
+        .catch(function(err) {
+          expect(err.message).to.match(/Could not find descriptions/);
+        });
+    });
+
+    it("throws for missing manifest element", function() {
+      var xml = "<?xml version=\"1.0\"?><RDF:RDF>" +
+                "<RDF:Description RDF:about=\"rdf:#$ZUQlk2\"/>" +
+                "</RDF:RDF>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function() {
+          throw new Error('Unexpected success');
+        })
+        .catch(function(err) {
+          expect(err.message).to.match(
+            /Could not find .*install-manifest Description/);
+        });
+    });
+
+    it("throws for missing ID", function() {
+      var xml = "<?xml version=\"1.0\"?><RDF:RDF>" +
+                "<RDF:Description RDF:about=\"urn:mozilla:install-manifest\">" +
+                "</RDF:Description>" +
+                "</RDF:RDF>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function() {
+          throw new Error('Unexpected success');
+        })
+        .catch(function(err) {
+          expect(err.message).to.match(/ID was empty/);
+        });
+    });
+
+    it("throws for missing version", function() {
+      var xml = "<?xml version=\"1.0\"?><RDF:RDF>" +
+                "<RDF:Description RDF:about=\"urn:mozilla:install-manifest\">" +
+                  "<em:id>sugar-pants</em:id>" +
+                "</RDF:Description>" +
+                "</RDF:RDF>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function() {
+          throw new Error('Unexpected success');
+        })
+        .catch(function(err) {
+          expect(err.message).to.match(/Version was empty/);
+        });
+    });
+
+    it("throws for broken RDF XML", function() {
+      var xml = "this-is-not valid >XML<";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function() {
+          throw new Error('Unexpected success');
+        })
+        .catch(function(err) {
+          expect(err.message).to.match(/install\.rdf: Non-whitespace before first tag/);
+        });
+    });
+
+    it("finds ID and version from attributes", function() {
+      var xml = "<?xml version=\"1.0\"?><RDF:RDF>" +
+                "<RDF:Description RDF:about=\"urn:mozilla:install-manifest\" " +
+                  "em:id=\"sugar-pants\" " +
+                  "em:version=\"0.0.1\" " +
+                ">" +
+                "</RDF:Description>" +
+                "</RDF:RDF>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function(info) {
+          expect(info.id).to.be.equal("sugar-pants");
+          expect(info.version).to.be.equal("0.0.1");
+          expect(info.manifest).to.be.equal(null);
+        });
+    });
+
+    it("finds ID and version from properties", function() {
+      var xml = "<?xml version=\"1.0\"?><RDF:RDF>" +
+                "<RDF:Description RDF:about=\"urn:mozilla:install-manifest\">" +
+                  "<em:id>sugar-pants</em:id>" +
+                  "<em:version>0.0.1</em:version>" +
+                "</RDF:Description>" +
+                "</RDF:RDF>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function(info) {
+          expect(info.id).to.be.equal("sugar-pants");
+          expect(info.version).to.be.equal("0.0.1");
+          expect(info.manifest).to.be.equal(null);
+        });
+    });
+
+    it("can handle unprefixed RDF files", function() {
+      var xml = "<?xml version=\"1.0\"?>" +
+                "<RDF>" +
+                "<Description about=\"urn:mozilla:install-manifest\">" +
+                  "<em:id>sugar-pants</em:id>" +
+                  "<em:version>0.0.1</em:version>" +
+                "</Description>" +
+                "</RDF>";
+      return utils.getXpiInfoFromInstallRdf(xml)
+        .then(function(info) {
+          expect(info.id).to.be.equal("sugar-pants");
+          expect(info.version).to.be.equal("0.0.1");
         });
     });
 
