@@ -68,9 +68,10 @@ program
     var start = Date.now();
     xpi(manifest, program).then(function(xpiPath) {
       var diff = Date.now() - start;
-      console.log("Successfully created xpi at " + xpiPath + " (" + diff + "ms)");
+      console.log("Successfully created XPI at " +
+                  xpiPath + " (" + diff + "ms)");
     }, function(reason) {
-      console.error("xpi creation failed: " + reason);
+      console.error("XPI creation failed: " + reason);
     });
   }));
 
