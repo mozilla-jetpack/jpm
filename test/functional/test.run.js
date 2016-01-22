@@ -125,17 +125,7 @@ describe("jpm run", function() {
         expect(err).to.not.be.ok;
         expect(stdout).to.contain("console\.log: param-dump:");
         expect(stdout).to.contain("PARAMS DUMP START");
-        done();
-      });
-    });
-
-    it("logs out everything from console with -v", function(done) {
-      var options = { addonDir: paramDumpPath, env: { JPM_FIREFOX_BINARY: binary }};
-      var proc = exec("run -v", options, function(err, stdout, stderr) {
-        expect(err).to.not.be.ok;
-        expect(stdout.split("\n").length).to.be.gt(2);
-        expect(stdout).to.contain("PARAMS DUMP START");
-        expect(stdout).to.contain("PARAMS DUMP END");
+        expect(stderr).not.to.contain("JavaScript error");
         done();
       });
     });
