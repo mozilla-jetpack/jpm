@@ -79,6 +79,7 @@ describe("amoClient.Client", function() {
         valid: true,
         reviewed: true,
         files: [{
+          signed: true,
           download_url: "http://amo/some-signed-file-1.2.3.xpi",
         }],
         validation_url: "http://amo/validation-results/",
@@ -158,6 +159,7 @@ describe("amoClient.Client", function() {
       this.client.downloadSignedFiles = downloadSignedFiles.getCallable();
 
       var files = [{
+        signed: true,
         download_url: "http://amo/the-signed-file-1.2.3.xpi",
       }];
       this.client._request = new MockRequest({
@@ -355,6 +357,77 @@ describe("amoClient.Client", function() {
         expect(result.success).to.be.equal(true);
         expect(result.downloadedFiles).to.be.deep.equal([filePath]);
         expect(createWriteStream.call[0]).to.be.equal(filePath);
+        expect(fakeRequest.call[0].url).to.be.equal(files[0].download_url);
+        done();
+      }).catch(done);
+    });
+
+    it("fails for unsigned files", function(done) {
+      var files = signedResponse().responseBody.files;
+      files = files.map(function(fileOb) {
+        // This can happen for certain invalid XPIs.
+        fileOb.signed = false;
+        return fileOb;
+      });
+
+      var fakeRequest = new CallableMock();
+      var createWriteStream = new CallableMock();
+
+      this.client.downloadSignedFiles(files, {
+        request: fakeRequest.getCallable(),
+        createWriteStream: createWriteStream.getCallable(),
+        stdout: {
+          write: function() {},
+        }
+      }).then(function() {
+        done(new Error("Unexpected success"));
+      }).catch(function(err) {
+        expect(err.message).to.match(/no signed files were found/);
+        expect(fakeRequest.wasCalled).to.be.equal(false);
+        done();
+      }).catch(done);
+    });
+
+    it("allows partially signed files", function(done) {
+      var fakeResponse = {
+        on: function(event, handler) {
+          return this;
+        },
+        pipe: function() {
+          return this;
+        },
+      };
+
+      var fakeFileWriter = {
+        on: function(event, handler) {
+          if (event === "finish") {
+            // Simulate completion of the download immediately when the
+            // handler is registered.
+            handler();
+          }
+        },
+      };
+
+      var files = signedResponse().responseBody.files;
+      files.push({
+        signed: false,
+        download_url: "http://nope.org/should-not-be-downloaded.xpi",
+      });
+
+      var fakeRequest = new CallableMock({returnValue: fakeResponse});
+      var createWriteStream = new CallableMock({returnValue: fakeFileWriter});
+
+      this.client.downloadSignedFiles(files, {
+        request: fakeRequest.getCallable(),
+        createWriteStream: createWriteStream.getCallable(),
+        stdout: {
+          write: function() {},
+        }
+      }).then(function(result) {
+        var filePath = path.join(process.cwd(), "some-signed-file-1.2.3.xpi");
+        expect(result.success).to.be.equal(true);
+        expect(result.downloadedFiles).to.be.deep.equal([filePath]);
+        expect(fakeRequest.call.length).to.be.equal(files.length - 1);
         expect(fakeRequest.call[0].url).to.be.equal(files[0].download_url);
         done();
       }).catch(done);
