@@ -58,7 +58,7 @@
     "unzip": "0.1.11",
     "when": "3.7.2",
     "xml2js": "0.4.16",
-    "zip-dir": "1.0.0",
+    "zip-dir": "1.0.1",
     "jszip": "2.4.0"
   },
   "devDependencies": {
