@@ -333,6 +333,16 @@ describe("lib/rdf", function() {
       expect(firefox.childNodes[5].tagName).to.be.equal("em:maxVersion");
       expect(firefox.childNodes[5].childNodes[0].data).to.be.equal(MAX_VERSION);
     });
+
+    it("passes through raw GUIDs as targetApplication", function() {
+      var xml = setupRDF({ engines: {
+        "{e95a4b1e-901d-d035-4077-e95157a7a118}": "*"
+      }});
+      var apps = xml.getElementsByTagName("em:targetApplication");
+      var application = apps[0].childNodes[1]; // Description
+      expect(application.childNodes[1].tagName).to.be.equal("em:id");
+      expect(application.childNodes[1].childNodes[0].data).to.be.equal("{e95a4b1e-901d-d035-4077-e95157a7a118}");
+    });
   });
 
   describe("createUpdateRDF", function() {
