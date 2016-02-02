@@ -44,6 +44,7 @@ program
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--prefs <path>", "Custom set user preferences (path to a json file)")
   .option("--post-url <url>", "A url to post a xpi of your extension")
+  .option("--compression-level <number>", "The compression level of the generated xpi (any level between 0 (no compression) and 9 (best but slowest compression). Default level is 5)")
   .option("--stop-on-error", "Stop running tests after the first failure")
   .option("--do-not-quit", "Do not close Firefox on a test failure")
   .option("--tbpl", "Print test output in TBPL format")
