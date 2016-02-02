@@ -15,7 +15,7 @@
     "jshint": "jshint bin/jpm lib test --exclude test/addons,test/addon_runners,test/fixtures",
     "jscs": "jscs bin/jpm lib",
     "test": "node ./test/run.js",
-    "prepush": "npm run documentation"
+    "prepush": "npm run jshint && npm run jscs && npm run documentation"
   },
   "homepage": "https://github.com/mozilla-jetpack/jpm",
   "repository": {
