@@ -95,7 +95,7 @@ To run just a specific type of test (functional, unit), run the associated scrip
 You must have the [Extension Auto-Installer](https://addons.mozilla.org/en-US/firefox/addon/autoinstaller/)
 installed on a pre-production Firefox and you need to use a profile
 that sets `xpinstall.signatures.required` to `false`
-([more info](http://www.ghacks.net/2015/06/19/how-to-disable-the-firefox-40-add-on-signing-requirement/)).
+([more info](http://www.ghacks.net/2015/06/19/how-to-disable-the-firefox-40-add-on-signing-requirement/)). For logging with `watchpost`, also see [Developing without browser restarts](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm#Developing_without_browser_restarts).
 
 ### Usage
 
