@@ -421,23 +421,23 @@ describe("lib/rdf", function() {
         }
       });
       var locales = xml.getElementsByTagName("em:localized");
-      var locale_ja = locales[0].childNodes[1]; // Description
-      var locale_zhs = locales[1].childNodes[1]; // Description
+      var localeJa = locales[0].childNodes[1]; // Description
+      var localeZhs = locales[1].childNodes[1]; // Description
       expect(locales.length).to.be.equal(2);
-      expect(locale_ja.tagName).to.be.equal("Description");
-      expect(locale_ja.childNodes[1].tagName).to.be.equal("em:locale");
-      expect(locale_ja.childNodes[1].childNodes[0].data).to.be.equal("ja");
-      expect(locale_ja.childNodes[3].tagName).to.be.equal("em:name");
-      expect(locale_ja.childNodes[3].childNodes[0].data).to.be.equal("名前");
-      expect(locale_ja.childNodes[5].tagName).to.be.equal("em:description");
-      expect(locale_ja.childNodes[5].childNodes[0].data).to.be.equal("紹介");
-      expect(locale_zhs.tagName).to.be.equal("Description");
-      expect(locale_zhs.childNodes[1].tagName).to.be.equal("em:locale");
-      expect(locale_zhs.childNodes[1].childNodes[0].data).to.be.equal("zh-CN");
-      expect(locale_zhs.childNodes[3].tagName).to.be.equal("em:name");
-      expect(locale_zhs.childNodes[3].childNodes[0].data).to.be.equal("扩展");
-      expect(locale_zhs.childNodes[5].tagName).to.be.equal("em:description");
-      expect(locale_zhs.childNodes[5].childNodes[0].data).to.be.equal("说明");
+      expect(localeJa.tagName).to.be.equal("Description");
+      expect(localeJa.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(localeJa.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(localeJa.childNodes[3].tagName).to.be.equal("em:name");
+      expect(localeJa.childNodes[3].childNodes[0].data).to.be.equal("名前");
+      expect(localeJa.childNodes[5].tagName).to.be.equal("em:description");
+      expect(localeJa.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+      expect(localeZhs.tagName).to.be.equal("Description");
+      expect(localeZhs.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(localeZhs.childNodes[1].childNodes[0].data).to.be.equal("zh-CN");
+      expect(localeZhs.childNodes[3].tagName).to.be.equal("em:name");
+      expect(localeZhs.childNodes[3].childNodes[0].data).to.be.equal("扩展");
+      expect(localeZhs.childNodes[5].tagName).to.be.equal("em:description");
+      expect(localeZhs.childNodes[5].childNodes[0].data).to.be.equal("说明");
     });
   });
 
