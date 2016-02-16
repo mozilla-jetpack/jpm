@@ -345,6 +345,102 @@ describe("lib/rdf", function() {
     });
   });
 
+  describe("locales", function() {
+    it("add ja localized title and description to add-on", function() {
+      var xml = setupRDF({ title: "my-title", description: "my-desc",
+        locales: {
+          "ja" : {
+            title: "名前",
+            description: "紹介"
+          }
+        }
+      });
+      var locales = xml.getElementsByTagName("em:localized");
+      var locale = locales[0].childNodes[1]; // Description
+      expect(locales.length).to.be.equal(1);
+      expect(locale.tagName).to.be.equal("Description");
+      expect(locale.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(locale.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(locale.childNodes[3].tagName).to.be.equal("em:name");
+      expect(locale.childNodes[3].childNodes[0].data).to.be.equal("名前");
+      expect(locale.childNodes[5].tagName).to.be.equal("em:description");
+      expect(locale.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+    });
+
+    it("add ja localized title to add-on", function() {
+      var xml = setupRDF({ title: "my-title", description: "my-desc",
+        locales: {
+          "ja" : {
+            title: "名前"
+          }
+        }
+      });
+      var locales = xml.getElementsByTagName("em:localized");
+      var locale = locales[0].childNodes[1]; // Description
+      expect(locales.length).to.be.equal(1);
+      expect(locale.tagName).to.be.equal("Description");
+      expect(locale.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(locale.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(locale.childNodes[3].tagName).to.be.equal("em:name");
+      expect(locale.childNodes[3].childNodes[0].data).to.be.equal("名前");
+      expect(locale.childNodes[5].tagName).to.be.equal("em:description");
+      expect(locale.childNodes[5].childNodes[0].data).to.be.equal("my-desc");
+    });
+
+    it("add ja localized description to add-on", function() {
+      var xml = setupRDF({ title: "my-title", description: "my-desc",
+        locales: {
+          "ja" : {
+            description: "紹介"
+          }
+        }
+      });
+      var locales = xml.getElementsByTagName("em:localized");
+      var locale = locales[0].childNodes[1]; // Description
+      expect(locales.length).to.be.equal(1);
+      expect(locale.tagName).to.be.equal("Description");
+      expect(locale.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(locale.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(locale.childNodes[3].tagName).to.be.equal("em:name");
+      expect(locale.childNodes[3].childNodes[0].data).to.be.equal("my-title");
+      expect(locale.childNodes[5].tagName).to.be.equal("em:description");
+      expect(locale.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+    });
+
+    it("add ja & zh-CN localized title and description to add-on", function() {
+      var xml = setupRDF({ title: "my-title", description: "my-desc",
+        locales: {
+          "ja" : {
+            title: "名前",
+            description: "紹介"
+          },
+          "zh-CN" : {
+            title: "扩展",
+            description: "说明"
+          }
+        }
+      });
+      var locales = xml.getElementsByTagName("em:localized");
+      var localeJa = locales[0].childNodes[1]; // Description
+      var localeZhs = locales[1].childNodes[1]; // Description
+      expect(locales.length).to.be.equal(2);
+      expect(localeJa.tagName).to.be.equal("Description");
+      expect(localeJa.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(localeJa.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(localeJa.childNodes[3].tagName).to.be.equal("em:name");
+      expect(localeJa.childNodes[3].childNodes[0].data).to.be.equal("名前");
+      expect(localeJa.childNodes[5].tagName).to.be.equal("em:description");
+      expect(localeJa.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+      expect(localeZhs.tagName).to.be.equal("Description");
+      expect(localeZhs.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(localeZhs.childNodes[1].childNodes[0].data).to.be.equal("zh-CN");
+      expect(localeZhs.childNodes[3].tagName).to.be.equal("em:name");
+      expect(localeZhs.childNodes[3].childNodes[0].data).to.be.equal("扩展");
+      expect(localeZhs.childNodes[5].tagName).to.be.equal("em:description");
+      expect(localeZhs.childNodes[5].childNodes[0].data).to.be.equal("说明");
+    });
+  });
+
   describe("createUpdateRDF", function() {
     it("create the update.rdf file with the correct value", function() {
       var str = RDF.createUpdateRDF(
