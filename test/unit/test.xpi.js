@@ -231,6 +231,7 @@ describe("lib/xpi", function() {
   it("Test default .jpmignore rules", function(done) {
     process.chdir(extraFilesPath);
     var ID_XPI = "extra-files@jpm.xpi";
+    var ID_SIGNED_XPI = "extra_files-0.0.1-fx.xpi";
     var manifest = require(path.join(extraFilesPath, "package.json"));
 
     // Copy in a XPI since we remove it between tests for cleanup
@@ -239,7 +240,7 @@ describe("lib/xpi", function() {
       return utils.unzipTo(xpiPath, tmpOutputDir);
     }).
     then(function() {
-      return when.all([ ".hidden", ".hidden-dir", "test", ID_XPI ]
+      return when.all([ ".hidden", ".hidden-dir", "test", ID_XPI, ID_SIGNED_XPI ]
         .map(function(p) { return path.join(tmpOutputDir, p); })
         .map(function(p) { return fs.exists(p); }))
         .then(function(results) {
@@ -249,7 +250,10 @@ describe("lib/xpi", function() {
         });
     }).
     then(function() {
-      return when.all([ ID_XPI ]
+      return fs.writeFile(path.join(extraFilesPath, ID_SIGNED_XPI), "This is not actually a signed XPI");
+    }).
+    then(function() {
+      return when.all([ ID_XPI, ID_SIGNED_XPI ]
         .map(function(p) { return path.join(extraFilesPath, p); })
         .map(function(p) { return fs.exists(p); }))
         .then(function(results) {
@@ -266,7 +270,7 @@ describe("lib/xpi", function() {
       return utils.unzipTo(xpiPath, tmpOutputDir);
     }).
     then(function() {
-      return when.all([ ".hidden", ".hidden-dir", "test", ID_XPI ]
+      return when.all([ ".hidden", ".hidden-dir", "test", ID_XPI, ID_SIGNED_XPI ]
         .map(function(p) { return path.join(tmpOutputDir, p); })
         .map(function(p) { return fs.exists(p); }))
         .then(function(results) {
