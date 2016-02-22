@@ -985,8 +985,8 @@ describe("sign", function() {
       createXPI: mockXPICreator.getCallable(),
       program: {
         verbose: true,
-        addonDir: "",
-      }
+        addonDir: simpleAddonPath,
+      },
     }).then(function() {
       expect(fakeClientContructor.call[0].debugLogging).to.be.equal(true);
       done();
@@ -1010,7 +1010,10 @@ describe("sign", function() {
   it("passes custom XPI to the signer", function(done) {
     var mockXpiInfoGetter = new CallableMock({
       returnValue: when.promise(function(resolve) {
-        resolve({});  // resolve with empty xpiInfo.
+        resolve({
+          id: 'some-id',
+          version: '0.0.1',
+        });
       }),
     });
     // Make sure nothing is checking the working directory for add-on
@@ -1039,6 +1042,22 @@ describe("sign", function() {
       StubAMOClient: makeAMOClientStub({
         result: {success: false},
       }),
+    }).then(function() {
+      expect(mockProcessExit.call[0]).to.be.equal(1);
+      done();
+    }).catch(done);
+  });
+
+  it("exits 1 when id/version cannot be detected", function(done) {
+    var mockXpiInfoGetter = new CallableMock({
+      returnValue: when.promise(function(resolve) {
+        // Resolve an empty XPI info object which will happen
+        // in various scenarios when id/version cannot be detected.
+        resolve({});
+      }),
+    });
+    runSignCmd({
+      getXpiInfoForSigning: mockXpiInfoGetter.getCallable(),
     }).then(function() {
       expect(mockProcessExit.call[0]).to.be.equal(1);
       done();
