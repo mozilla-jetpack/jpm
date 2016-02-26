@@ -352,7 +352,7 @@ describe("lib/rdf", function() {
           "ja" : {
             title: "名前",
             description: "紹介",
-            homepage: "ホームページ"
+            homepage: "ホームページ",
           }
         }
       });
@@ -376,7 +376,7 @@ describe("lib/rdf", function() {
         locales: {
           "ja" : {
             title: "名前",
-            homepage: "ホームページ"
+            homepage: "ホームページ",
           }
         }
       });
@@ -398,7 +398,7 @@ describe("lib/rdf", function() {
         locales: {
           "ja" : {
             title: "名前",
-            description: "紹介"
+            description: "紹介",
           }
         }
       });
@@ -422,7 +422,7 @@ describe("lib/rdf", function() {
         locales: {
           "ja" : {
             description: "紹介",
-            homepage: "ホームページ"
+            homepage: "ホームページ",
           }
         }
       });
@@ -447,12 +447,12 @@ describe("lib/rdf", function() {
           "ja" : {
             title: "名前",
             description: "紹介",
-            homepage: "ホームページ"
+            homepage: "ホームページ",
           },
           "zh-CN" : {
             title: "扩展",
             description: "说明",
-            homepage: "主页"
+            homepage: "主页",
           }
         }
       });
@@ -460,6 +460,7 @@ describe("lib/rdf", function() {
       var localeJa = locales[0].childNodes[1]; // Description
       var localeZhs = locales[1].childNodes[1]; // Description
       expect(locales.length).to.be.equal(2);
+
       expect(localeJa.tagName).to.be.equal("Description");
       expect(localeJa.childNodes[1].tagName).to.be.equal("em:locale");
       expect(localeJa.childNodes[1].childNodes[0].data).to.be.equal("ja");
@@ -470,6 +471,7 @@ describe("lib/rdf", function() {
       expect(localeJa.childNodes[7].tagName).to.be.equal("em:creator");
       expect(localeJa.childNodes[9].tagName).to.be.equal("em:homepageURL");
       expect(localeJa.childNodes[9].childNodes[0].data).to.be.equal("ホームページ");
+
       expect(localeZhs.tagName).to.be.equal("Description");
       expect(localeZhs.childNodes[1].tagName).to.be.equal("em:locale");
       expect(localeZhs.childNodes[1].childNodes[0].data).to.be.equal("zh-CN");
@@ -487,7 +489,7 @@ describe("lib/rdf", function() {
         locales: {
           "ja" : {
             title: "名前",
-            homepage: "ホームページ"
+            homepage: "ホームページ",
           },
           "zh-CN" : {
             description: "说明"
@@ -498,6 +500,7 @@ describe("lib/rdf", function() {
       var localeJa = locales[0].childNodes[1]; // Description
       var localeZhs = locales[1].childNodes[1]; // Description
       expect(locales.length).to.be.equal(2);
+
       expect(localeJa.tagName).to.be.equal("Description");
       expect(localeJa.childNodes[1].tagName).to.be.equal("em:locale");
       expect(localeJa.childNodes[1].childNodes[0].data).to.be.equal("ja");
@@ -506,6 +509,7 @@ describe("lib/rdf", function() {
       expect(localeJa.childNodes[5].tagName).to.be.equal("em:creator");
       expect(localeJa.childNodes[7].tagName).to.be.equal("em:homepageURL");
       expect(localeJa.childNodes[7].childNodes[0].data).to.be.equal("ホームページ");
+
       expect(localeZhs.tagName).to.be.equal("Description");
       expect(localeZhs.childNodes[1].tagName).to.be.equal("em:locale");
       expect(localeZhs.childNodes[1].childNodes[0].data).to.be.equal("zh-CN");
