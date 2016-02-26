@@ -346,8 +346,55 @@ describe("lib/rdf", function() {
   });
 
   describe("locales", function() {
-    it("add ja localized title and description to add-on", function() {
-      var xml = setupRDF({ title: "my-title", description: "my-desc",
+    it("add `ja` title, description, and homepage to add-on", function() {
+      var xml = setupRDF({ title: "my-title", description: "my-desc", homepage: "my-page",
+        locales: {
+          "ja" : {
+            title: "名前",
+            description: "紹介",
+            homepage: "ホームページ"
+          }
+        }
+      });
+      var locales = xml.getElementsByTagName("em:localized");
+      var locale = locales[0].childNodes[1]; // Description
+      expect(locales.length).to.be.equal(1);
+      expect(locale.tagName).to.be.equal("Description");
+      expect(locale.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(locale.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(locale.childNodes[3].tagName).to.be.equal("em:name");
+      expect(locale.childNodes[3].childNodes[0].data).to.be.equal("名前");
+      expect(locale.childNodes[5].tagName).to.be.equal("em:description");
+      expect(locale.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+      expect(locale.childNodes[7].tagName).to.be.equal("em:creator");
+      expect(locale.childNodes[9].tagName).to.be.equal("em:homepageURL");
+      expect(locale.childNodes[9].childNodes[0].data).to.be.equal("ホームページ");
+    });
+
+    it("add `ja` title and homepage to add-on w/o description", function() {
+      var xml = setupRDF({ title: "my-title", homepage: "my-page",
+        locales: {
+          "ja" : {
+            title: "名前",
+            homepage: "ホームページ"
+          }
+        }
+      });
+      var locales = xml.getElementsByTagName("em:localized");
+      var locale = locales[0].childNodes[1]; // Description
+      expect(locales.length).to.be.equal(1);
+      expect(locale.tagName).to.be.equal("Description");
+      expect(locale.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(locale.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(locale.childNodes[3].tagName).to.be.equal("em:name");
+      expect(locale.childNodes[3].childNodes[0].data).to.be.equal("名前");
+      expect(locale.childNodes[5].tagName).to.be.equal("em:creator");
+      expect(locale.childNodes[7].tagName).to.be.equal("em:homepageURL");
+      expect(locale.childNodes[7].childNodes[0].data).to.be.equal("ホームページ");
+    });
+
+    it("add `ja` title and description to add-on w/o description", function() {
+      var xml = setupRDF({ title: "my-title", homepage: "my-page",
         locales: {
           "ja" : {
             title: "名前",
@@ -365,33 +412,17 @@ describe("lib/rdf", function() {
       expect(locale.childNodes[3].childNodes[0].data).to.be.equal("名前");
       expect(locale.childNodes[5].tagName).to.be.equal("em:description");
       expect(locale.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+      expect(locale.childNodes[7].tagName).to.be.equal("em:creator");
+      expect(locale.childNodes[9].tagName).to.be.equal("em:homepageURL");
+      expect(locale.childNodes[9].childNodes[0].data).to.be.equal("my-page");
     });
 
-    it("add ja localized title to add-on", function() {
-      var xml = setupRDF({ title: "my-title", description: "my-desc",
+    it("add `ja` description and homepage to add-on w/o description", function() {
+      var xml = setupRDF({ title: "my-title", homepage: "my-page",
         locales: {
           "ja" : {
-            title: "名前"
-          }
-        }
-      });
-      var locales = xml.getElementsByTagName("em:localized");
-      var locale = locales[0].childNodes[1]; // Description
-      expect(locales.length).to.be.equal(1);
-      expect(locale.tagName).to.be.equal("Description");
-      expect(locale.childNodes[1].tagName).to.be.equal("em:locale");
-      expect(locale.childNodes[1].childNodes[0].data).to.be.equal("ja");
-      expect(locale.childNodes[3].tagName).to.be.equal("em:name");
-      expect(locale.childNodes[3].childNodes[0].data).to.be.equal("名前");
-      expect(locale.childNodes[5].tagName).to.be.equal("em:description");
-      expect(locale.childNodes[5].childNodes[0].data).to.be.equal("my-desc");
-    });
-
-    it("add ja localized description to add-on", function() {
-      var xml = setupRDF({ title: "my-title", description: "my-desc",
-        locales: {
-          "ja" : {
-            description: "紹介"
+            description: "紹介",
+            homepage: "ホームページ"
           }
         }
       });
@@ -405,18 +436,23 @@ describe("lib/rdf", function() {
       expect(locale.childNodes[3].childNodes[0].data).to.be.equal("my-title");
       expect(locale.childNodes[5].tagName).to.be.equal("em:description");
       expect(locale.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+      expect(locale.childNodes[7].tagName).to.be.equal("em:creator");
+      expect(locale.childNodes[9].tagName).to.be.equal("em:homepageURL");
+      expect(locale.childNodes[9].childNodes[0].data).to.be.equal("ホームページ");
     });
 
-    it("add ja & zh-CN localized title and description to add-on", function() {
-      var xml = setupRDF({ title: "my-title", description: "my-desc",
+    it("add `ja` & `zh-CN` title, description, and homepage to add-on", function() {
+      var xml = setupRDF({ title: "my-title", description: "my-desc", homepage: "my-page",
         locales: {
           "ja" : {
             title: "名前",
-            description: "紹介"
+            description: "紹介",
+            homepage: "ホームページ"
           },
           "zh-CN" : {
             title: "扩展",
-            description: "说明"
+            description: "说明",
+            homepage: "主页"
           }
         }
       });
@@ -431,6 +467,9 @@ describe("lib/rdf", function() {
       expect(localeJa.childNodes[3].childNodes[0].data).to.be.equal("名前");
       expect(localeJa.childNodes[5].tagName).to.be.equal("em:description");
       expect(localeJa.childNodes[5].childNodes[0].data).to.be.equal("紹介");
+      expect(localeJa.childNodes[7].tagName).to.be.equal("em:creator");
+      expect(localeJa.childNodes[9].tagName).to.be.equal("em:homepageURL");
+      expect(localeJa.childNodes[9].childNodes[0].data).to.be.equal("ホームページ");
       expect(localeZhs.tagName).to.be.equal("Description");
       expect(localeZhs.childNodes[1].tagName).to.be.equal("em:locale");
       expect(localeZhs.childNodes[1].childNodes[0].data).to.be.equal("zh-CN");
@@ -438,6 +477,45 @@ describe("lib/rdf", function() {
       expect(localeZhs.childNodes[3].childNodes[0].data).to.be.equal("扩展");
       expect(localeZhs.childNodes[5].tagName).to.be.equal("em:description");
       expect(localeZhs.childNodes[5].childNodes[0].data).to.be.equal("说明");
+      expect(localeZhs.childNodes[7].tagName).to.be.equal("em:creator");
+      expect(localeZhs.childNodes[9].tagName).to.be.equal("em:homepageURL");
+      expect(localeZhs.childNodes[9].childNodes[0].data).to.be.equal("主页");
+    });
+
+    it("add `ja` title and homepage & `zh-CN` description to add-on only with homepage", function() {
+      var xml = setupRDF({ homepage: "my-page",
+        locales: {
+          "ja" : {
+            title: "名前",
+            homepage: "ホームページ"
+          },
+          "zh-CN" : {
+            description: "说明"
+          }
+        }
+      });
+      var locales = xml.getElementsByTagName("em:localized");
+      var localeJa = locales[0].childNodes[1]; // Description
+      var localeZhs = locales[1].childNodes[1]; // Description
+      expect(locales.length).to.be.equal(2);
+      expect(localeJa.tagName).to.be.equal("Description");
+      expect(localeJa.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(localeJa.childNodes[1].childNodes[0].data).to.be.equal("ja");
+      expect(localeJa.childNodes[3].tagName).to.be.equal("em:name");
+      expect(localeJa.childNodes[3].childNodes[0].data).to.be.equal("名前");
+      expect(localeJa.childNodes[5].tagName).to.be.equal("em:creator");
+      expect(localeJa.childNodes[7].tagName).to.be.equal("em:homepageURL");
+      expect(localeJa.childNodes[7].childNodes[0].data).to.be.equal("ホームページ");
+      expect(localeZhs.tagName).to.be.equal("Description");
+      expect(localeZhs.childNodes[1].tagName).to.be.equal("em:locale");
+      expect(localeZhs.childNodes[1].childNodes[0].data).to.be.equal("zh-CN");
+      expect(localeZhs.childNodes[3].tagName).to.be.equal("em:name");
+      expect(localeZhs.childNodes[3].childNodes[0].data).to.be.equal("Untitled");
+      expect(localeZhs.childNodes[5].tagName).to.be.equal("em:description");
+      expect(localeZhs.childNodes[5].childNodes[0].data).to.be.equal("说明");
+      expect(localeZhs.childNodes[7].tagName).to.be.equal("em:creator");
+      expect(localeZhs.childNodes[9].tagName).to.be.equal("em:homepageURL");
+      expect(localeZhs.childNodes[9].childNodes[0].data).to.be.equal("my-page");
     });
   });
 
