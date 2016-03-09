@@ -1103,6 +1103,8 @@ describe("sign", function() {
 
   describe("getXpiInfoForSigning", function() {
     var simpleAddonXPI = path.join(testDir, "xpis", "@simple-addon.xpi");
+    var minimalWebExt = path.join(__dirname, "..", "xpis",
+                                  "minimal_web_extension-0.1.1.xpi");
     var installRdfXpi = path.join(testDir, "xpis", "install-rdf.xpi");
 
     it("gets info from an SDK add-on", function() {
@@ -1110,6 +1112,14 @@ describe("sign", function() {
         .then(function(xpiInfo) {
           expect(xpiInfo.version).to.be.equal("1.0.0");
           expect(xpiInfo.id).to.be.equal("@simple-addon");
+        });
+    });
+
+    it("gets info from a web extension", function() {
+      return getXpiInfoForSigning({xpiPath: minimalWebExt})
+        .then(function(xpiInfo) {
+          expect(xpiInfo.version).to.be.equal("0.1.1");
+          expect(xpiInfo.id).to.be.equal("minimal-web-ext@site.com");
         });
     });
 
