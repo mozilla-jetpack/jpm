@@ -220,6 +220,14 @@ describe("lib/rdf", function() {
       var xml = setupRDF({ author: { name: "Marie Curie", email: "mc@espci.fr"} });
       expect(getData(xml, "em:creator")).to.be.equal("Marie Curie");
     });
+
+    it("if `author` field is '' or undefined, do not ceate <em:creator/>", function() {
+      var xml = setupRDF({ author: "" });
+      expect(getData(xml, "em:creator")).to.be.equal(undefined);
+
+      xml = setupRDF({ author: undefined });
+      expect(getData(xml, "em:creator")).to.be.equal(undefined);
+    });
   });
 
   describe("engines", function() {
