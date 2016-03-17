@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+var deepcopy = require("deepcopy");
 var os = require("os");
 var fs = require("fs");
 var path = require("path");
@@ -15,6 +16,8 @@ var hasAOMSupport = utils.hasAOMSupport;
 
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var simpleAddonXPI = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
+var minimalWebExt = path.join(__dirname, "..", "xpis",
+                              "minimal_web_extension-0.1.1.xpi");
 var prevDir, prevBinary;
 
 describe("lib/utils", function() {
@@ -143,6 +146,105 @@ describe("lib/utils", function() {
           throw new Error("unexpected success");
         }).catch(function(err) {
           expect(err.message).to.include("xpiPath cannot be empty");
+        });
+    });
+
+  });
+
+  describe("getXpiInfo", function() {
+
+    it("returns info about a web extension", function() {
+      return utils.getXpiInfo(minimalWebExt)
+        .then(function(info) {
+          expect(info.id).to.be.equal("minimal-web-ext@site.com");
+          expect(info.version).to.be.equal("0.1.1");
+          expect(info.manifest.applications.gecko.id)
+            .to.be.equal("minimal-web-ext@site.com");
+        });
+    });
+
+  });
+
+  describe("getXpiInfoFromWebExtManifest", function() {
+
+    var minimalManifest = {
+      manifest_version: 2,
+      name: "Minimal Web Extension",
+      version: "0.1.1",
+      applications: {
+        gecko: {
+          id: "minimal-web-ext@site.com",
+        },
+      },
+    };
+
+    it("returns the full manifest", function() {
+      return utils.getXpiInfoFromWebExtManifest(minimalManifest)
+        .then(function(info) {
+          expect(info.manifest).to.be.deep.equal(minimalManifest);
+        });
+    });
+
+    it("returns ID and version", function() {
+      return utils.getXpiInfoFromWebExtManifest(minimalManifest)
+        .then(function(info) {
+          expect(info.id).to.be.equal("minimal-web-ext@site.com");
+          expect(info.version).to.be.equal("0.1.1");
+        });
+    });
+
+    it("requires a version", function() {
+      var manifest = deepcopy(minimalManifest);
+      delete manifest.version;
+      return utils.getXpiInfoFromWebExtManifest(manifest)
+        .then(function() {
+          throw new Error('unexpected success');
+        })
+        .catch(function(error) {
+          expect(error.message)
+            .to.match(/invalid web extension manifest.*version/);
+        });
+    });
+
+    it("requires manifest.applications.gecko.id", function() {
+      var manifest = deepcopy(minimalManifest);
+      delete manifest.applications.gecko.id;
+      return utils.getXpiInfoFromWebExtManifest(manifest)
+        .then(function() {
+          throw new Error('unexpected success');
+        })
+        .catch(function(error) {
+          expect(error.message)
+            .to.match(/invalid web extension manifest.*id/);
+        });
+    });
+
+    it("requires manifest.applications.gecko", function() {
+      var manifest = deepcopy(minimalManifest);
+      delete manifest.applications.gecko.id;
+      delete manifest.applications.gecko;
+      return utils.getXpiInfoFromWebExtManifest(manifest)
+        .then(function() {
+          throw new Error('unexpected success');
+        })
+        .catch(function(error) {
+          expect(error.message)
+            .to.match(/invalid web extension manifest.*id/);
+        });
+    });
+
+    it("requires manifest.applications", function() {
+      var manifest = deepcopy(minimalManifest);
+      delete manifest.applications.gecko.id;
+      delete manifest.applications.gecko;
+      delete manifest.applications;
+      return utils.getXpiInfoFromWebExtManifest(manifest)
+        .then(function() {
+          throw new Error('unexpected success');
+        })
+        .catch(function(error) {
+          expect(error.message)
+            .to.match(/invalid web extension manifest.*id/);
         });
     });
 
