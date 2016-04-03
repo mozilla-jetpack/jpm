@@ -124,7 +124,7 @@ describe("lib/utils", function() {
         .then(function() {
           throw new Error("unexpected success");
         }).catch(function(err) {
-          expect(err.message).to.include("invalid signature");
+          expect(err.message).to.include("Could not find the End of Central Directory Record");
         });
     });
 
