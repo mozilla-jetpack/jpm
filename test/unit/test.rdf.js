@@ -101,45 +101,70 @@ describe("lib/rdf", function() {
     });
 
     it("iconURL uses `icon` with string", function() {
-      var xml = setupRDF({ icon: "megaman.png" });
-      expect(getData(xml, "em:iconURL")).to.be.equal("megaman.png");
+      var xml = setupRDF({ id: "icon@jetpack", icon: "megaman.png" });
+      expect(getData(xml, "em:iconURL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
     });
 
     it("iconURL uses `icon` with object no 48", function() {
-      var xml = setupRDF({ icon: { "32": "foo32.png" } });
-      expect(getData(xml, "em:iconURL")).to.be.equal("foo32.png");
+      var xml = setupRDF({ id: "icon@jetpack", icon: { "32": "foo32.png" } });
+      expect(getData(xml, "em:iconURL")).to.be.equal("resource://icon-at-jetpack/foo32.png");
     });
 
     // Use 48 because as of Fx 4 48 can be used in place of 32
     it("iconURL uses `icon` with object and 48", function() {
-      var xml = setupRDF({ icon: {
+      var xml = setupRDF({ id: "icon@jetpack", icon: {
         "32": "foo32.png",
         "48": "foo48.png"
       } });
-      expect(getData(xml, "em:iconURL")).to.be.equal("foo48.png");
+      expect(getData(xml, "em:iconURL")).to.be.equal("resource://icon-at-jetpack/foo48.png");
     });
 
     // Use 48 because as of Fx 4 48 can be used in place of 32
     it("iconURL uses `icon` with object with no 32", function() {
-      var xml = setupRDF({ icon: { "48": "foo48.png" } });
-      expect(getData(xml, "em:iconURL")).to.be.equal("foo48.png");
+      var xml = setupRDF({ id: "icon@jetpack", icon: { "48": "foo48.png" } });
+      expect(getData(xml, "em:iconURL")).to.be.equal("resource://icon-at-jetpack/foo48.png");
     });
 
     it("iconURL ignores default `icon.png`", function() {
-      var xml = setupRDF({ icon: "icon.png" });
+      var xml = setupRDF({ id: "icon@jetpack", icon: "icon.png" });
       expect(getData(xml, "em:iconURL")).to.be.equal(undefined);
       expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
     });
 
+    it("iconURL uses a url without modifying it", function () {
+      var xml1 = setupRDF({ id: "icon@jetpack", icon: "http://mozilla.org/icon.png" });
+      expect(getData(xml1, "em:iconURL")).to.be.equal("http://mozilla.org/icon.png");
+      var xml2 = setupRDF({ id: "icon@jetpack", icon: "chrome://icon-at-jetpack/icon.png" });
+      expect(getData(xml2, "em:iconURL")).to.be.equal("chrome://icon-at-jetpack/icon.png");
+      var xml3 = setupRDF({ id: "icon@jetpack", icon: "resource://icon-at-jetpack/megaman.png" });
+      expect(getData(xml3, "em:iconURL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
+    });
+
+    it("icon64URL uses a url without modifying it", function () {
+      var xml1 = setupRDF({ id: "icon@jetpack", icon: { "64": "http://mozilla.org/icon.png" } });
+      expect(getData(xml1, "em:icon64URL")).to.be.equal("http://mozilla.org/icon.png");
+      var xml2 = setupRDF({ id: "icon@jetpack", icon: { "64": "chrome://icon-at-jetpack/icon.png" } });
+      expect(getData(xml2, "em:icon64URL")).to.be.equal("chrome://icon-at-jetpack/icon.png");
+      var xml3 = setupRDF({ id: "icon@jetpack", icon: { "64": "resource://icon-at-jetpack/megaman.png" } });
+      expect(getData(xml3, "em:icon64URL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
+     });
+
     it("icon64URL uses `icon64`", function() {
-      var xml = setupRDF({ icon: { "64": "megaman.png" } });
-      expect(getData(xml, "em:icon64URL")).to.be.equal("megaman.png");
+      var xml = setupRDF({ id: "icon@jetpack", icon: { "64": "megaman.png" } });
+      expect(getData(xml, "em:icon64URL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
     });
 
     it("icon64URL ignores default `icon64.png`", function() {
-      var xml = setupRDF({ icon: { "64": "icon64.png" } });
+      var xml = setupRDF({ id: "icon@jetpack", icon: { "64": "icon64.png" } });
       expect(getData(xml, "em:iconURL")).to.be.equal(undefined);
       expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
+    });
+
+    it("iconURL and icon64URL are not touched if a custom bootstrap.js provided", function() {
+      var xml1 = setupRDF({ id: "icon@jetpack", icon: { "32": "megaman.png" } }, false);
+      expect(getData(xml1, "em:iconURL")).to.be.equal("megaman.png");
+      var xml2 = setupRDF({ id: "icon@jetpack", icon: { "64": "megaman.png" } }, false);
+      expect(getData(xml2, "em:icon64URL")).to.be.equal("megaman.png");
     });
 
     it("updateURL uses `updateURL`", function() {
@@ -626,8 +651,11 @@ function parseRDF(rdf) {
   return new DOMParser().parseFromString(rdf, "application/rdf+xml");
 }
 
-function setupRDF (manifest) {
-  return parseRDF(RDF.createRDF(manifest));
+function setupRDF (manifest, needsBootstrapJS) {
+  if (typeof needsBootstrapJS == "undefined") {
+    needsBootstrapJS = true;
+  }
+  return parseRDF(RDF.createRDF(manifest, needsBootstrapJS));
 }
 
 function nodeExists (xml, tag) {
