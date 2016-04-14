@@ -33,8 +33,10 @@ describe("lib/xpi", function() {
     var xpiPath;
     return xpi(manifest).then(function(filePath) {
       xpiPath = filePath;
+      // expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
+                                            // "@simple-addon-1.0.0.xpi"));
       expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
-                                            "@simple-addon-1.0.0.xpi"));
+                                            "simple-addon.xpi"));
       return utils.unzipTo(xpiPath, tmpOutputDir).then(function() {
         utils.compareDirs(simpleAddonPath, tmpOutputDir);
       });
@@ -51,7 +53,7 @@ describe("lib/xpi", function() {
     var manifest = require(path.join(aomUnsupportedPath, "package.json"));
     xpi(manifest).then(function(xpiPath) {
       expect(xpiPath).to.be.equal(path.join(aomUnsupportedPath,
-                                            "@aom-unsupported.xpi"));
+                                            "aom-unsupported.xpi"));
       return utils.unzipTo(xpiPath, tmpOutputDir).then(function() {
         var files = ["package.json", "index.js", "install.rdf", "bootstrap.js"];
         files.forEach(function(file) {
@@ -230,7 +232,7 @@ describe("lib/xpi", function() {
 
   it("Test default .jpmignore rules", function(done) {
     process.chdir(extraFilesPath);
-    var ID_XPI = "extra-files@jpm.xpi";
+    var ID_XPI = "extra-files.xpi";
     var ID_SIGNED_XPI = "extra_files-0.0.1-fx.xpi";
     var manifest = require(path.join(extraFilesPath, "package.json"));
 
@@ -464,7 +466,7 @@ describe("lib/xpi", function() {
     return xpi(manifest).then(function(filePath) {
       xpiPath = filePath;
       expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"))).to.equal(true);
-      expect(fs.existsSync(path.join(updateRDFPath, "@simple-addon-1.0.0.xpi"))).to.equal(true);
+      expect(fs.existsSync(path.join(updateRDFPath, "simple-addon.xpi"))).to.equal(true);
       //Removing the update.RDF file to make utils.compareDirs works
       fs.unlink(path.join(updateRDFPath, "@simple-addon-1.0.0.update.rdf"));
       return utils.unzipTo(xpiPath, tmpOutputDir).then(function() {
@@ -485,12 +487,12 @@ describe("lib/xpi", function() {
       function(filePath) {},
       function(err) {
         expect(fs.existsSync(path.join(updateRDFFailPath, "@simple-addon-1.0.0.update.rdf"))).to.equal(false);
-        expect(fs.existsSync(path.join(updateRDFFailPath, "@simple-addon-1.0.0.xpi"))).to.equal(true);
+        expect(fs.existsSync(path.join(updateRDFFailPath, "simple-addon.xpi"))).to.equal(true);
         return;
       }
     )
     .then(function() {
-      fs.unlink(path.join(updateRDFFailPath, "@simple-addon-1.0.0.xpi"));
+      fs.unlink(path.join(updateRDFFailPath, "simple-addon.xpi"));
       done();
     })
     .catch(done);
