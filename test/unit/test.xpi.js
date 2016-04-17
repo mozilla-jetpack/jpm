@@ -13,6 +13,7 @@ var expect = chai.expect;
 var xpi = require("../../lib/xpi");
 
 var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");
+var simpleAddonWithIdPath = path.join(__dirname, "..", "fixtures", "simple-addon-with-id");
 var aomUnsupportedPath = path.join(__dirname, "..", "fixtures", "aom-unsupported");
 var extraFilesPath = path.join(__dirname, "..", "addons", "extra-files");
 var jpmignorePath = path.join(__dirname, "..", "addons", "jpmignore");
@@ -40,6 +41,22 @@ describe("lib/xpi", function() {
       return utils.unzipTo(xpiPath, tmpOutputDir).then(function() {
         utils.compareDirs(simpleAddonPath, tmpOutputDir);
       });
+    })
+    .then(function() {
+      fs.unlink(xpiPath);
+      done();
+    })
+    .catch(done);
+  });
+  it("Check file name with id", function(done) {
+    process.chdir(simpleAddonWithIdPath);
+    var manifest = require(path.join(simpleAddonWithIdPath, "package.json"));
+    var xpiPath;
+    return xpi(manifest).then(function(filePath) {
+      xpiPath = filePath;
+      expect(xpiPath).to.be.equal(path.join(simpleAddonWithIdPath,
+                                            "@simple-addon-1.0.0.xpi"));
+      return true
     })
     .then(function() {
       fs.unlink(xpiPath);
