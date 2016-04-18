@@ -34,8 +34,6 @@ describe("lib/xpi", function() {
     var xpiPath;
     return xpi(manifest).then(function(filePath) {
       xpiPath = filePath;
-      // expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
-                                            // "@simple-addon-1.0.0.xpi"));
       expect(xpiPath).to.be.equal(path.join(simpleAddonPath,
                                             "simple-addon.xpi"));
       return utils.unzipTo(xpiPath, tmpOutputDir).then(function() {
