@@ -49,18 +49,15 @@ describe("lib/xpi", function() {
   it("Check file name with id", function(done) {
     process.chdir(simpleAddonWithIdPath);
     var manifest = require(path.join(simpleAddonWithIdPath, "package.json"));
-    var xpiPath;
     return xpi(manifest).then(function(filePath) {
-      xpiPath = filePath;
-      expect(xpiPath).to.be.equal(path.join(simpleAddonWithIdPath,
+      expect(filePath).to.be.equal(path.join(simpleAddonWithIdPath,
                                             "@simple-addon-1.0.0.xpi"));
-      return true
+      return filePath;
     })
-    .then(function() {
-      fs.unlink(xpiPath);
+    .then(function(filePath) {
+      fs.unlink(filePath);
       done();
-    })
-    .catch(done);
+    });
   });
 
   it("Zips and creates install.rdf/bootstrap.js for AOM-unsupported addons", function(done) {
