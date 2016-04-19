@@ -44,7 +44,7 @@
     "jpm-core": "0.0.11",
     "jsontoxml": "0.0.11",
     "jsonwebtoken": "5.4.0",
-    "lodash": "3.10.1",
+    "lodash": "4.11.1",
     "lodash.merge": "3.3.2",
     "minimatch": "3.0.0",
     "mozilla-toolkit-versioning": "0.0.2",
