@@ -20,7 +20,7 @@ describe("jpm xpi", function() {
   it("creates a xpi of the simple-addon", function(done) {
     var proc = exec("xpi", { addonDir: simpleAddonPath });
     proc.on("close", function() {
-      var xpiPath = path.join(simpleAddonPath, "@simple-addon-1.0.0.xpi");
+      var xpiPath = path.join(simpleAddonPath, "simple-addon.xpi");
 
       utils.unzipTo(xpiPath, utils.tmpOutputDir).then(function() {
         utils.compareDirs(simpleAddonPath, utils.tmpOutputDir);

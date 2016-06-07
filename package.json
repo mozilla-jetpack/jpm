@@ -1,6 +1,6 @@
 {
   "name": "jpm",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Jetpack Mechanic utilities for creating, testing, running and packaging Mozilla Jetpack Addons",
   "main": "index.js",
   "bin": {
@@ -34,6 +34,7 @@
   "dependencies": {
     "commander": "2.9.0",
     "deepcopy": "0.5.0",
+    "decompress-zip": "0.3.0",
     "firefox-profile": "0.3.9",
     "fs-extra": "0.30.0",
     "fs-promise": "0.3.1",
@@ -43,7 +44,7 @@
     "jpm-core": "0.0.11",
     "jsontoxml": "0.0.11",
     "jsonwebtoken": "5.4.0",
-    "lodash": "3.10.1",
+    "lodash": "4.11.1",
     "lodash.merge": "3.3.2",
     "minimatch": "3.0.0",
     "mozilla-toolkit-versioning": "0.0.2",
@@ -55,7 +56,6 @@
     "request": "2.67.0",
     "semver": "5.1.0",
     "tmp": "0.0.28",
-    "unzip": "0.1.11",
     "when": "3.7.2",
     "xml2js": "0.4.16",
     "zip-dir": "1.0.2",
