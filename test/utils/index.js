@@ -5,7 +5,7 @@ var execFile = childProcess.execFile;
 var fs = require("fs-extra");
 var rimraf = require("rimraf");
 var glob = require("glob");
-var unzip = require("unzip");
+var DecompressZip = require("decompress-zip");
 var chai = require("chai");
 var async = require("async");
 var when = require("when");
@@ -116,9 +116,13 @@ exports.run = run;
 
 function unzipTo(xpiPath, outputDir) {
   return when.promise(function(resolve, reject) {
-    fs.createReadStream(xpiPath)
-      .pipe(unzip.Extract({path: outputDir}))
-      .on("close", resolve);
+    var unzipper = new DecompressZip(xpiPath);
+
+    unzipper.on("extract", resolve);
+    unzipper.on("error", reject);
+    unzipper.extract({
+      path: outputDir,
+    });
   });
 }
 exports.unzipTo = unzipTo;
