@@ -23,6 +23,7 @@ var jpmignoreMixedPath = path.join(__dirname, "..", "addons", "jpmignore-mixed")
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
 var updateRDFPath = path.join(__dirname, "..", "fixtures", "updateRDF");
 var updateRDFFailPath = path.join(__dirname, "..", "fixtures", "updateRDF-fail");
+var webextensionUnsupportedPath = path.join(__dirname, "..", "fixtures", "webext-unsupported");
 
 describe("lib/xpi", function() {
   beforeEach(utils.setup);
@@ -508,5 +509,22 @@ describe("lib/xpi", function() {
       done();
     })
     .catch(done);
+  });
+
+  it("Warn when executed against a WebExtension", function(done) {
+    process.chdir(webextensionUnsupportedPath);
+
+    // In this test scenario, jpm is executed agains a WebExtension that contains
+    // both a package.json and a manifest.json files in the root dir, probably because
+    // the add-on is being built from an npm package.
+    var manifest = require(path.join(webextensionUnsupportedPath, "package.json"));
+    xpi(manifest).then(function () {
+      // The XPI file is not supposed to be created successfully.
+      throw Error("Expected error not received");
+    }).catch(function(error) {
+      // The expected error message should point to the web-ext intro on MDN.
+      expect(error.message).to.contains("Getting_started_with_web-ext");
+      done();
+    }).catch(done);
   });
 });

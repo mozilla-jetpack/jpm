@@ -40,7 +40,7 @@
     "fs-promise": "0.3.1",
     "fx-runner": "0.0.10",
     "jetpack-id": "0.0.4",
-    "jetpack-validation": "0.0.4",
+    "jetpack-validation": "0.0.6",
     "jpm-core": "0.0.11",
     "jsontoxml": "0.0.11",
     "jsonwebtoken": "5.4.0",
