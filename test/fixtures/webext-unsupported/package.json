@@ -1,0 +1,9 @@
+{
+  "title": "My WebExtension add-on built from an npm package",
+  "name": "webext-addon",
+  "version": "1.0.0",
+  "description": "A WebExtension which is built from an npm package and has both the package.json and the manifest.json",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT"
+}
