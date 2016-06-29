@@ -69,6 +69,13 @@ program
 program
   .command("xpi")
   .description("Bundle the addon into an .xpi file")
+  .option("--dest-dir <output_dir>", "Where to write the generated xpi",
+          // turn into an absolute path
+          function(dir) {
+            program.xpiPath = path.resolve(dir);
+            return program.xpiPath;
+          },
+          process.cwd())
   .action(cmd.prepare("xpi", program, function(manifest) {
     var start = Date.now();
     xpi(manifest, program).then(function(xpiPath) {
