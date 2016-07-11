@@ -6,7 +6,7 @@ node_js:
   - "5"
   - "6"
 addons:
-  firefox: latest-beta
+  firefox: latest
 notifications:
   irc: "irc.mozilla.org#jpm"
 before_install:
