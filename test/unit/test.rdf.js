@@ -548,6 +548,96 @@ describe("lib/rdf", function() {
     });
   });
 
+  describe("preferencesPage", function() {
+    it("doesn't set em:options* if no `preferences` or `preferencesURL` exist", function() {
+      var xml = setupRDF(
+        {
+          id: "preferences@jetpack",
+          version: "1.0"
+        }
+      );
+
+      // optionsURL shouldn't be set
+      var optURL = xml.getElementsByTagName("em:optionsURL");
+      expect(optURL.length).to.be.equal(0);
+
+      // optionsType shouldn't be set
+      var optType = xml.getElementsByTagName("em:optionsType");
+      expect(optType.length).to.be.equal(0);
+    });
+
+    it("sets em:optionsType to 2 by default if `preferences` exists", function() {
+      var xml = setupRDF(
+        {
+          id: "preferences@jetpack",
+          version: "1.0",
+          preferences: [
+            {
+              "name": "somePreference",
+              "title": "Some preference title",
+              "description": "Some short description for the preference",
+              "type": "string",
+              "value": "this is the default string value"
+            }
+          ]
+        }
+      );
+
+      // Check if optionsURL is properly set
+      var optURL = xml.getElementsByTagName("em:optionsURL")[0];
+      expect(optURL.firstChild.data).to.be.equal("data:text/xml,<placeholder/>");
+
+      // Check if optionsType is properly set
+      var optType = xml.getElementsByTagName("em:optionsType")[0];
+      expect(optType.firstChild.data).to.be.equal("2");
+    });
+
+    it("sets em:optionsType to 3 if `preferencesURL` exists", function() {
+      var xml = setupRDF(
+        {
+          id: "preferences@jetpack",
+          version: "1.0",
+          preferencesURL: "resource://preferences-at-jetpack/data/preferences.html"
+        }
+      );
+
+      // Check if optionsURL is properly set
+      var optURL = xml.getElementsByTagName("em:optionsURL")[0];
+      expect(optURL.firstChild.data).to.be.equal("resource://preferences-at-jetpack/data/preferences.html");
+
+      // Check if optionsType is properly set
+      var optType = xml.getElementsByTagName("em:optionsType")[0];
+      expect(optType.firstChild.data).to.be.equal("3");
+    });
+
+    it("sets em:optionsType to 3 if both `preferences` and `preferencesURL` exist", function() {
+      var xml = setupRDF(
+        {
+          id: "preferences@jetpack",
+          version: "1.0",
+          preferences: [
+            {
+              "name": "somePreference",
+              "title": "Some preference title",
+              "description": "Some short description for the preference",
+              "type": "string",
+              "value": "this is the default string value"
+            }
+          ],
+          preferencesURL: "resource://preferences-at-jetpack/data/preferences.html"
+        }
+      );
+
+      // Check if optionsURL is properly set
+      var optURL = xml.getElementsByTagName("em:optionsURL")[0];
+      expect(optURL.firstChild.data).to.be.equal("resource://preferences-at-jetpack/data/preferences.html");
+
+      // Check if optionsType is properly set
+      var optType = xml.getElementsByTagName("em:optionsType")[0];
+      expect(optType.firstChild.data).to.be.equal("3");
+    });
+  });
+
   describe("createUpdateRDF", function() {
     it("create the update.rdf file with the correct value", function() {
       var str = RDF.createUpdateRDF(
