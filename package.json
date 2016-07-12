@@ -15,7 +15,9 @@
     "jshint": "jshint bin/jpm lib test --exclude test/addons,test/addon_runners,test/fixtures",
     "jscs": "jscs bin/jpm lib",
     "test": "node ./test/run.js",
-    "prepush": "npm run jshint && npm run jscs && npm run documentation"
+    "prepush": "npm run jshint && npm run jscs && npm run documentation",
+    "changelog": "conventional-changelog -p angular -u",
+    "changelog-lint": "conventional-changelog-lint --from master"
   },
   "homepage": "https://github.com/mozilla-jetpack/jpm",
   "repository": {
@@ -65,6 +67,8 @@
   "devDependencies": {
     "async": "1.5.0",
     "chai": "3.4.1",
+    "conventional-changelog-cli": "1.2.0",
+    "conventional-changelog-lint": "1.0.0",
     "dive": "0.4.0",
     "glob": "5.0.3",
     "husky": "^0.10.1",

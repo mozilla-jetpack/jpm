@@ -20,3 +20,4 @@ mossop
 mozilla-jetpack
 release-it
 release-it's
+rpl

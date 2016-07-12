@@ -1,29 +1,46 @@
 sudo: false
 language: node_js
 node_js:
-  - "0.10"
-  - "4"
-  - "5"
-  - "6"
+- '0.10'
+- '4'
+- '5'
+- '6'
 addons:
+  # This is how Firefox nightly used to be installed:
+  # before_script:
+  #   - pwd
+  #   - cd ..
+  #   - wget "https://download.mozilla.org/?product=firefox-nightly-latest&os=linux64&lang=en-US" -O firefox.tar.bz2 && tar xvf firefox.tar.bz2
   firefox: latest
 notifications:
-  irc: "irc.mozilla.org#jpm"
+  irc: irc.mozilla.org#jpm
 before_install:
-  - export DISPLAY=:99.0
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR"
-  - npm install -g npm
+# Create a master branch for conventional-changelog-lint
+- git remote set-branches origin master && git fetch
+- git checkout master
+# Check out the commit that TravisCI started on:
+- git checkout -
+- export DISPLAY=:99.0
+- /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile
+  --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR
+- npm install -g npm
 install:
-  - npm install
-
-# To use firefox nightly, uncomment the following lines:
-# before_script:
-#   - pwd
-#   - cd ..
-#   - wget "https://download.mozilla.org/?product=firefox-nightly-latest&os=linux64&lang=en-US" -O firefox.tar.bz2 && tar xvf firefox.tar.bz2
-
+- npm install
 script:
-  - export JPM_FIREFOX_BINARY=`which firefox`
-  - npm run-script jshint
-  - npm run-script jscs
-  - npm test
+- export JPM_FIREFOX_BINARY=`which firefox`
+- npm run-script jshint
+- npm run-script jscs
+- npm test
+# Run changelog-lint but only on newer versions of Node (because of syntax errors)
+- if [[ ${TRAVIS_NODE_VERSION:0:1} -ge "4" ]]; then
+  npm run changelog-lint;
+  fi
+deploy:
+  provider: npm
+  email: addons-dev-automation+npm@mozilla.com
+  skip_cleanup: true
+  # This is the API key for npm user 'addons-robot'
+  api_key:
+    secure: UKzB8YkSmxmYudL+hR1MdRWDmhPi8IOOwdKZSA7DsBhFzH+mxx7wV66K5R83ToQRufMJ9vFrYwmfMefKS4jRgf/FgbO0L+SaeWujGM2NUtjqN+dmmKEuck3vkKJHrY6VyEfz9HWJrpaUyNl8wmlDSayqc2eVPK63R9LmUcnYxbo=
+  on:
+    tags: true

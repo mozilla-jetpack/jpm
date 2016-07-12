@@ -68,42 +68,4 @@ describe("Spell Checking", function() {
       });
     });
   });
-
-  it("Spellcheck CONTRIBUTING.md", function(done) {
-   var readme = path.join(rootURI, "CONTRIBUTING.md");
-
-    fs.readFile(readme, function(err, data) {
-      expect(err).to.be.equal(null);
-      var text = data.toString();
-
-      teacher.check(text, function(err, data) {
-        expect(err).to.be.equal(null);
-
-        var results = data || [];
-        results = results.filter(function(result) {
-          if (NEW_WORDS.indexOf(result.string.toLowerCase()) != -1) {
-            return false;
-          }
-
-          // ignore anything that starts with a dash
-          if (result.string[0] == "-") {
-            return false;
-          }
-
-          if (!(new RegExp(result.string)).test(text)) {
-            return false;
-          }
-
-          return true;
-        });
-
-        if (results.length > 0) {
-          console.log(results);
-        }
-        expect(results.length).to.be.equal(0);
-
-        done();
-      });
-    });
-  });
 });
