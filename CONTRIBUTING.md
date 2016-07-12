@@ -1,3 +1,7 @@
+# Development
+
+This is a guide to developing features for the `jpm` project.
+
 ## Ask Questions
 
 * [Mailing List](https://wiki.mozilla.org/Labs/Jetpack#Mailing_list)
@@ -18,6 +22,16 @@ as well as possible.
 * Write tests if possible.
 * Ask for a help if you need it.
 * Ask for a review from `@kumar303` or `@rpl` when you are ready.
+
+## Testing
+
+To run the jpm test suite
+
+    npm test
+
+To run just a specific type of test (functional, unit), run the associated script:
+
+    npm run unit
 
 ## Writing commit messages
 
