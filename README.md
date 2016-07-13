@@ -12,20 +12,27 @@ Replacing the previous python tool for developing Firefox Add-ons, [cfx](https:/
 
 ## Install
 
-Installing from npm:
+To install with npm, version 3.0.0 or higher is required.
+Make sure you are up to date:
 
-```
-npm install jpm -g
-```
+    npm install --global npm
 
-Installing from GitHub to get latest features or working on jpm itself, use [npm link](https://www.npmjs.org/doc/cli/npm-link.html) to add the `jpm` global to your path:
+Here's how to
+[complete the npm upgrade](https://github.com/npm/npm/wiki/Troubleshooting#upgrading-on-windows)
+on Windows.
 
-```
-git clone https://github.com/mozilla-jetpack/jpm.git
-cd jpm
-npm install
-npm link
-```
+Install the jpm module:
+
+    npm install --global jpm
+
+
+Install from GitHub to get the latest features or to work on jpm itself.
+Use [npm link](https://www.npmjs.org/doc/cli/npm-link.html) to add the `jpm` global to your path:
+
+    git clone https://github.com/mozilla-jetpack/jpm.git
+    cd jpm
+    npm install
+    npm link
 
 ## Usage
 
