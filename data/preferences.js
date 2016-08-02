@@ -64,7 +64,13 @@ exports.DEFAULT_FIREFOX_PREFS = {
     // Point the url-classifier to a nonexistent local URL for fast failures.
     "browser.safebrowsing.provider.0.gethashURL" : "http://localhost/safebrowsing-dummy/gethash",
     "browser.safebrowsing.provider.0.keyURL" : "http://localhost/safebrowsing-dummy/newkey",
-    "browser.safebrowsing.provider.0.updateURL" : "http://localhost/safebrowsing-dummy/update"
+    "browser.safebrowsing.provider.0.updateURL" : "http://localhost/safebrowsing-dummy/update",
+
+    // Disable self repair/SHIELD
+    "browser.selfsupport.url": "https://localhost/selfrepair",
+
+    // Disable Reader Mode UI tour
+    "browser.reader.detectedFirstArticle": true
 };
 
 // When launching a temporary new Thunderbird profile, use these preferences.
