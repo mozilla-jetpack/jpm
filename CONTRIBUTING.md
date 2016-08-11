@@ -65,19 +65,19 @@ by running this:
 To release a new version of `jpm`, follow these steps:
 
 * Pull from master to make sure you're up to date.
-* Create a changelog by running `npm run changelog`.
-  This will output a Markdown list of all unreleased changes.
-  You can copy/paste this into the tag notes on github after the tag is created.
-  It may require some manual editing. For example, commit messages might be
-  truncated.
 * Bump the version in `package.json`.
-* Commit and push the version change.
-* Tag master with the new release you're about to create
-  (example: `git tag 1.0.1`) and run `git push --tags upstream`.
-* Go to the github
-  [releases page](https://github.com/mozilla/jpm/releases),
-  edit the tag you just created, and enter in the changelog notes.
-* When [Travis](https://travis-ci.org/) builds the tag,
+* Commit and push the version change
+  (or create and merge a pull request for it).
+* Create a changelog by running `npm run changelog`.
+  This will output Markdown of all unreleased changes.
+* Create a [new release](https://github.com/mozilla-jetpack/jpm/releases/new)
+  and paste in the changelog Markdown.
+  It may require some manual editing. For example, some commit messages
+  might have been truncated.
+  Title the github release after the new version you just
+  added to `package.json` in the previous commit (example: `1.0.4`).
+* When you publish the release, github creates a tag.
+  When TravisCI builds the tag,
   it will automatically publish the package to
   [npm](https://www.npmjs.com/package/jpm).
 
