@@ -23,7 +23,12 @@ var jpmignoreMixedPath = path.join(__dirname, "..", "addons", "jpmignore-mixed")
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
 var updateRDFPath = path.join(__dirname, "..", "fixtures", "updateRDF");
 var updateRDFFailPath = path.join(__dirname, "..", "fixtures", "updateRDF-fail");
-var webextensionUnsupportedPath = path.join(__dirname, "..", "fixtures", "webext-unsupported");
+var webextensionManifestExcludedPath = path.join(
+  __dirname, "..", "fixtures", "webext-manifest-excluded"
+);
+var webextensionManifestExcludedJPMIgnorePath = path.join(
+  __dirname, "..", "fixtures", "webext-manifest-excluded-jpmignore"
+);
 
 describe("lib/xpi", function() {
   beforeEach(utils.setup);
@@ -511,20 +516,52 @@ describe("lib/xpi", function() {
     .catch(done);
   });
 
-  it("Warn when executed against a WebExtension", function(done) {
-    process.chdir(webextensionUnsupportedPath);
+  it("Exclude a manifest.json when a manifest.json file exist", function() {
+    process.chdir(webextensionManifestExcludedPath);
 
     // In this test scenario, jpm is executed agains a WebExtension that contains
     // both a package.json and a manifest.json files in the root dir, probably because
-    // the add-on is being built from an npm package.
-    var manifest = require(path.join(webextensionUnsupportedPath, "package.json"));
-    xpi(manifest).then(function () {
-      // The XPI file is not supposed to be created successfully.
-      throw Error("Expected error not received");
-    }).catch(function(error) {
-      // The expected error message should point to the web-ext intro on MDN.
-      expect(error.message).to.contains("Getting_started_with_web-ext");
-      done();
-    }).catch(done);
+    // the add-on is being built from an npm package, and no .jpmignore is defined in this addon
+    var manifest = require(path.join(webextensionManifestExcludedPath, "package.json"));
+    return xpi(manifest)
+      .then(function(xpiPath) {
+        return utils.unzipTo(xpiPath, tmpOutputDir);
+      })
+      .then(function(xpiPath) {
+        return when.all(
+          [ "manifest.json" ]
+            .map(function(p) { return path.join(tmpOutputDir, p); })
+            .map(function(p) { return fs.exists(p); })
+        ).then(function(results) {
+          results.forEach(function(exists) {
+            expect(exists).to.be.equal(false);
+          });
+        });
+      });
+  });
+
+  it("Exclude a manifest.json even if not included in a .jpmignore file", function() {
+    process.chdir(webextensionManifestExcludedJPMIgnorePath);
+
+    // In this test scenario, jpm is executed agains a WebExtension that contains
+    // both a package.json and a manifest.json files in the root dir, and there
+    // is a .jpmignore file that doesn't contains the manifest.json.
+    var manifest = require(path.join(webextensionManifestExcludedJPMIgnorePath,
+                                     "package.json"));
+    return xpi(manifest)
+      .then(function(xpiPath) {
+        return utils.unzipTo(xpiPath, tmpOutputDir);
+      })
+      .then(function(xpiPath) {
+        return when.all(
+          [ "manifest.json", "ignored.txt" ]
+            .map(function(p) { return path.join(tmpOutputDir, p); })
+            .map(function(p) { return fs.exists(p); })
+        ).then(function(results) {
+          results.forEach(function(exists) {
+            expect(exists).to.be.equal(false);
+          });
+        });
+      });
   });
 });
