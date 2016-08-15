@@ -25,7 +25,7 @@ install:
 - npm install
 before_script:
 # Install unbranded Firefox to prevent signing errors.
-- npm run get-unbranded-firefox -- --extract-to ../
+- npm run get-unbranded-firefox -- --target ../
 script:
 - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox-bin
 - npm run-script jshint
