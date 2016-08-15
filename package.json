@@ -21,7 +21,8 @@
     "test": "node ./test/run.js",
     "prepush": "npm run jshint && npm run jscs && npm run documentation",
     "changelog": "conventional-changelog -p angular -u",
-    "changelog-lint": "conventional-changelog-lint --from master"
+    "changelog-lint": "conventional-changelog-lint --from master",
+    "get-unbranded-firefox": "get-firefox -ecb unbranded-release"
   },
   "homepage": "https://github.com/mozilla-jetpack/jpm",
   "repository": {
@@ -74,6 +75,7 @@
     "conventional-changelog-cli": "1.2.0",
     "conventional-changelog-lint": "1.0.0",
     "dive": "0.4.0",
+    "get-firefox": "1.4.0",
     "glob": "5.0.3",
     "husky": "^0.10.1",
     "jscs": "^2.7.0",
