@@ -1,7 +1,6 @@
 sudo: false
 language: node_js
 node_js:
-- '0.10'
 - '4'
 - '5'
 - '6'
@@ -25,10 +24,8 @@ before_install:
 install:
 - npm install
 before_script:
-# Install Firefox Nightly to prevent signing errors.
-- cd $TRAVIS_BUILD_DIR/../
-- wget "https://download.mozilla.org/?product=firefox-nightly-latest&os=linux64&lang=en-US" -O firefox.tar.bz2 && tar xvf firefox.tar.bz2
-- cd $TRAVIS_BUILD_DIR
+# Install unbranded Firefox to prevent signing errors.
+- npm run get-unbranded-firefox -- --extract-to ../
 script:
 - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox-bin
 - npm run-script jshint
