@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var VERSION = require("../package.json").version;
+var assign = require("object-assign");
 var program = require("commander");
 var console = require("../lib/utils").console;
 var run = require("../lib/run");
@@ -72,13 +73,12 @@ program
   .option("--dest-dir <output_dir>", "Where to write the generated xpi",
           // turn into an absolute path
           function(dir) {
-            program.xpiPath = path.resolve(dir);
-            return program.xpiPath;
+            return path.resolve(dir);
           },
           process.cwd())
-  .action(cmd.prepare("xpi", program, function(manifest) {
+  .action(cmd.prepare("xpi", program, function(manifest, options) {
     var start = Date.now();
-    xpi(manifest, program).then(function(xpiPath) {
+    xpi(manifest, assign({}, program, options)).then(function(xpiPath) {
       var diff = Date.now() - start;
       console.log("Successfully created XPI at " +
                   xpiPath + " (" + diff + "ms)");
