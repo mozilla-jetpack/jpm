@@ -21,7 +21,7 @@ var jpmignoreLFPath = path.join(__dirname, "..", "addons", "jpmignore-lf");
 var jpmignoreCRLFPath = path.join(__dirname, "..", "addons", "jpmignore-crlf");
 var jpmignoreMixedPath = path.join(__dirname, "..", "addons", "jpmignore-mixed");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
-var targetDir = path.join(tmpOutputDir, "target");
+var targetDir = path.join(__dirname, "../", "target");
 var updateRDFPath = path.join(__dirname, "..", "fixtures", "updateRDF");
 var updateRDFFailPath = path.join(__dirname, "..", "fixtures", "updateRDF-fail");
 var webextensionManifestExcludedPath = path.join(
@@ -58,6 +58,7 @@ describe("lib/xpi", function() {
     process.chdir(simpleAddonPath);
     var manifest = require(path.join(simpleAddonPath, "package.json"));
     var xpiPath;
+    fs.mkdirs(targetDir);
     return xpi(manifest, {destDir: targetDir}).then(function(filePath) {
       xpiPath = filePath;
       expect(xpiPath).to.be.equal(path.join(targetDir, "simple-addon.xpi"));
@@ -66,7 +67,7 @@ describe("lib/xpi", function() {
       });
     })
     .then(function() {
-      fs.unlink(xpiPath);
+      fs.remove(targetDir);
       done();
     })
     .catch(done);
