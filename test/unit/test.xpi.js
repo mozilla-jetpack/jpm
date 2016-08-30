@@ -54,23 +54,19 @@ describe("lib/xpi", function() {
     .catch(done);
   });
 
-  it("Zips up cwd's addon in the specified directory", function(done) {
+  it("Zips up cwd's addon in the specified directory", function() {
     process.chdir(simpleAddonPath);
     var manifest = require(path.join(simpleAddonPath, "package.json"));
-    var xpiPath;
     fs.mkdirs(targetDir);
     return xpi(manifest, {destDir: targetDir}).then(function(filePath) {
-      xpiPath = filePath;
-      expect(xpiPath).to.be.equal(path.join(targetDir, "simple-addon.xpi"));
-      return utils.unzipTo(xpiPath, tmpOutputDir).then(function() {
+      expect(filePath).to.be.equal(path.join(targetDir, "simple-addon.xpi"));
+      return utils.unzipTo(filePath, tmpOutputDir).then(function() {
         utils.compareDirs(simpleAddonPath, tmpOutputDir);
       });
     })
     .then(function() {
       fs.remove(targetDir);
-      done();
-    })
-    .catch(done);
+    });
   });
 
   it("Check file name with id", function(done) {
