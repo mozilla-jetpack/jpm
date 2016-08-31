@@ -21,6 +21,7 @@ var jpmignoreLFPath = path.join(__dirname, "..", "addons", "jpmignore-lf");
 var jpmignoreCRLFPath = path.join(__dirname, "..", "addons", "jpmignore-crlf");
 var jpmignoreMixedPath = path.join(__dirname, "..", "addons", "jpmignore-mixed");
 var tmpOutputDir = path.join(__dirname, "../", "tmp");
+var targetDir = path.join(__dirname, "../", "target");
 var updateRDFPath = path.join(__dirname, "..", "fixtures", "updateRDF");
 var updateRDFFailPath = path.join(__dirname, "..", "fixtures", "updateRDF-fail");
 var webextensionManifestExcludedPath = path.join(
@@ -52,6 +53,22 @@ describe("lib/xpi", function() {
     })
     .catch(done);
   });
+
+  it("Zips up cwd's addon in the specified directory", function() {
+    process.chdir(simpleAddonPath);
+    var manifest = require(path.join(simpleAddonPath, "package.json"));
+    fs.mkdirs(targetDir);
+    return xpi(manifest, {destDir: targetDir}).then(function(filePath) {
+      expect(filePath).to.be.equal(path.join(targetDir, "simple-addon.xpi"));
+      return utils.unzipTo(filePath, tmpOutputDir).then(function() {
+        utils.compareDirs(simpleAddonPath, tmpOutputDir);
+      });
+    })
+    .then(function() {
+      fs.remove(targetDir);
+    });
+  });
+
   it("Check file name with id", function(done) {
     process.chdir(simpleAddonWithIdPath);
     var manifest = require(path.join(simpleAddonWithIdPath, "package.json"));

@@ -57,6 +57,7 @@
     "mozilla-toolkit-versioning": "0.0.2",
     "mozilla-version-comparator": "1.0.2",
     "node-watch": "0.3.4",
+    "object-assign": "4.1.0",
     "open": "0.0.5",
     "promzard": "0.3.0",
     "read": "1.0.7",
