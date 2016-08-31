@@ -74,8 +74,7 @@ program
           // turn into an absolute path
           function(dir) {
             return path.resolve(dir);
-          },
-          process.cwd())
+          })
   .action(cmd.prepare("xpi", program, function(manifest, options) {
     var start = Date.now();
     xpi(manifest, assign({}, program, options)).then(function(xpiPath) {
