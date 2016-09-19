@@ -29,6 +29,9 @@ var webextensionManifestExcludedPath = path.join(
 var webextensionManifestExcludedJPMIgnorePath = path.join(
   __dirname, "..", "fixtures", "webext-manifest-excluded-jpmignore"
 );
+var webextensionManifestEmbeddedPath = path.join(
+  __dirname, "..", "fixtures", "webext-embed"
+);
 
 describe("lib/xpi", function() {
   beforeEach(utils.setup);
@@ -532,10 +535,10 @@ describe("lib/xpi", function() {
     .catch(done);
   });
 
-  it("Exclude a manifest.json when a manifest.json file exist", function() {
+  it("Exclude manifest.json when it exists in the addon root dir", function() {
     process.chdir(webextensionManifestExcludedPath);
 
-    // In this test scenario, jpm is executed agains a WebExtension that contains
+    // In this test scenario, jpm is executed against a WebExtension that contains
     // both a package.json and a manifest.json files in the root dir, probably because
     // the add-on is being built from an npm package, and no .jpmignore is defined in this addon
     var manifest = require(path.join(webextensionManifestExcludedPath, "package.json"));
@@ -556,10 +559,10 @@ describe("lib/xpi", function() {
       });
   });
 
-  it("Exclude a manifest.json even if not included in a .jpmignore file", function() {
+  it("Exclude ./manifest.json even if not included in a .jpmignore file", function() {
     process.chdir(webextensionManifestExcludedJPMIgnorePath);
 
-    // In this test scenario, jpm is executed agains a WebExtension that contains
+    // In this test scenario, jpm is executed against a WebExtension that contains
     // both a package.json and a manifest.json files in the root dir, and there
     // is a .jpmignore file that doesn't contains the manifest.json.
     var manifest = require(path.join(webextensionManifestExcludedJPMIgnorePath,
@@ -580,4 +583,30 @@ describe("lib/xpi", function() {
         });
       });
   });
+
+  it("Doesn't exclude webextension/manifest.json needed by SDK hybrid addons", function() {
+    process.chdir(webextensionManifestEmbeddedPath);
+
+    // In this test scenario, jpm is executed against an SDK hybrid addon,
+    // and the 'webextension/manifest.json' file should not be excluded from the
+    // generated xpi.
+    var manifest = require(path.join(webextensionManifestEmbeddedPath,
+                                     "package.json"));
+    return xpi(manifest)
+      .then(function(xpiPath) {
+        return utils.unzipTo(xpiPath, tmpOutputDir);
+      })
+      .then(function(xpiPath) {
+        return when.all(
+          [ "webextension/manifest.json" ]
+            .map(function(p) { return path.join(tmpOutputDir, p); })
+            .map(function(p) { return fs.exists(p); })
+        ).then(function(results) {
+          results.forEach(function(exists) {
+            expect(exists).to.be.equal(true);
+          });
+        });
+      });
+  });
+
 });
