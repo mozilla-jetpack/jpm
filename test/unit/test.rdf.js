@@ -740,7 +740,7 @@ function parseRDF(rdf) {
 }
 
 function setupRDF (manifest, needsBootstrapJS) {
-  if (typeof needsBootstrapJS == "undefined") {
+  if (typeof needsBootstrapJS === "undefined") {
     needsBootstrapJS = true;
   }
   return parseRDF(RDF.createRDF(manifest, needsBootstrapJS));

@@ -165,6 +165,6 @@ function invalidResolve() {
 exports.invalidResolve = invalidResolve;
 
 function isTravis() {
-  return (process.env.TRAVIS == "true");
+  return (process.env.TRAVIS === "true");
 }
 exports.isTravis = isTravis;
