@@ -28,8 +28,7 @@ before_script:
 - npm run get-unbranded-firefox -- --target ../
 script:
 - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox-bin
-- npm run-script jshint
-- npm run-script jscs
+- npm run lint
 - npm test
 # Run changelog-lint but only on newer versions of Node (because of syntax errors)
 - if [[ ${TRAVIS_NODE_VERSION:0:1} -ge "4" ]]; then

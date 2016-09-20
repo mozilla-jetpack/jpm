@@ -1,4 +1,3 @@
-/* jshint esversion: 6, moz: true */
 "use strict";
 
 const { Cc, Ci } = require("chrome");
