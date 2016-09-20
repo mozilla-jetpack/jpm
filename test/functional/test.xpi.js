@@ -7,8 +7,6 @@
 var fs = require("fs");
 var path = require("path");
 var utils = require("../utils");
-var chai = require("chai");
-var expect = chai.expect;
 var exec = utils.exec;
 
 var simpleAddonPath = path.join(__dirname, "..", "fixtures", "simple-addon");

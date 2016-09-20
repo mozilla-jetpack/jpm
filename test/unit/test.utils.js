@@ -1,21 +1,19 @@
-/* jshint mocha: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-var os = require("os");
 var fs = require("fs");
 var path = require("path");
 var chai = require("chai");
 var expect = chai.expect;
 var utils = require("../../lib/utils");
-var all = require("when").all;
 var hasAOMSupport = utils.hasAOMSupport;
 
 var simpleAddonPath = path.join(__dirname, "..", "addons", "simple-addon");
 var simpleAddonXPI = path.join(__dirname, "..", "xpis", "@simple-addon.xpi");
-var prevDir, prevBinary;
+var prevDir;
+var prevBinary;
 
 describe("lib/utils", function() {
   beforeEach(function() {
@@ -69,7 +67,7 @@ describe("lib/utils", function() {
                                    "@missing-package-json.xpi");
       return utils.getManifest({xpiPath: noPackageXPI})
         .then(function() {
-          throw new Error('Unexpected success');
+          throw new Error("Unexpected success");
         })
         .catch(function(err) {
           expect(err.message).to.match(/no manifest found/);
@@ -84,7 +82,7 @@ describe("lib/utils", function() {
         .then(function(tmpXPI) {
           try {
             var manifest = require(
-              path.join(tmpXPI.path, 'package.json'));
+              path.join(tmpXPI.path, "package.json"));
             expect(manifest.name).to.be.equal("simple-addon");
           } catch (e) {
             tmpXPI.remove();
@@ -154,7 +152,7 @@ describe("lib/utils", function() {
       var xml = "<?xml version=\"1.0\"?><empty></empty>";
       return utils.getXpiInfoFromInstallRdf(xml)
         .then(function() {
-          throw new Error('Unexpected success');
+          throw new Error("Unexpected success");
         })
         .catch(function(err) {
           expect(err.message).to.match(/Could not find root RDF element/);
@@ -165,7 +163,7 @@ describe("lib/utils", function() {
       var xml = "<?xml version=\"1.0\"?><RDF:RDF><whatever/></RDF:RDF>";
       return utils.getXpiInfoFromInstallRdf(xml)
         .then(function() {
-          throw new Error('Unexpected success');
+          throw new Error("Unexpected success");
         })
         .catch(function(err) {
           expect(err.message).to.match(/Could not find descriptions/);
@@ -178,7 +176,7 @@ describe("lib/utils", function() {
                 "</RDF:RDF>";
       return utils.getXpiInfoFromInstallRdf(xml)
         .then(function() {
-          throw new Error('Unexpected success');
+          throw new Error("Unexpected success");
         })
         .catch(function(err) {
           expect(err.message).to.match(
@@ -193,7 +191,7 @@ describe("lib/utils", function() {
                 "</RDF:RDF>";
       return utils.getXpiInfoFromInstallRdf(xml)
         .then(function() {
-          throw new Error('Unexpected success');
+          throw new Error("Unexpected success");
         })
         .catch(function(err) {
           expect(err.message).to.match(/ID was empty/);
@@ -208,7 +206,7 @@ describe("lib/utils", function() {
                 "</RDF:RDF>";
       return utils.getXpiInfoFromInstallRdf(xml)
         .then(function() {
-          throw new Error('Unexpected success');
+          throw new Error("Unexpected success");
         })
         .catch(function(err) {
           expect(err.message).to.match(/Version was empty/);
@@ -219,7 +217,7 @@ describe("lib/utils", function() {
       var xml = "this-is-not valid >XML<";
       return utils.getXpiInfoFromInstallRdf(xml)
         .then(function() {
-          throw new Error('Unexpected success');
+          throw new Error("Unexpected success");
         })
         .catch(function(err) {
           expect(err.message).to.match(/install\.rdf: Non-whitespace before first tag/);

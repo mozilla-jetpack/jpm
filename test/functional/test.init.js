@@ -13,8 +13,6 @@ var chai = require("chai");
 var expect = chai.expect;
 var exec = utils.exec;
 
-var capitalAddonPath = path.join(__dirname, "..", "fixtures", "Capital-name");
-
 describe("jpm init", function() {
   beforeEach(utils.setup);
   afterEach(utils.tearDown);

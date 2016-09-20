@@ -9,7 +9,6 @@ var path = require("path");
 var exec = utils.exec;
 var chai = require("chai");
 var expect = chai.expect;
-var when = require("when");
 
 var addonsPath = path.join(__dirname, "..", "fixtures");
 

@@ -1,7 +1,6 @@
 var _ = require("lodash");
 var path = require("path");
 var childProcess = require("child_process");
-var execFile = childProcess.execFile;
 var fs = require("fs-extra");
 var rimraf = require("rimraf");
 var glob = require("glob");

@@ -6,7 +6,6 @@
 
 var fs = require("fs");
 var path = require("path");
-var when = require("when");
 var chai = require("chai");
 var expect = chai.expect;
 var teacher = require("teacher");
@@ -23,7 +22,7 @@ var IGNORED_TEACHER_DESCRIPTIONS = [
 
 describe("Spell Checking", function() {
   it("Spellcheck README.md", function(done) {
-   var readme = path.join(rootURI, "README.md");
+    var readme = path.join(rootURI, "README.md");
 
     fs.readFile(readme, function(err, data) {
       expect(err).to.be.equal(null);
