@@ -1,7 +1,6 @@
 var _ = require("lodash");
 var path = require("path");
 var childProcess = require("child_process");
-var execFile = childProcess.execFile;
 var fs = require("fs-extra");
 var rimraf = require("rimraf");
 var glob = require("glob");
@@ -166,6 +165,6 @@ function invalidResolve() {
 exports.invalidResolve = invalidResolve;
 
 function isTravis() {
-  return (process.env.TRAVIS == "true");
+  return (process.env.TRAVIS === "true");
 }
 exports.isTravis = isTravis;

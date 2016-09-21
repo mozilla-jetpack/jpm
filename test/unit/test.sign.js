@@ -1,4 +1,3 @@
-/* jshint mocha: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,10 +5,8 @@
 
 var path = require("path");
 var _ = require("lodash");
-var merge = require("lodash.merge");
 var chai = require("chai");
 var expect = chai.expect;
-var jwt = require("jsonwebtoken");
 var when = require("when");
 
 var signCmd = require("../../lib/sign").signCmd;
@@ -180,8 +177,8 @@ describe("sign", function() {
     var mockXpiInfoGetter = new CallableMock({
       returnValue: when.promise(function(resolve) {
         resolve({
-          id: 'some-id',
-          version: '0.0.1',
+          id: "some-id",
+          version: "0.0.1",
         });
       }),
     });

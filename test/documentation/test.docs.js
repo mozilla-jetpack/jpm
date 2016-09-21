@@ -1,4 +1,3 @@
-/* jshint mocha: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,7 +5,6 @@
 
 var fs = require("fs");
 var path = require("path");
-var when = require("when");
 var chai = require("chai");
 var expect = chai.expect;
 var teacher = require("teacher");
@@ -23,7 +21,7 @@ var IGNORED_TEACHER_DESCRIPTIONS = [
 
 describe("Spell Checking", function() {
   it("Spellcheck README.md", function(done) {
-   var readme = path.join(rootURI, "README.md");
+    var readme = path.join(rootURI, "README.md");
 
     fs.readFile(readme, function(err, data) {
       expect(err).to.be.equal(null);
@@ -34,12 +32,12 @@ describe("Spell Checking", function() {
 
         var results = data || [];
         results = results.filter(function(result) {
-          if (NEW_WORDS.indexOf(result.string.toLowerCase()) != -1) {
+          if (NEW_WORDS.indexOf(result.string.toLowerCase()) !== -1) {
             return false;
           }
 
           // ignore anything that starts with a dash
-          if (result.string[0] == "-") {
+          if (result.string[0] === "-") {
             return false;
           }
 
@@ -59,7 +57,7 @@ describe("Spell Checking", function() {
 
         // filter out results with descriptions which we do not want to consider as errors
         results = results.filter(function(result) {
-          return IGNORED_TEACHER_DESCRIPTIONS.indexOf(result.description) == -1;
+          return IGNORED_TEACHER_DESCRIPTIONS.indexOf(result.description) === -1;
         });
 
         expect(results.length).to.be.equal(0);

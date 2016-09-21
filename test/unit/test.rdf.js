@@ -1,4 +1,3 @@
-/* jshint mocha: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,7 +5,6 @@
 
 var RDF = require("../../lib/rdf");
 var DOMParser = require("xmldom").DOMParser;
-var parse = require("mozilla-toolkit-versioning").parse;
 var chai = require("chai");
 var expect = chai.expect;
 var GUIDS = require("../../lib/settings").ids;
@@ -147,7 +145,7 @@ describe("lib/rdf", function() {
       expect(getData(xml2, "em:icon64URL")).to.be.equal("chrome://icon-at-jetpack/icon.png");
       var xml3 = setupRDF({ id: "icon@jetpack", icon: { "64": "resource://icon-at-jetpack/megaman.png" } });
       expect(getData(xml3, "em:icon64URL")).to.be.equal("resource://icon-at-jetpack/megaman.png");
-     });
+    });
 
     it("icon64URL uses `icon64`", function() {
       var xml = setupRDF({ id: "icon@jetpack", icon: { "64": "megaman.png" } });
@@ -382,7 +380,7 @@ describe("lib/rdf", function() {
     it("add `ja` title, description, and homepage to add-on", function() {
       var xml = setupRDF({ title: "my-title", description: "my-desc", homepage: "my-page",
         locales: {
-          "ja" : {
+          "ja": {
             title: "名前",
             description: "紹介",
             homepage: "ホームページ",
@@ -406,7 +404,7 @@ describe("lib/rdf", function() {
     it("add `ja` title and homepage to add-on w/o description", function() {
       var xml = setupRDF({ title: "my-title", homepage: "my-page",
         locales: {
-          "ja" : {
+          "ja": {
             title: "名前",
             homepage: "ホームページ",
           }
@@ -427,7 +425,7 @@ describe("lib/rdf", function() {
     it("add `ja` title and description to add-on w/o description", function() {
       var xml = setupRDF({ title: "my-title", homepage: "my-page",
         locales: {
-          "ja" : {
+          "ja": {
             title: "名前",
             description: "紹介",
           }
@@ -450,7 +448,7 @@ describe("lib/rdf", function() {
     it("add `ja` description and homepage to add-on w/o description", function() {
       var xml = setupRDF({ title: "my-title", homepage: "my-page",
         locales: {
-          "ja" : {
+          "ja": {
             description: "紹介",
             homepage: "ホームページ",
           }
@@ -473,12 +471,12 @@ describe("lib/rdf", function() {
     it("add `ja` & `zh-CN` title, description, and homepage to add-on", function() {
       var xml = setupRDF({ title: "my-title", description: "my-desc", homepage: "my-page",
         locales: {
-          "ja" : {
+          "ja": {
             title: "名前",
             description: "紹介",
             homepage: "ホームページ",
           },
-          "zh-CN" : {
+          "zh-CN": {
             title: "扩展",
             description: "说明",
             homepage: "主页",
@@ -514,11 +512,11 @@ describe("lib/rdf", function() {
     it("add `ja` title and homepage & `zh-CN` description to add-on only with homepage", function() {
       var xml = setupRDF({ homepage: "my-page",
         locales: {
-          "ja" : {
+          "ja": {
             title: "名前",
             homepage: "ホームページ",
           },
-          "zh-CN" : {
+          "zh-CN": {
             description: "说明"
           }
         }
@@ -642,7 +640,7 @@ describe("lib/rdf", function() {
     it("create the update.rdf file with the correct value", function() {
       var str = RDF.createUpdateRDF(
         {
-          id : "myaddon@jetpack",
+          id: "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi",
           version: "1.4.1",
           engines: { fennec: ">=21.0a <32.0" }
@@ -676,7 +674,7 @@ describe("lib/rdf", function() {
     it("create the update.rdf file with multiple engine", function() {
       var str = RDF.createUpdateRDF(
         {
-          id : "myaddon@jetpack",
+          id: "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi",
           version: "1.4.1",
           engines: { fennec: ">=21.0a <32.0", firefox: ">=21.0a <=33.0"}
@@ -714,7 +712,7 @@ describe("lib/rdf", function() {
     it("create the update.rdf file with default value", function() {
       var str = RDF.createUpdateRDF(
         {
-          id : "myaddon@jetpack",
+          id: "myaddon@jetpack",
           updateLink: "https://mozilla.org/myaddon.xpi"
         }
       );
@@ -742,7 +740,7 @@ function parseRDF(rdf) {
 }
 
 function setupRDF (manifest, needsBootstrapJS) {
-  if (typeof needsBootstrapJS == "undefined") {
+  if (typeof needsBootstrapJS === "undefined") {
     needsBootstrapJS = true;
   }
   return parseRDF(RDF.createRDF(manifest, needsBootstrapJS));

@@ -1,0 +1,46 @@
+env:
+  node: true
+
+extends: eslint:recommended
+
+plugins:
+  - dependencies
+
+root: true
+
+rules:
+  dependencies/case-sensitive: error
+  dependencies/no-cycles: error
+  dependencies/no-unresolved: error
+  dependencies/require-json-ext: error
+
+  array-bracket-spacing: [off, never, {singleValue: true}]
+  brace-style: off # TODO: Set to warn|error?
+  camelcase: [error, {properties: always}]
+  comma-dangle: off # TODO: Set to `[error, always|never]`?
+  curly: off # TODO: Set to error?
+  dot-notation: error
+  eol-last: error
+  eqeqeq: error
+  indent: [error, 2, {SwitchCase: 1}]
+  key-spacing: [error, {beforeColon: false, afterColon: true}]
+  max-len: [off, 80] # TODO: Set to warn|error?
+  new-cap: error
+  no-console: off # TODO: Set to warn|error?
+  no-mixed-spaces-and-tabs: error
+  no-multi-str: error
+  no-multiple-empty-lines: error
+  no-spaced-func: error
+  no-trailing-spaces: error
+  no-unused-vars: [warn, {vars: all, args: none}]
+  no-with: error
+  one-var: [error, never]
+  operator-linebreak: [error, after]
+  quotes: [error, double]
+  semi: [error, always]
+  space-before-blocks: [error, always]
+  space-before-function-paren: off
+  space-in-parens: [error, never]
+  space-infix-ops: error
+  space-return-throw-case: off
+  space-unary-ops: off
