@@ -52,7 +52,7 @@ describe("Spell Checking", function() {
 
         if (results.length > 0) {
           // prints all the teacher results (even the ignored suggestions)
-          console.log(JSON.stringify(results, null, 2));
+          console.log(JSON.stringify(results, null, 2)); // eslint-disable-line no-console
         }
 
         // filter out results with descriptions which we do not want to consider as errors

@@ -254,7 +254,7 @@ describe("jpm run", function() {
           json = JSON.parse(data);
         }
         catch (e) {
-          console.log("Something is wrong with output:\n" + output);
+          console.log("Something is wrong with output:\n" + output); // eslint-disable-line no-console
         }
         return json;
       }

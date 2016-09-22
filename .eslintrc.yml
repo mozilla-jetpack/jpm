@@ -24,15 +24,16 @@ rules:
   eqeqeq: error
   indent: [error, 2, {SwitchCase: 1}]
   key-spacing: [error, {beforeColon: false, afterColon: true}]
-  max-len: [off, 80] # TODO: Set to warn|error?
+  max-len: [error, 80, {ignoreComments: true}]
   new-cap: error
-  no-console: off # TODO: Set to warn|error?
+  no-console: error
   no-mixed-spaces-and-tabs: error
   no-multi-str: error
   no-multiple-empty-lines: error
   no-spaced-func: error
   no-trailing-spaces: error
   no-unused-vars: [warn, {vars: all, args: none}]
+  no-warning-comments: warn
   no-with: error
   one-var: [error, never]
   operator-linebreak: [error, after]
