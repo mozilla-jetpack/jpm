@@ -1,0 +1,10 @@
+{
+  "title": "SDK hybrid addon",
+  "name": "webext-embed-addon",
+  "version": "1.0.0",
+  "description": "A hybrid SDK + embedded webextension add-on",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
+  "hasEmbeddedWebExtension": true
+}

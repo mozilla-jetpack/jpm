@@ -226,6 +226,20 @@ describe("lib/rdf", function() {
       expect(translators[0].childNodes[0].data).to.be.equal("Bebop");
       expect(translators[1].childNodes[0].data).to.be.equal("Rocksteady");
     });
+
+    it("hasEmbeddedWebExtension optional property", function() {
+      var xml = parseRDF(RDF.createRDF({ id: "1" }));
+      expect(nodeExists(xml, "em:hasEmbeddedWebExtension")).to.be.equal(false);
+      expect(getData(xml, "em:hasEmbeddedWebExtension")).to.be.equal(undefined);
+
+      xml = parseRDF(RDF.createRDF({ id: "1", hasEmbeddedWebExtension: true }));
+      expect(nodeExists(xml, "em:hasEmbeddedWebExtension")).to.be.equal(true);
+      expect(getData(xml, "em:hasEmbeddedWebExtension")).to.be.equal("true");
+
+      xml = parseRDF(RDF.createRDF({ id: "1", hasEmbeddedWebExtension: false }));
+      expect(nodeExists(xml, "em:hasEmbeddedWebExtension")).to.be.equal(false);
+      expect(getData(xml, "em:hasEmbeddedWebExtension")).to.be.equal(undefined);
+    });
   });
 
   describe("author", function() {
