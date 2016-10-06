@@ -101,6 +101,7 @@ program
           "optional XPI to be signed. By default, an XPI will be built " +
           "from your working directory")
   .option("--timeout <milliseconds>", "time to wait for a signing result")
+  .option("--api-proxy <url>", "Optional proxy to use for all API requests")
   .action(function(options) {
     signCmd(program, options);
   });
