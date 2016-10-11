@@ -18,7 +18,8 @@
     "documentation": "mocha -t 5000 test/documentation",
     "lint": "eslint bin/jpm lib test",
     "test": "node ./test/run.js",
-    "prepush": "npm run lint && npm run documentation",
+    "prepush": "npm run lint",
+    "commitmsg": "npm run changelog-lint",
     "changelog": "conventional-changelog -p angular -u",
     "changelog-lint": "conventional-changelog-lint --from master",
     "get-unbranded-firefox": "get-firefox -ecb unbranded-release"
