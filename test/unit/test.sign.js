@@ -187,7 +187,7 @@ describe("sign", function() {
     }).catch(done);
   });
 
-    it("passes custom XPI to the signer", function(done) {
+  it("passes custom XPI to the signer", function(done) {
     var mockXpiInfoGetter = new CallableMock({
       returnValue: when.promise(function(resolve) {
         resolve({
