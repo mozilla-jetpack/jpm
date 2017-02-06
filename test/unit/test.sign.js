@@ -173,7 +173,7 @@ describe("sign", function() {
     }).catch(done);
   });
 
-  it("can configure a proxy", function(done) {
+  it("can configure a proxy", function() {
     runSignCmd({
       cmdOptions: {
         apiKey: "some-key",
@@ -183,8 +183,7 @@ describe("sign", function() {
     }).then(function() {
       expect(signAddonCall.call[0].apiProxy)
         .to.be.equal("some-proxy");
-      done();
-    }).catch(done);
+    });
   });
 
   it("passes custom XPI to the signer", function(done) {
