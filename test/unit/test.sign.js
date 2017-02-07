@@ -174,7 +174,7 @@ describe("sign", function() {
   });
 
   it("can configure a proxy", function() {
-    runSignCmd({
+    return runSignCmd({
       cmdOptions: {
         apiKey: "some-key",
         apiSecret: "some-secret",
