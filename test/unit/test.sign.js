@@ -173,6 +173,19 @@ describe("sign", function() {
     }).catch(done);
   });
 
+  it("can configure a proxy", function() {
+    return runSignCmd({
+      cmdOptions: {
+        apiKey: "some-key",
+        apiSecret: "some-secret",
+        apiProxy: "some-proxy",
+      },
+    }).then(function() {
+      expect(signAddonCall.call[0].apiProxy)
+        .to.be.equal("some-proxy");
+    });
+  });
+
   it("passes custom XPI to the signer", function(done) {
     var mockXpiInfoGetter = new CallableMock({
       returnValue: when.promise(function(resolve) {
