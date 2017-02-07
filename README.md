@@ -4,11 +4,17 @@ JPM [![Dependency Status](https://david-dm.org/mozilla-jetpack/jpm.png)](https:/
 [![NPM](https://nodei.co/npm/jpm.png?stars&downloads)](https://nodei.co/npm/jpm/)
 [![NPM](https://nodei.co/npm-dl/jpm.png)](https://nodei.co/npm/jpm)
 
-[Jetpack](https://wiki.mozilla.org/Jetpack) Manager for Node.js
+**IMPORTANT UPDATE AS OF 2017-02-07**: Firefox is planning to deprecate the type of
+add-ons that are built by `jpm`. If you're building a new add-on, consider a
+[WebExtension](https://developer.mozilla.org/en-US/Add-ons/WebExtensions)
+instead and check out the [web-ext](https://github.com/mozilla/web-ext)
+tool which has all the same features as `jpm`. Here are some
+[resources](https://wiki.mozilla.org/Add-ons/developer/communication#Migration_paths_for_developers_of_legacy_add-ons)
+to help you migrate a legacy `jpm` built add-on.
 
-Replacing the previous python tool for developing Firefox Add-ons, [cfx](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx), jpm is a utility for developing, testing, and packaging add-ons.
-
-**Currently only works with Firefox 38+**. Check out the `--binary` flag for ensuring that you're using the correct release of Firefox with jpm.
+Replacing the previous python tool for developing Firefox Add-ons,
+[cfx](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/cfx),
+jpm is a utility for developing, testing, and packaging add-ons.
 
 ## Install
 
