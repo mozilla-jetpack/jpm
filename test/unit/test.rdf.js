@@ -203,8 +203,8 @@ describe("lib/rdf", function() {
       expect(getData(xml, "em:multiprocessCompatible")).to.be.equal("true");
 
       xml = parseRDF(RDF.createRDF({ id: "1", permissions: { multiprocess: false } }));
-      expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
-      expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
+      expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(true);
+      expect(getData(xml, "em:multiprocessCompatible")).to.be.equal("false");
     });
 
     it("adds `translator` fields for each translator", function() {
