@@ -29,6 +29,7 @@ describe("lib/rdf", function() {
       expect(getData(xml, "em:icon64URL")).to.be.equal(undefined);
       expect(getData(xml, "em:translator")).to.be.equal(undefined);
       expect(getData(xml, "em:contributor")).to.be.equal(undefined);
+      expect(getData(xml, "em:multiprocessCompatible")).to.be.equal(undefined);
       expect(str.indexOf("homepageURL")).to.be.equal(-1);
       ["description", "creator"].forEach(function(field) {
         expect(nodeEmpty(xml, "em:" + field)).to.be.equal(true);
@@ -39,6 +40,7 @@ describe("lib/rdf", function() {
       expect(nodeExists(xml, "em:icon64URL")).to.be.equal(false);
       expect(nodeExists(xml, "em:translator")).to.be.equal(false);
       expect(nodeExists(xml, "em:contributor")).to.be.equal(false);
+      expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
     });
   });
 
@@ -71,6 +73,16 @@ describe("lib/rdf", function() {
     it("homepage uses `homepageURL`", function() {
       var xml = setupRDF({ homepage: "http://mozilla.com" });
       expect(getData(xml, "em:homepageURL")).to.be.equal("http://mozilla.com");
+    });
+
+    it("multiprocessCompatible uses `multiprocessCompatible`", function() {
+      var xml = setupRDF({ multiprocessCompatible: true });
+      expect(getData(xml, "em:multiprocessCompatible")).to.be.equal('true');
+    });
+
+    it("multiprocessCompatible does not convert non-boolean fields", function() {
+      var xml = setupRDF({ multiprocessCompatible: "yes" });
+      expect(nodeExists(xml, "em:multiprocessCompatible")).to.be.equal(false);
     });
 
     it("unpack uses `unpack`", function() {
