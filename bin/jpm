@@ -42,6 +42,11 @@ program
             return path.resolve(dir);
           },
           process.cwd())
+  .option("--xpi-path <path>", "Output directory path for the add-on",
+          // turn into an absolute path
+          function(dir) {
+            return path.resolve(dir);
+          })
   .option("--binary-args <CMDARGS>", "Pass additional arguments into Firefox.")
   .option("--prefs <path>", "Custom set user preferences (path to a json file)")
   .option("--post-url <url>", "A url to post a xpi of your extension")
