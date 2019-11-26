@@ -48,10 +48,10 @@
     "jetpack-validation": "0.0.7",
     "jpm-core": "0.0.11",
     "jsontoxml": "0.0.11",
+    "jszip": "2.4.0",
     "lodash": "4.11.1",
     "minimatch": "3.0.2",
     "mozilla-toolkit-versioning": "0.0.2",
-    "mozilla-version-comparator": "1.0.2",
     "node-watch": "0.3.4",
     "object-assign": "4.1.0",
     "open": "0.0.5",
@@ -62,8 +62,7 @@
     "tmp": "0.0.28",
     "when": "3.7.2",
     "xml2js": "0.4.16",
-    "zip-dir": "1.0.2",
-    "jszip": "2.4.0"
+    "zip-dir": "1.0.2"
   },
   "devDependencies": {
     "async": "1.5.0",
